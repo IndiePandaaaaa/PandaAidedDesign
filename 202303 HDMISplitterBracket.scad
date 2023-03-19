@@ -28,11 +28,11 @@ module Bracket() {
 }
 difference() {
     Bracket();
-    translate([screwSocketWidth / 2, - 2.5, screwSocketWidth / 2])
-        rotate([- 90, 0, 0]) screw(3, 5, false);
+    translate([screwSocketWidth / 2, -thickness, screwSocketWidth / 2])
+        rotate([- 90, 0, 0]) screw(3.5, 5, true);
     translate([screwSocketWidth + splitterWidth + thickness * 2, 0, 0])
-        translate([screwSocketWidth / 2, - 2.5, screwSocketWidth / 2])
-            rotate([- 90, 0, 0]) screw(3, 5, false);
+        translate([screwSocketWidth / 2, -thickness, screwSocketWidth / 2])
+            rotate([- 90, 0, 0]) screw(3.5, 5, true);
 }
 
 
