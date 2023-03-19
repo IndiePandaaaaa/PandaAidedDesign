@@ -2,7 +2,7 @@ use <Parts/Screw.scad>
 
 thickness = 2.5;
 screwSocketWidth = 14;
-splitterWidth = 83.1;
+splitterWidth = 83.1 + 0.1; // for tolerance issues
 chamfer = 1;
 
 module Bracket() {
