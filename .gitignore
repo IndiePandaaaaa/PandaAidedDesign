@@ -1,4 +1,10 @@
-*.stl
-*.txt
+# IntelliJ Project Folder
+.idea
+out
 
+# compilation files
+*.stl
+
+# temporary files
+*.txt
 *~
