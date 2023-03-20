@@ -2,7 +2,7 @@ use <Parts/ZipTiePoint.scad>
 
 height = 8.9;
 width = 14.5;
-depth = 12;
+depth = 7.2;
 
 union() {
     difference() {
