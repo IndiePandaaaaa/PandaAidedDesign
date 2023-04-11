@@ -20,7 +20,7 @@ module screw(diameter, length, cutout_sample = false, fs = 0.1, fa = 1) {
         echo("New length is: ", length);
     }
 
-    cone_height = diameter*0.85;
+    cone_height = diameter * 0.85;
     cone_diameter = diameter * 2;
 
     if (!cutout_sample) {
@@ -48,7 +48,7 @@ module screw(diameter, length, cutout_sample = false, fs = 0.1, fa = 1) {
                     }
             }
     } else {
-		offset = 0.2;
+        offset = 0.2;
         translate([0, 0, - length - offset / 2])
             base_model(diameter, length, cone_height, cone_diameter, offset);
     }

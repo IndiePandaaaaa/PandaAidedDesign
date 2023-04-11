@@ -9,14 +9,14 @@ module ziptiepoint(width = 2.5, depth = 2, cutout_sample = false) {
             linear_extrude(height = width + 0.15) {
                 polygon([
                         [0, 0],
-                        [chamfer-chamfer/2, 0],
-                        [chamfer+chamfer/2, chamfer/2],
+                        [chamfer - chamfer / 2, 0],
+                        [chamfer + chamfer / 2, chamfer / 2],
                         [depth - chamfer, io_height - chamfer],
                         [depth, io_height + chamfer],
                         [depth, io_height + middle_height - chamfer],
                         [depth - chamfer, io_height + middle_height + chamfer],
-                        [chamfer+chamfer/2, 2 * io_height + middle_height - chamfer/2],
-                        [chamfer-chamfer/2, 2 * io_height + middle_height],
+                        [chamfer + chamfer / 2, 2 * io_height + middle_height - chamfer / 2],
+                        [chamfer - chamfer / 2, 2 * io_height + middle_height],
                         [0, 2 * io_height + middle_height],
                     ]);
             }
@@ -30,6 +30,6 @@ module ziptiepoint(width = 2.5, depth = 2, cutout_sample = false) {
     }
 }
 
-function ziptiepoint_fullHeight(ziptie_depth = 2) = ((ziptie_depth / tan(42))*2)+(ziptie_depth * 1.25);
+function ziptiepoint_fullHeight(ziptie_depth = 2) = ((ziptie_depth / tan(42)) * 2) + (ziptie_depth * 1.25);
 
 ziptiepoint(cutout_sample = true);
