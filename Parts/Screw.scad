@@ -54,4 +54,6 @@ module screw(diameter, length, cutout_sample = false, fs = 0.1, fa = 1) {
     }
 }
 
+function screw_cone_diameter(screw_diameter) = screw_diameter * 2;
+
 screw(3.5, 12);
