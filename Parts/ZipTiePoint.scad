@@ -30,6 +30,6 @@ module ziptiepoint(width = 2.5, depth = 2, cutout_sample = false) {
     }
 }
 
-function ziptiepoint_fullHeight(ziptie_depth = 2) = (depth / tan(42))*2+(depth * 1.25);
+function ziptiepoint_fullHeight(ziptie_depth = 2) = ((ziptie_depth / tan(42))*2)+(ziptie_depth * 1.25);
 
 ziptiepoint(cutout_sample = true);
