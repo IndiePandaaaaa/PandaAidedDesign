@@ -1,17 +1,27 @@
 // created by IndiePandaaaaa | Lukas
 
 width = 30;
-height = width;
-pole_diameter = 20; // diameter of the pole
+pole_diameter = 21; // diameter of the pole
 wall_offset = 15;
-hook_width = 20;
+height = width;
+hook_width = width;
 
 module towel_hook(width, height, pole_diameter, wall_offset, hook_width, material_strength = 3, socket = 5, chamfer =
 2.5) {
+    if (wall_offset < material_strength) {
+        wall_offset = material_strength;
+    }
+
     pole_dia = pole_diameter + 2; // diameter of the pole with additional offset
     mat_strength = material_strength;
 
     module hook_width_removal(width) {
+
+        if (width < 0) {
+            width = width * - 1;
+            echo("width was negativ. New width: ", width);
+        }
+
         linear_extrude(height = width) {
             polygon([
                     [wall_offset, 0],
