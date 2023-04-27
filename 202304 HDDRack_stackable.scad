@@ -101,7 +101,7 @@ module AirVent(height, starting_depth, full_height, full_depth, full_width, ubas
     z_height = (full_height - height) / 2;
     translate([0, vent_depth - ubase_thickness, 0]) rotate([90, 0, 0])
         linear_extrude(height = vent_depth) {
-            for (i = [0:floor((full_depth - starting_depth) / (bridging_width * 2) - 1)]) {
+            for (i = [0:floor((full_depth - starting_depth) / (bridging_width * 2) - 2)]) {// -2 for more stability
                 polygon([
                         [starting_depth + bridging_width * 2 * i, z_height],
                         [starting_depth + bridging_width * 2 * i + bridging_width, z_height],
