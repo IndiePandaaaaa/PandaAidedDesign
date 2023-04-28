@@ -144,33 +144,28 @@ module Mounting(width, depth, height, distance, for_cutout_only = false) {
     }
 }
 
-module HexPattern(thickness, start_pos_x, start_pos_y, full_depth, full_width, single_diameter = 20) {
-    inner_radius = tan(60) * (single_diameter / 2);
-    echo("IR: ", inner_radius);
+module HexPattern(thickness, start_pos_x, start_pos_y, full_depth, full_width, single_hexagon_od = 20) {
+    inner_radius = tan(60) * (single_hexagon_od / 2);
 
-    count_x = floor((full_width - start_pos_x * 2) / single_diameter);
+    count_x = floor((full_width - start_pos_x * 2) / single_hexagon_od);
     count_y = floor((full_depth - start_pos_y) / (inner_radius));
-    echo("COUNT X:", count_x);
-    echo("COUNT Y:", count_y);
 
-    distance_x = ((full_width - start_pos_x * 2) - (count_x * single_diameter));
-    echo("DISTANCE X:", distance_x);
+    distance_x = ((full_width - start_pos_x * 2) - (count_x * single_hexagon_od));
 
     for (y = [0:count_y - 1]) {
         for (x = [0:count_x - 1]) {
-            translate([(start_pos_x + distance_x + single_diameter / 2) + single_diameter * x,
-                    (start_pos_y + single_diameter / 2) + inner_radius * 2 * y,
-                - 0.01]) {
+            translate([(start_pos_x + distance_x + single_hexagon_od / 2) + single_hexagon_od * x,
+                    (start_pos_y + single_hexagon_od / 2) + inner_radius * 2 * y, - 0.01]) {
                 linear_extrude(height = thickness + 0.02) {
                     rotate([0, 0, 90]) {
-                        circle(d = single_diameter, $fn = 6);
+                        circle(d = single_hexagon_od, $fn = 6);
                     }
                 }
                 if (x < count_x - 1 && y < floor((full_depth - start_pos_y) / (inner_radius * 2))) {
-                    translate([single_diameter / 2, inner_radius, 0]) {
+                    translate([single_hexagon_od / 2, inner_radius, 0]) {
                         linear_extrude(height = thickness + 0.02) {
                             rotate([0, 0, 90]) {
-                                circle(d = single_diameter, $fn = 6);
+                                circle(d = single_hexagon_od, $fn = 6);
                             }
                         }
                     }
@@ -197,8 +192,8 @@ union() {
             AirVent(FULLMODEL_HEIGHT - UBASE_THICKNESS * 2, SCREW_LENGTH + 2,
             FULLMODEL_HEIGHT, FULLMODEL_DEPTH, FULLMODEL_WIDTH, UBASE_THICKNESS);
 
-        HexPattern(UBASE_THICKNESS, UBASE_THICKNESS + TOLERANCE_HDD + RUBBER_OD, SCREW_LENGTH + 5,
-        FULLMODEL_DEPTH, FULLMODEL_WIDTH);
+        HexPattern(UBASE_THICKNESS, UBASE_THICKNESS + TOLERANCE_HDD + RUBBER_OD, SCREW_LENGTH + 7,
+        FULLMODEL_DEPTH, FULLMODEL_WIDTH, 19);
 
         // to prepare the space for the screws later
         translate([0, 0, UBASE_THICKNESS])
