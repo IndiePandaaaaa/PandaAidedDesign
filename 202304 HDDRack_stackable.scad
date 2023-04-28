@@ -32,7 +32,7 @@ RUBBER_OD_ID = 6.2;
 SCREW_LENGTH = 12 + 2;  // additionally 2mm for less tolerance issues with threading
 SCREW_SOCKET_WIDTH = 10;
 
-FULLMODEL_DEPTH = SCREW_LENGTH + HDD_BOTTOM_SCREW_DEPTH + 54; // ~ 112 mm
+FULLMODEL_DEPTH = SCREW_LENGTH + HDD_BOTTOM_SCREW_DEPTH + 55; // ~ 112 mm
 FULLMODEL_HEIGHT = HEIGHT_HDD + UBASE_THICKNESS + RUBBER_HEIGHT + 0.5; // ~ 34 mm total height
 FULLMODEL_WIDTH = UBASE_THICKNESS * 2 + TOLERANCE_HDD * 2 + WIDTH_HDD;
 
@@ -147,10 +147,12 @@ module Mounting(width, depth, height, distance, for_cutout_only = false) {
 module HexPattern(thickness, start_pos_x, start_pos_y, full_depth, full_width, single_hexagon_od = 20) {
     inner_radius = tan(60) * (single_hexagon_od / 2);
 
-    count_x = floor((full_width - start_pos_x * 2) / single_hexagon_od);
-    count_y = floor((full_depth - start_pos_y) / (inner_radius));
+    count_x = floor((full_width - start_pos_x * 2) / inner_radius);
 
+    // inner_radius * 2 is used but single_hexagon_od is needed to consider the strips inbetween
     distance_x = ((full_width - start_pos_x * 2) - (count_x * single_hexagon_od));
+
+    count_y = round((full_depth - start_pos_y) / (inner_radius + single_hexagon_od));
 
     for (y = [0:count_y - 1]) {
         for (x = [0:count_x - 1]) {
@@ -161,7 +163,7 @@ module HexPattern(thickness, start_pos_x, start_pos_y, full_depth, full_width, s
                         circle(d = single_hexagon_od, $fn = 6);
                     }
                 }
-                if (x < count_x - 1 && y < floor((full_depth - start_pos_y) / (inner_radius * 2))) {
+                if (x < count_x - 1 && y < floor((full_depth - start_pos_y) / (inner_radius + single_hexagon_od))) {
                     translate([single_hexagon_od / 2, inner_radius, 0]) {
                         linear_extrude(height = thickness + 0.02) {
                             rotate([0, 0, 90]) {
