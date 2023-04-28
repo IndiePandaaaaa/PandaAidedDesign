@@ -30,8 +30,7 @@ RUBBER_OD = 10;
 RUBBER_OD_ID = 6.2;
 
 SCREW_LENGTH = 12;
-SCREW_OD = 3.5;
-SCREW_ID = 2.2;
+SCREW_SOCKET_WIDTH = 10;
 
 FULLMODEL_DEPTH = SCREW_LENGTH + HDD_BOTTOM_SCREW_DEPTH + 54; // ~ 112 mm
 FULLMODEL_HEIGHT = HEIGHT_HDD + UBASE_THICKNESS + RUBBER_HEIGHT + 0.5; // ~ 34 mm total height
@@ -112,13 +111,22 @@ module AirVent(height, starting_depth, full_height, full_depth, full_width, ubas
         }
 }
 
-module Mounting(width, depth, height, distance, screw_id, for_cutout_only = false) {
-    module ScrewHole(width, depth, height, screw_id, screws_per_socket = 2) {
-        total_screws = screws_per_socket - 1;
-        for (i = [0:total_screws]) {
-            translate([width / 2, - 0.01, width / 2 + (height - screw_id - width) / total_screws * i])
-                rotate([- 90, 0, 0])
-                    cylinder(h = depth + 0.02, d = screw_id, center = false, $fs = 0.1);
+module Mounting(width, depth, height, distance, for_cutout_only = false) {
+    module ScrewHole(width_mounting, depth_mounting, height_mounting) {
+        // https://de.wikipedia.org/wiki/Kernloch
+        //  Gewinde	Steigung	Kernloch (core hole)
+        //  M4	    x0.7	3.3
+        //  M3	    x0.5	2.5
+        for (i = [0:2]) {
+            translate([width_mounting / 2, - 0.01, height_mounting / 3 / 2 + height_mounting / 3 * i]) {
+                rotate([- 90, 0, 0]) {
+                    if (i == 1) {// hole for M3 threading
+                        cylinder(h = depth_mounting + 0.02, d = 2.5, center = false, $fs = 0.1);
+                    } else {// holes for M4 threading
+                        cylinder(h = depth_mounting + 0.02, d = 3.3, center = false, $fs = 0.1);
+                    }
+                }
+            }
         }
     }
 
@@ -127,10 +135,10 @@ module Mounting(width, depth, height, distance, screw_id, for_cutout_only = fals
             if (!for_cutout_only) {
                 difference() {
                     cube([width, depth, height]);
-                    ScrewHole(width, depth, height, screw_id, screws_per_socket = 3);
+                    ScrewHole(width, depth, height);
                 }
             } else {
-                ScrewHole(width, depth, height, screw_id, screws_per_socket = 3);
+                ScrewHole(width, depth, height);
             }
         }
     }
@@ -172,8 +180,6 @@ module HexPattern(thickness, start_pos_x, start_pos_y, full_depth, full_width, s
     }
 }
 
-
-
 union() {
     difference() {
         translate([0, FULLMODEL_DEPTH, 0]) rotate([90, 0, 0])
@@ -196,9 +202,8 @@ union() {
 
         // to prepare the space for the screws later
         translate([0, 0, UBASE_THICKNESS])
-            Mounting(SCREW_OD * 2.5, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS, FAN_MOUNTING_DISTANCE, SCREW_ID,
-            true);
+            Mounting(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS, FAN_MOUNTING_DISTANCE, true);
     }
     translate([0, 0, UBASE_THICKNESS])
-        Mounting(SCREW_OD * 2.5, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS, FAN_MOUNTING_DISTANCE, SCREW_ID);
+        Mounting(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS, FAN_MOUNTING_DISTANCE);
 }
