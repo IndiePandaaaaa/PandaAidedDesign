@@ -14,7 +14,7 @@ POST_DEPTH_SCREW_IN = 16;
 
 WIDTH_HDD = 101.5;
 HEIGHT_HDD = 26.5;
-FAN_MOUNTING_DISTANCE = 105; // 105 mm is the distance between screws for an 120 mm fan
+FAN_CaseMountingSocket_DISTANCE = 105; // 105 mm is the distance between screws for an 120 mm fan
 
 HDD_BOTTOM_SCREW_DEPTH = 41.3;
 HDD_BOTTOM_SCREW_POS_X = 3.2;
@@ -34,7 +34,7 @@ SCREW_SOCKET_WIDTH = 10;
 
 FULLMODEL_DEPTH = SCREW_LENGTH + HDD_BOTTOM_SCREW_DEPTH + 55; // ~ 112 mm
 FULLMODEL_HEIGHT = HEIGHT_HDD + UBASE_THICKNESS + RUBBER_HEIGHT + 0.5; // ~ 34 mm total height
-FULLMODEL_WIDTH = UBASE_THICKNESS * 2 + TOLERANCE_HDD * 2 + WIDTH_HDD;
+FULLMODEL_WIDTH = UBASE_THICKNESS * 2 + TOLERANCE_HDD * 2 + WIDTH_HDD + 2 * RUBBER_WIDTH_ADDITIONAL;
 
 module UBase(depth, height, hdd_width, hdd_tolerance, thickness, tolerance = 0.1) {
     linear_extrude(height = depth) {
@@ -64,7 +64,7 @@ module UBase(depth, height, hdd_width, hdd_tolerance, thickness, tolerance = 0.1
     }
 }
 
-module BottomHoles(rubber_od, rubber_od_id, cutout_height) {
+module MountingHolesHDD(rubber_od, rubber_od_id, cutout_height) {
     height = 12;
     hdd_screw_width = 95.25;
     hdd_screw_depth = 44.45;
@@ -111,19 +111,19 @@ module AirVent(height, starting_depth, full_height, full_depth, full_width, ubas
         }
 }
 
-module Mounting(width, depth, height, distance, for_cutout_only = false) {
-    module ScrewHole(width_mounting, depth_mounting, height_mounting) {
+module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout_only = false) {
+    module ScrewHole(width_CaseMountingSocket, depth_CaseMountingSocket, height_CaseMountingSocket, position_x) {
         // https://de.wikipedia.org/wiki/Kernloch
         //  Gewinde	Steigung	Kernloch (core hole)
         //  M4	    x0.7	3.3
         //  M3	    x0.5	2.5
         for (i = [0:2]) {
-            translate([width_mounting / 2, - 0.01, height_mounting / 3 / 2 + height_mounting / 3 * i]) {
+            translate([position_x, - 0.01, height_CaseMountingSocket / 3 / 2 + height_CaseMountingSocket / 3 * i]) {
                 rotate([- 90, 0, 0]) {
                     if (i == 1) {// hole for M3 threading
-                        cylinder(h = depth_mounting + 0.02, d = 2.5, center = false, $fs = 0.1);
+                        cylinder(h = depth_CaseMountingSocket + 0.02, d = 2.5, center = false, $fs = 0.1);
                     } else {// holes for M4 threading
-                        cylinder(h = depth_mounting + 0.02, d = 3.3, center = false, $fs = 0.1);
+                        cylinder(h = depth_CaseMountingSocket + 0.02, d = 3.3, center = false, $fs = 0.1);
                     }
                 }
             }
@@ -131,14 +131,15 @@ module Mounting(width, depth, height, distance, for_cutout_only = false) {
     }
 
     for (i = [0:1]) {
-        translate([distance * i, 0, 0]) {
+        translate([(full_width - width) * i, 0, 0]) {
+            screw_hole_pos_x = (full_width - distance) / 2 + (width - (full_width - distance)) * i;
             if (!for_cutout_only) {
                 difference() {
-                    cube([width, depth, height]);
-                    ScrewHole(width, depth, height);
+                    cube([width, depth, height], center = false);
+                    ScrewHole(width, depth, height, screw_hole_pos_x);
                 }
             } else {
-                ScrewHole(width, depth, height);
+                ScrewHole(width, depth, height, screw_hole_pos_x);
             }
         }
     }
@@ -147,10 +148,10 @@ module Mounting(width, depth, height, distance, for_cutout_only = false) {
 module HexPattern(thickness, start_pos_x, start_pos_y, full_depth, full_width, single_hexagon_od = 20) {
     inner_radius = tan(60) * (single_hexagon_od / 2);
 
-    count_x = floor((full_width - start_pos_x * 2) / inner_radius);
+    count_x = round((full_width - start_pos_x * 2) / single_hexagon_od);
 
     // inner_radius * 2 is used but single_hexagon_od is needed to consider the strips inbetween
-    distance_x = ((full_width - start_pos_x * 2) - (count_x * single_hexagon_od));
+    distance_x = ((full_width - start_pos_x * 2) - (count_x * single_hexagon_od)) / 2;
 
     count_y = round((full_depth - start_pos_y) / (inner_radius + single_hexagon_od));
 
@@ -185,7 +186,7 @@ union() {
 
         translate([UBASE_THICKNESS + TOLERANCE_HDD / 2 + RUBBER_OD / 2, HDD_BOTTOM_SCREW_DEPTH + SCREW_LENGTH + 2, 0
             ]) {
-            BottomHoles(RUBBER_OD, RUBBER_OD_ID, UBASE_THICKNESS - RUBBER_HEIGHT_INTERNAL);
+            MountingHolesHDD(RUBBER_OD, RUBBER_OD_ID, UBASE_THICKNESS - RUBBER_HEIGHT_INTERNAL);
             ConnectorSpacer(HDD_SATA_CONNECTOR_WIDTH, HDD_SATA_CONNECTOR_CABLE_DEPTH, HDD_SATA_CONNECTOR_HEIGHT,
                 HDD_SATA_CONNECTOR_POS_X - HDD_BOTTOM_SCREW_POS_X, HDD_BOTTOM_SCREW_DEPTH);
         }
@@ -199,8 +200,12 @@ union() {
 
         // to prepare the space for the screws later
         translate([0, 0, UBASE_THICKNESS])
-            Mounting(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS, FAN_MOUNTING_DISTANCE, true);
+            CaseMountingSocket(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS,
+            FAN_CaseMountingSocket_DISTANCE,
+            FULLMODEL_WIDTH, true);
     }
     translate([0, 0, UBASE_THICKNESS])
-        Mounting(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS, FAN_MOUNTING_DISTANCE);
+        CaseMountingSocket(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS,
+        FAN_CaseMountingSocket_DISTANCE,
+        FULLMODEL_WIDTH, false);
 }
