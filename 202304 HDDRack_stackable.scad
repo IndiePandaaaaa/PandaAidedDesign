@@ -29,7 +29,7 @@ RUBBER_HEIGHT_INTERNAL = 1.5;
 RUBBER_OD = 10;
 RUBBER_OD_ID = 6.2;
 
-SCREW_LENGTH = 12;
+SCREW_LENGTH = 12 + 2;  // additionally 2mm for less tolerance issues with threading
 SCREW_SOCKET_WIDTH = 10;
 
 FULLMODEL_DEPTH = SCREW_LENGTH + HDD_BOTTOM_SCREW_DEPTH + 54; // ~ 112 mm
