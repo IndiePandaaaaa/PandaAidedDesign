@@ -1,5 +1,7 @@
 // created by IndiePandaaaaa | Lukas
 
+// for use with Lamptron HDD Rubber Screws PRO - https://www.caseking.de/lamptron-hdd-rubber-screws-pro-red-molt-075.html?__shop=2
+
 // HDD IronWolf 20TB 3,5″
 //height_HDD = 26.1;
 //width_HDD = 101.85;
