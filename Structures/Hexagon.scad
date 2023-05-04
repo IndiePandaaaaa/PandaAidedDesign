@@ -13,23 +13,18 @@ function hexagon_get_y_outer_element_height(single_outer_diameter = 20) = single
 function hexagon_get_y_next_structure(single_outer_diameter = 20) = (single_outer_diameter / 2 * 3) +
             hexagon_inbetween_distance_x(single_outer_diameter) * cos(30) * 2;
 
-function hexagon_get_y_element_height(single_outer_diameter = 20) = hexagon_get_y_outer_element_height(
-single_outer_diameter) + hexagon_get_y_inner_element_additional_height(single_outer_diameter);
+function hexagon_get_y_element_height(single_outer_diameter = 20) =
+    hexagon_get_y_outer_element_height(single_outer_diameter) +
+    hexagon_get_y_inner_element_additional_height(single_outer_diameter);
 
 function hexagon_get_x_element_count(width, single_outer_diameter = 20) = floor(width / single_outer_diameter);
 
-function hexagon_get_y_element_count(depth, single_outer_diameter = 20) = floor(((depth - (hexagon_get_y_element_height(
-single_outer_diameter) -
-    hexagon_get_y_next_structure(single_outer_diameter))) / hexagon_get_y_next_structure(single_outer_diameter)) * 2);
+function hexagon_get_y_element_count(depth, single_outer_diameter = 20) = floor(((depth -
+    (hexagon_get_y_element_height(single_outer_diameter) - hexagon_get_y_next_structure(single_outer_diameter))) /
+    hexagon_get_y_next_structure(single_outer_diameter)) * 2);
 
 function hexagon_get_used_width(width, single_outer_diameter = 20) = single_outer_diameter *
     hexagon_get_x_element_count(width, single_outer_diameter) - hexagon_inbetween_distance_x(single_outer_diameter);
-
-//function hexagon_get_used_depth(depth, single_outer_diameter = 20) = hexagon_get_y_next_structure(single_outer_diameter)
-//    * (floor(depth / hexagon_get_y_next_structure(single_outer_diameter))) + (hexagon_inbetween_distance_x(single_outer_diameter)) * cos(30);
-
-//function hexagon_get_used_depth(depth, single_outer_diameter = 20) = (hexagon_get_y_element_count(depth,single_outer_diameter) - 1) * 
-//			hexagon_get_y_next_structure(single_outer_diameter) + hexagon_get_y_element_height(single_outer_diameter);
 
 function hexagon_get_used_depth(depth, single_outer_diameter = 20) = round(hexagon_get_y_element_count(depth,
 single_outer_diameter) / 2) * hexagon_get_y_outer_element_height(single_outer_diameter) +
@@ -56,7 +51,7 @@ module hexagon_pattern(width, depth, thickness, single_outer_diameter = 20, vert
                         rotate([0, 0, angle]) circle(d = single_outer_diameter, $fn = vertices);
                     }
                 }
-            } else if (x < count_x - 1 && y % 2 == 1) {
+            } else if (x < count_x - 1) {
                 translate([inner_diameter / 2 + single_outer_diameter * x + single_outer_diameter / 2,
                         (single_outer_diameter / 2) + inner_diameter * y, - 0.01]) {
                     linear_extrude(height = thickness + 0.02) {
