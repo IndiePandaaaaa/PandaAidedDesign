@@ -9,7 +9,7 @@ innerHeight = 7.1;
 // optimizations:
 innerWidth = 24.5;
 chamfer = 0.5;
-chamferPyramid = 0.4;
+chamferPyramid = 0.5;
 
 module pyra(chamferPyra = 0.25) {
     polyhedron(
@@ -48,32 +48,70 @@ module pyra(chamferPyra = 0.25) {
     );
 }
 
-difference() {
-    linear_extrude(height = depth) {
-        difference() {
+intersection() {
+    difference() {
+        linear_extrude(height = depth) {
+            difference() {
+                outer_chamfer = chamfer + thickness - 0.25;
+                polygon([
+                        [0, outer_chamfer / 2 * 3],
+                        [outer_chamfer / 2, outer_chamfer / 2],
+                        [outer_chamfer / 2 * 3, 0],
+                        [thickness * 2 + innerWidth - outer_chamfer / 2 * 3, 0],
+                        [thickness * 2 + innerWidth - outer_chamfer / 2, outer_chamfer / 2],
+                        [thickness * 2 + innerWidth, outer_chamfer / 2 * 3],
+                        [thickness * 2 + innerWidth, thickness * 2 + innerHeight - outer_chamfer / 2 * 3],
+                        [thickness * 2 + innerWidth - outer_chamfer / 2, thickness * 2 + innerHeight - outer_chamfer / 2
+                        ],
+                        [thickness * 2 + innerWidth - outer_chamfer / 2 * 3, thickness * 2 + innerHeight],
+                        [outer_chamfer / 2 * 3, thickness * 2 + innerHeight],
+                        [outer_chamfer / 2, thickness * 2 + innerHeight - outer_chamfer / 2],
+                        [0, thickness * 2 + innerHeight - outer_chamfer / 2 * 3],
+                    ]);
+                polygon([
+                        [thickness, thickness + chamfer],
+                        [thickness + chamfer, thickness],
+                        [thickness + innerWidth - chamfer, thickness],
+                        [thickness + innerWidth, thickness + chamfer],
+                        [thickness + innerWidth, thickness + innerHeight - chamfer],
+                        [thickness + innerWidth - chamfer, thickness + innerHeight],
+                        [thickness + chamfer, thickness + innerHeight],
+                        [thickness, thickness + innerHeight - chamfer],
+                    ]);
+            }
+        }
+        pyra(chamferPyramid);
+        translate([innerWidth + thickness * 2, 0, depth])
+            rotate([0, 180, 0]) pyra(chamferPyramid);
+    }
+    rotate([0, 90, 0]) translate([- depth, 0, 0]) {
+        linear_extrude(innerWidth + thickness * 2) {
             polygon([
                     [0, chamfer],
                     [chamfer, 0],
-                    [thickness * 2 + innerWidth - chamfer, 0],
-                    [thickness * 2 + innerWidth, chamfer],
-                    [thickness * 2 + innerWidth, thickness * 2 + innerHeight - chamfer],
-                    [thickness * 2 + innerWidth - chamfer, thickness * 2 + innerHeight],
-                    [chamfer, thickness * 2 + innerHeight],
-                    [0, thickness * 2 + innerHeight - chamfer],
-                ]);
-            polygon([
-                    [thickness, thickness + chamfer],
-                    [thickness + chamfer, thickness],
-                    [thickness + innerWidth - chamfer, thickness],
-                    [thickness + innerWidth, thickness + chamfer],
-                    [thickness + innerWidth, thickness + innerHeight - chamfer],
-                    [thickness + innerWidth - chamfer, thickness + innerHeight],
-                    [thickness + chamfer, thickness + innerHeight],
-                    [thickness, thickness + innerHeight - chamfer],
+                    [depth - chamfer, 0],
+                    [depth, chamfer],
+                    [depth, innerHeight + thickness * 2 - chamfer],
+                    [depth - chamfer, innerHeight + thickness * 2],
+                    [chamfer, innerHeight + thickness * 2],
+                    [0, innerHeight + thickness * 2 - chamfer],
                 ]);
         }
     }
-    pyra(chamferPyramid);
-    translate([innerWidth + thickness * 2, 0, depth])
-        rotate([0, 180, 0]) pyra(chamferPyramid);
+    rotate([- 90, 0, 0]) translate([0, - depth, 0]) {
+        linear_extrude(innerHeight + thickness * 2) {
+            polygon([
+                    [0, chamfer],
+                    [chamfer, 0],
+                    [innerWidth + 2 * thickness - chamfer, 0],
+                    [innerWidth + 2 * thickness, chamfer],
+                    [innerWidth + 2 * thickness, depth - chamfer],
+                    [innerWidth + 2 * thickness - chamfer, depth],
+                    [chamfer, depth],
+                    [0, depth - chamfer],
+                ]);
+        }
+    }
 }
+
+
