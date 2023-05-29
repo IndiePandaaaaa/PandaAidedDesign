@@ -1,6 +1,6 @@
 // created by IndiePandaaaaa | Lukas
 
-ramp_depth = 30;
+ramp_depth = 40;
 ramp_height_material_thickness = 3;
 ramp_height_difference = 15;
 ramp_width = 65;
