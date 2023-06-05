@@ -33,10 +33,12 @@ linear_extrude(ramp_depth) {
         ]);
 }
 
-translate([ramp_width + 5, 0, 0]) {
-    LProfile(lprofile_length, lprofile_width, lprofile_height, lprofile_thickness);
-    translate([5, 0, 0]) LProfile(lprofile_length, 2, 1, 0.7);
-    translate([10, 0, 0]) LProfile(lprofile_length, 1.5, 1.5, 0.7);
-    translate([15, 0, 0]) LProfile(lprofile_length, 1.5, 1, 0.7);
+bed_width = 200;
+xPos = ramp_width + 5;
+translate([xPos, 0, 0]) {
+    lengths = [130, 200, 156, 157, 157]; // 470 splitted into 156,157,157
+    for (i = [0:len(lengths)]) {
+        translate([5 * i, 0, 0]) LProfile(lengths[i], lprofile_width, lprofile_height, lprofile_thickness);
+    }
 }
 
