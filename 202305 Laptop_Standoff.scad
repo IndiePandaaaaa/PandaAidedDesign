@@ -19,7 +19,7 @@ standoff_bottom_height = 3.5;
 
 width_between = (standoff_width - (standoff_brick_width * standoff_count)) / (standoff_count - 1);
 
-rubber_bottom_thickness = 0.5;
+rubber_bottom_thickness = 0.75;
 rubber_wall_thickness = 1;
 
 chamfer = 3;
