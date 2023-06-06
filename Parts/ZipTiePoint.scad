@@ -1,3 +1,7 @@
+// created by IndiePandaaaaa | Lukas
+
+function ziptie_point_height(ziptie_depth = 2) = ((ziptie_depth / tan(42)) * 2) + (ziptie_depth * 1.25);
+
 module ziptiepoint(width = 2.5, depth = 2, cutout_sample = false) {
     module cutout(width, depth) {
         chamfer = 0.35;
@@ -29,7 +33,5 @@ module ziptiepoint(width = 2.5, depth = 2, cutout_sample = false) {
             cutout(width, depth);
     }
 }
-
-function ziptiepoint_fullHeight(ziptie_depth = 2) = ((ziptie_depth / tan(42)) * 2) + (ziptie_depth * 1.25);
 
 ziptiepoint(cutout_sample = true);
