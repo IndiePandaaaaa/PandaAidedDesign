@@ -43,6 +43,9 @@ difference() {
         offset_z_screw = width_inbetween / 2 + (MATERIAL_THICKNESS + width_inbetween) * i;
         rotation = i % 2 == 1 ? [0, 90, - 90]:[0, 90, 0];
         translation = i % 2 == 1 ? [MATERIAL_THICKNESS + (SIDES - MATERIAL_THICKNESS) / 2, SIDES - MATERIAL_THICKNESS,
+            offset_z_screw]:  [MATERIAL_THICKNESS, (SIDES - MATERIAL_THICKNESS) / 2, offset_z_screw];
+        rotation = i % 2 == 1 ? [0, 90, - 90]:[0, 90, 0];
+        translation = i % 2 == 1 ? [MATERIAL_THICKNESS + (SIDES - MATERIAL_THICKNESS) / 2, SIDES - MATERIAL_THICKNESS,
             offset_z_screw]:[MATERIAL_THICKNESS, (SIDES - MATERIAL_THICKNESS) / 2, offset_z_screw];
 
         translate(translation)
