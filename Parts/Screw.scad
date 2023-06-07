@@ -2,7 +2,7 @@
 
 function cone_diameter(diameter) = diameter * 2;
 
-function cone_height(diameter) = diameter * 0.85;
+function cone_height(diameter) = diameter * 0.75;
 
 module screw(diameter, length, cutout_sample = false, fs = 0.1, fa = 1) {
     //$fs = 0.1; [size in mm] | $fa = 1; [degrees]
