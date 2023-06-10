@@ -11,17 +11,18 @@ lprofile_width = 2.5;
 lprofile_thickness = 1;
 
 module LProfile(length, width, height, thickness) {
-    linear_extrude(length) {
-        polygon([
-                [0, 0],
-                [thickness, 0],
-                [thickness, height - thickness],
-                [width, height - thickness],
-                [width, height],
-                [0, height],
-            ]);
+    if (length != undef) {
+        linear_extrude(length) {
+            polygon([
+                    [0, 0],
+                    [thickness, 0],
+                    [thickness, height - thickness],
+                    [width, height - thickness],
+                    [width, height],
+                    [0, height],
+                ]);
+        }
     }
-
 }
 
 // ramp adapter
@@ -37,7 +38,8 @@ bed_width = 200;
 xPos = ramp_width + 5;
 translate([xPos, 0, 0]) {
     lengths = [130, 200, 156, 157, 157]; // 470 splitted into 156,157,157
-    for (i = [0:len(lengths)]) {
+    for (i = [0:len(lengths) - 1]) {
+        echo(lengths[i]);
         translate([5 * i, 0, 0]) LProfile(lengths[i], lprofile_width, lprofile_height, lprofile_thickness);
     }
 }
