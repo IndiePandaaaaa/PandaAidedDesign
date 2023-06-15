@@ -2,6 +2,8 @@
 
 // for use with Lamptron HDD Rubber Screws PRO - https://www.caseking.de/lamptron-hdd-rubber-screws-pro-red-molt-075.html?__shop=2
 
+use <Structures/Hexagon.scad>
+
 // HDD IronWolf 20TB 3,5″
 //height_HDD = 26.1;
 //width_HDD = 101.85;
@@ -97,22 +99,6 @@ module ConnectorSpacer(width, depth, height, offset_x, bottom_screw_depth) {
         cube([width, depth, height + 0.01]);
 }
 
-module AirVent(height, starting_depth, full_height, full_depth, full_width, ubase_thickness, bridging_width = 2) {
-    vent_depth = full_width + ubase_thickness;
-    z_height = (full_height - height) / 2;
-    translate([0, vent_depth - ubase_thickness, 0]) rotate([90, 0, 0])
-        linear_extrude(height = vent_depth) {
-            for (i = [0:floor((full_depth - starting_depth) / (bridging_width * 2) - 3)]) {// -3 for more stability
-                polygon([
-                        [starting_depth + bridging_width * 2 * i, z_height],
-                        [starting_depth + bridging_width * 2 * i + bridging_width, z_height],
-                        [starting_depth + bridging_width * 2 * i + bridging_width, z_height + height],
-                        [starting_depth + bridging_width * 2 * i, z_height + height],
-                    ]);
-            }
-        }
-}
-
 module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout_only = false) {
     module ScrewHole(width_CaseMountingSocket, depth_CaseMountingSocket, height_CaseMountingSocket, position_x) {
         // https://de.wikipedia.org/wiki/Kernloch
@@ -147,58 +133,36 @@ module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout
     }
 }
 
-module HexPattern(thickness, start_pos_x, start_pos_y, full_depth, full_width, single_hexagon_od = 20) {
-    inner_radius = tan(60) * (single_hexagon_od / 2);
-
-    count_x = round((full_width - start_pos_x * 2) / single_hexagon_od);
-
-    // inner_radius * 2 is used but single_hexagon_od is needed to consider the strips inbetween
-    distance_x = ((full_width - start_pos_x * 2) - (count_x * single_hexagon_od)) / 2;
-
-    count_y = round((full_depth - start_pos_y) / (inner_radius + single_hexagon_od));
-
-    for (y = [0:count_y - 1]) {
-        for (x = [0:count_x - 1]) {
-            translate([(start_pos_x + distance_x + single_hexagon_od / 2) + single_hexagon_od * x,
-                    (start_pos_y + single_hexagon_od / 2) + inner_radius * 2 * y, - 0.01]) {
-                linear_extrude(height = thickness + 0.02) {
-                    rotate([0, 0, 90]) {
-                        circle(d = single_hexagon_od, $fn = 6);
-                    }
-                }
-                if (x < count_x - 1 && y < floor((full_depth - start_pos_y) / (inner_radius + single_hexagon_od))) {
-                    translate([single_hexagon_od / 2, inner_radius, 0]) {
-                        linear_extrude(height = thickness + 0.02) {
-                            rotate([0, 0, 90]) {
-                                circle(d = single_hexagon_od, $fn = 6);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
 union() {
     difference() {
         translate([0, FULLMODEL_DEPTH, 0]) rotate([90, 0, 0])
             UBase(FULLMODEL_DEPTH, FULLMODEL_HEIGHT, WIDTH_HDD + 2 * RUBBER_WIDTH_ADDITIONAL,
             TOLERANCE_HDD, UBASE_THICKNESS);
 
-        translate([UBASE_THICKNESS + TOLERANCE_HDD / 2 + RUBBER_OD / 2, HDD_BOTTOM_SCREW_DEPTH + SCREW_LENGTH + 2, 0
-            ]) {
+        translate([UBASE_THICKNESS + TOLERANCE_HDD / 2 + RUBBER_OD / 2,
+                    HDD_BOTTOM_SCREW_DEPTH + SCREW_LENGTH + 2, 0]) {
             MountingHolesHDD(RUBBER_OD, RUBBER_OD_ID, UBASE_THICKNESS - RUBBER_HEIGHT_INTERNAL);
             ConnectorSpacer(HDD_SATA_CONNECTOR_WIDTH, HDD_SATA_CONNECTOR_CABLE_DEPTH, HDD_SATA_CONNECTOR_HEIGHT,
                 HDD_SATA_CONNECTOR_POS_X - HDD_BOTTOM_SCREW_POS_X, HDD_BOTTOM_SCREW_DEPTH);
         }
 
-        translate([FULLMODEL_WIDTH, 0, 0]) rotate([0, 0, 90])
-            AirVent(FULLMODEL_HEIGHT - UBASE_THICKNESS * 2, SCREW_LENGTH + 2,
-            FULLMODEL_HEIGHT, FULLMODEL_DEPTH, FULLMODEL_WIDTH, UBASE_THICKNESS);
+        vent_width = FULLMODEL_DEPTH - (SCREW_LENGTH + 2) - SCREW_LENGTH / 2;
+        vent_height = FULLMODEL_HEIGHT - UBASE_THICKNESS * 2;
+        vent_hex_od = 12;
+        vent_pos_y = (SCREW_LENGTH + 2) + (vent_width - hexagon_get_used_width(vent_width, vent_hex_od)) / 2;
+        vent_pos_z = (FULLMODEL_HEIGHT - hexagon_get_used_depth(vent_height, vent_hex_od)) / 2;
 
-        HexPattern(UBASE_THICKNESS, UBASE_THICKNESS + TOLERANCE_HDD + RUBBER_OD, SCREW_LENGTH + 7,
-        FULLMODEL_DEPTH, FULLMODEL_WIDTH, 19);
+        rotate([90, 0, 90]) translate([vent_pos_y, vent_pos_z, 0])
+            hexagon_pattern(vent_width, vent_height, FULLMODEL_WIDTH, vent_hex_od);
+
+        pattern_width = FULLMODEL_WIDTH - (UBASE_THICKNESS + TOLERANCE_HDD + RUBBER_OD) * 2;
+        pattern_hex_od = 19;
+        pattern_pos_x = (FULLMODEL_WIDTH - hexagon_get_used_width(pattern_width, pattern_hex_od)) / 2;
+        pattern_pos_y = SCREW_LENGTH + 7 + (FULLMODEL_DEPTH - (SCREW_LENGTH + 7) -
+            hexagon_get_used_depth(FULLMODEL_DEPTH - (SCREW_LENGTH + 7), pattern_hex_od)) / 2;
+
+        translate([pattern_pos_x, pattern_pos_y, 0])
+            hexagon_pattern(pattern_width, FULLMODEL_DEPTH - pattern_pos_y, UBASE_THICKNESS, pattern_hex_od);
 
         // to prepare the space for the screws later
         translate([0, 0, UBASE_THICKNESS])
