@@ -73,7 +73,7 @@ module generate_elements(screws, cutout = true) {
         //        (false)
         //        );
 
-        if (one_screw || two_screws || three_screws || four_screws || five_screws) {
+        if (one_screw || two_screws || three_screws || four_screws) {
             translate([SCREW_DIAMETER + DISTANCE_X + (DISTANCE_X + ziptie_point_height(ZIP_TIE_THICKNESS)) * i,
                     DEPTH / 2, MATERIAL_THICKNESS])
                 if (cutout) screw(SCREW_DIAMETER, MATERIAL_THICKNESS * 2, true);
