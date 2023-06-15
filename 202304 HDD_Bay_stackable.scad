@@ -55,8 +55,8 @@ module UBase(depth, height, hdd_width, hdd_tolerance, thickness, tolerance = 0.1
                 [thickness + hdd_tolerance * 2 + hdd_width + thickness, 0],
                 [thickness + hdd_tolerance * 2 + hdd_width + thickness, height],
                 [thickness + hdd_tolerance * 2 + hdd_width + thickness / 2 - tolerance / 2, height],
-                [thickness + hdd_tolerance * 2 + hdd_width + thickness / 2 - tolerance / 2, height + thickness / 2 -
-                tolerance],
+                [thickness + hdd_tolerance * 2 + hdd_width + thickness / 2 - tolerance / 2,
+                        height + thickness / 2 - tolerance],
                 [thickness + hdd_tolerance * 2 + hdd_width + tolerance / 2, height + thickness / 2 - tolerance],
                 [thickness + hdd_tolerance * 2 + hdd_width + tolerance / 2, thickness],
                 [thickness - tolerance / 2, thickness],
@@ -167,11 +167,9 @@ union() {
         // to prepare the space for the screws later
         translate([0, 0, UBASE_THICKNESS])
             CaseMountingSocket(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS,
-            FAN_CaseMountingSocket_DISTANCE,
-            FULLMODEL_WIDTH, true);
+            FAN_CaseMountingSocket_DISTANCE, FULLMODEL_WIDTH, true);
     }
     translate([0, 0, UBASE_THICKNESS])
         CaseMountingSocket(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS,
-        FAN_CaseMountingSocket_DISTANCE,
-        FULLMODEL_WIDTH, false);
+        FAN_CaseMountingSocket_DISTANCE, FULLMODEL_WIDTH, false);
 }
