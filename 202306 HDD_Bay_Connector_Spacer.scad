@@ -7,7 +7,9 @@ MODEL_TOLERANCE = 0.15;
 TOLERANCE_HDD = 1;
 
 SATA_CONNECTORS = 3;
-SATA_CONNECTOR_WIDTH = 15;
+SATA_CONNECTOR_WIDTH = 16;
+
+WITH_DIAMOND_CUTOUT = false;
 
 SCREW_LENGTH = 12 + 2;  // additionally 2mm for less tolerance issues with threading
 SCREW_SOCKET_WIDTH = 10;
@@ -42,8 +44,9 @@ union() {
                     [UBASE_THICKNESS, UBASE_THICKNESS],
                     [UBASE_THICKNESS, 0],
                     [UBASE_THICKNESS + width_offset, 0],
-                    [UBASE_THICKNESS + width_offset + slope_width, slope_height],
-                    [FULLMODEL_WIDTH - width_offset - UBASE_THICKNESS - slope_width, slope_height],
+                    [UBASE_THICKNESS + width_offset + slope_width, slope_height - UBASE_THICKNESS / 2],
+                    [FULLMODEL_WIDTH - width_offset - UBASE_THICKNESS - slope_width,
+                        slope_height - UBASE_THICKNESS / 2],
                     [FULLMODEL_WIDTH - width_offset, 0],
                     [FULLMODEL_WIDTH - UBASE_THICKNESS, 0],
                     [FULLMODEL_WIDTH - UBASE_THICKNESS, UBASE_THICKNESS],
@@ -53,8 +56,10 @@ union() {
                     [FULLMODEL_WIDTH, FULLMODEL_HEIGHT - UBASE_THICKNESS],
                     [FULLMODEL_WIDTH, FULLMODEL_HEIGHT],
                     [FULLMODEL_WIDTH - UBASE_THICKNESS - width_offset, FULLMODEL_HEIGHT],
-                    [FULLMODEL_WIDTH - UBASE_THICKNESS - width_offset - slope_width, FULLMODEL_HEIGHT - slope_height],
-                    [UBASE_THICKNESS + width_offset + slope_width, FULLMODEL_HEIGHT - slope_height],
+                    [FULLMODEL_WIDTH - UBASE_THICKNESS - width_offset - slope_width,
+                            FULLMODEL_HEIGHT - slope_height + UBASE_THICKNESS / 2],
+                    [UBASE_THICKNESS + width_offset + slope_width,
+                            FULLMODEL_HEIGHT - slope_height + UBASE_THICKNESS / 2],
                     [width_offset + UBASE_THICKNESS, FULLMODEL_HEIGHT],
                     [0, FULLMODEL_HEIGHT],
                     [0, FULLMODEL_HEIGHT - UBASE_THICKNESS],
@@ -64,31 +69,33 @@ union() {
                 ]);
         }
 
-        translate([0, FULLMODEL_HEIGHT, 0]) rotate([90, 0, 0]) {
-            linear_extrude(FULLMODEL_HEIGHT) {
-                middle_width = (FULLMODEL_WIDTH - width_offset - UBASE_THICKNESS) - (UBASE_THICKNESS + width_offset +
-                    slope_width);
-                polygon([
-                        [UBASE_THICKNESS + width_offset + UBASE_THICKNESS, width_offset * 2],
-                        [UBASE_THICKNESS + width_offset + slope_width / 2, UBASE_THICKNESS * 2],
-                        [UBASE_THICKNESS + width_offset + slope_width - UBASE_THICKNESS, width_offset * 2],
-                        [UBASE_THICKNESS + width_offset + slope_width - UBASE_THICKNESS,
-                            FULLMODEL_DEPTH - width_offset * 2],
-                        [UBASE_THICKNESS + width_offset + slope_width / 2, FULLMODEL_DEPTH - UBASE_THICKNESS * 2],
-                        [UBASE_THICKNESS + width_offset + UBASE_THICKNESS, FULLMODEL_DEPTH - width_offset * 2],
-                    ]);
-                polygon([
-                        [UBASE_THICKNESS + middle_width + width_offset + UBASE_THICKNESS, width_offset * 2],
-                        [UBASE_THICKNESS + middle_width + width_offset + slope_width / 2, UBASE_THICKNESS * 2],
-                        [UBASE_THICKNESS + middle_width + width_offset + slope_width - UBASE_THICKNESS,
-                            width_offset * 2],
-                        [UBASE_THICKNESS + middle_width + width_offset + slope_width - UBASE_THICKNESS,
-                            FULLMODEL_DEPTH - width_offset * 2],
-                        [UBASE_THICKNESS + middle_width + width_offset + slope_width / 2,
-                            FULLMODEL_DEPTH - UBASE_THICKNESS * 2],
-                        [UBASE_THICKNESS + middle_width + width_offset + UBASE_THICKNESS,
-                            FULLMODEL_DEPTH - width_offset * 2],
-                    ]);
+        if (WITH_DIAMOND_CUTOUT) {
+            translate([0, FULLMODEL_HEIGHT, 0]) rotate([90, 0, 0]) {
+                linear_extrude(FULLMODEL_HEIGHT) {
+                    middle_width = (FULLMODEL_WIDTH - width_offset - UBASE_THICKNESS) -
+                        (UBASE_THICKNESS + width_offset + slope_width);
+                    polygon([
+                            [UBASE_THICKNESS + width_offset + UBASE_THICKNESS, width_offset * 2],
+                            [UBASE_THICKNESS + width_offset + slope_width / 2, UBASE_THICKNESS * 2],
+                            [UBASE_THICKNESS + width_offset + slope_width - UBASE_THICKNESS, width_offset * 2],
+                            [UBASE_THICKNESS + width_offset + slope_width - UBASE_THICKNESS,
+                                FULLMODEL_DEPTH - width_offset * 2],
+                            [UBASE_THICKNESS + width_offset + slope_width / 2, FULLMODEL_DEPTH - UBASE_THICKNESS * 2],
+                            [UBASE_THICKNESS + width_offset + UBASE_THICKNESS, FULLMODEL_DEPTH - width_offset * 2],
+                        ]);
+                    polygon([
+                            [UBASE_THICKNESS + middle_width + width_offset + UBASE_THICKNESS, width_offset * 2],
+                            [UBASE_THICKNESS + middle_width + width_offset + slope_width / 2, UBASE_THICKNESS * 2],
+                            [UBASE_THICKNESS + middle_width + width_offset + slope_width - UBASE_THICKNESS,
+                                width_offset * 2],
+                            [UBASE_THICKNESS + middle_width + width_offset + slope_width - UBASE_THICKNESS,
+                                FULLMODEL_DEPTH - width_offset * 2],
+                            [UBASE_THICKNESS + middle_width + width_offset + slope_width / 2,
+                                FULLMODEL_DEPTH - UBASE_THICKNESS * 2],
+                            [UBASE_THICKNESS + middle_width + width_offset + UBASE_THICKNESS,
+                                FULLMODEL_DEPTH - width_offset * 2],
+                        ]);
+                }
             }
         }
     }
