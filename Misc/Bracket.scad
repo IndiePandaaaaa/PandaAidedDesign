@@ -18,16 +18,3 @@ color("orange") difference() {
 		rotate([0, 0, 90*(i+1)]) fillet([depth/2, width/2, 0], depth/2, height);
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
