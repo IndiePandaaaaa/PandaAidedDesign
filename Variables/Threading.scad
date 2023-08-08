@@ -1,7 +1,8 @@
 // created by IndiePandaaaaa | Lukas
 
 // source M3-M12: https://de.wikipedia.org/wiki/Kernloch
-// source UNC14-UNC38: https://gewindeaufschneider.de/blog/stativgewinde/
+// source UNC14: https://www.thommel.de/de/artikel/werkzeuge,80,format-hsse-maschinengewindebohrer,3017680017/
+// source UNC38:https://www.thommel.de/de/artikel/werkzeuge,80,format-hsse-maschinengewindebohrer,3017680021/
 
 // UNC14 => UNC 1/4″ 20  |   UNC38 => UNC 3/8″ 16
 
@@ -19,6 +20,6 @@ function core_hole_M10() = 8.5;
 
 function core_hole_M12() = 10.2;
 
-function core_hole_UNC14() = 5.35;
+function core_hole_UNC14() = 5.1;
 
-function core_hole_UNC38() = 8.25;
+function core_hole_UNC38() = 8;
