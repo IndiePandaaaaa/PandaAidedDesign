@@ -3,7 +3,7 @@
 use <Parts/ZipTiePoint.scad>
 
 MATERIAL_THICKNESS = 2.5;
-TOLERANCE = 0.15;
+TOLERANCE = 0.2;
 FN = $preview ? 25 : 120;
 
 STAND_DIAMETER = 25.3;  // diameter from elgato multimount
@@ -28,7 +28,7 @@ module apple_watch_pad_dummy() {
     cylinder(d = PAD_DIAMETER + TOLERANCE, PAD_THICKNESS, $fn = FN);
 }
 module apple_watch_pad_cable_dummy() {
-    cube([55, PAD_CABLE_DIAMETER + TOLERANCE, PAD_THICKNESS]);
+    cube([PAD_OFFSET * 2, PAD_CABLE_DIAMETER + TOLERANCE, PAD_THICKNESS]);
 }
 
 module cable_bend_radius(rad = 20) {
@@ -48,12 +48,12 @@ difference() {
                     [0, 0],
                     [BRACKET_WIDTH, 0],
                     [BRACKET_WIDTH, BRACKET_DEPTH / 2],
-                    [BRACKET_WIDTH / 6 * 5, BRACKET_DEPTH],
-                    [BRACKET_WIDTH / 6 * 4.5, BRACKET_DEPTH],
-                    [BRACKET_WIDTH / 6 * 4.5, STAND_DIAMETER],
-                    [BRACKET_WIDTH / 6 * 1.5, STAND_DIAMETER],
-                    [BRACKET_WIDTH / 6 * 1.5, BRACKET_DEPTH],
-                    [BRACKET_WIDTH / 6, BRACKET_DEPTH],
+                    [BRACKET_WIDTH / 6 * 5.5, BRACKET_DEPTH],
+                    [BRACKET_WIDTH / 6 * 4.95, BRACKET_DEPTH],
+                    [BRACKET_WIDTH / 6 * 4.95, BRACKET_DEPTH / 3 * 2],
+                    [BRACKET_WIDTH / 6 * 1.05, BRACKET_DEPTH / 3 * 2],
+                    [BRACKET_WIDTH / 6 * 1.05, BRACKET_DEPTH],
+                    [BRACKET_WIDTH / 6 * 0.5, BRACKET_DEPTH],
                     [0, BRACKET_DEPTH / 2],
                 ]);
             translate([BRACKET_WIDTH / 2, BRACKET_DEPTH / 1.5])
@@ -67,10 +67,10 @@ difference() {
             cylinder(d = ZT_WIDTH + 0.25, h = BRACKET_WIDTH, $fn = FN);
     cable_bend_radius(14);
 
-    angle = atan((BRACKET_WIDTH / 6) / (BRACKET_DEPTH / 2));
-    width_offset = tan(angle) * BRACKET_DEPTH/4-TOLERANCE;
-    translate([BRACKET_WIDTH-width_offset, BRACKET_DEPTH/4*3, BRACKET_HEIGHT/2])
-        rotate([90,180,angle]) {
+    angle = atan((BRACKET_WIDTH / 6 * 0.5) / (BRACKET_DEPTH / 2));
+    width_offset = tan(angle) * BRACKET_DEPTH / 4 - TOLERANCE;
+    translate([BRACKET_WIDTH - width_offset, BRACKET_DEPTH / 4 * 3, BRACKET_HEIGHT / 2])
+        rotate([90, 180, angle]) {
             ziptiepoint(cutout = true);
         }
 }
@@ -94,10 +94,10 @@ difference() {
     cable_bend_radius(14);
 }
 
-angle = atan((BRACKET_WIDTH / 6) / (BRACKET_DEPTH / 2));
-width_offset = tan(angle) * BRACKET_DEPTH/4;
-translate([BRACKET_WIDTH-width_offset, BRACKET_DEPTH/4*3, BRACKET_HEIGHT/2])
-    rotate([90,180,angle]) {
+angle = atan((BRACKET_WIDTH / 6 * 0.5) / (BRACKET_DEPTH / 2));
+width_offset = tan(angle) * BRACKET_DEPTH / 4;
+translate([BRACKET_WIDTH - width_offset, BRACKET_DEPTH / 4 * 3, BRACKET_HEIGHT / 2])
+    rotate([90, 180, angle]) {
         ziptiepoint(cutout = false);
     }
 
