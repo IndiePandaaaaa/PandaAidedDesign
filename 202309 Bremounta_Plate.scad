@@ -7,7 +7,7 @@ MODEL_THICKNESS = 3;
 FN = 42;
 
 SOCKET_WIDTH = 14;
-PLATE_DEPTH = 58;
+PLATE_DEPTH = 64;  // Bremounta 58mm
 PLATE_WIDTH = 21 + SOCKET_WIDTH;
 PLATE_SCREW_OD = 3.5;
 
@@ -29,13 +29,12 @@ difference() {
         translate([0, PLATE_DEPTH / 5, 0]) cube([SOCKET_WIDTH * 1.75, PLATE_DEPTH / 5 * 3, WOOD_BOARD_THICKNESS]);
     }
     for (i = [0:1]) {
-        translate([SOCKET_WIDTH / 2, (PLATE_DEPTH - BREMOUNTA_SCREW_DIST + BREMOUNTA_SCREW_HOLE_OD) / 2, 0]) {
-            translate([0, (BREMOUNTA_SCREW_DIST - BREMOUNTA_SCREW_HOLE_OD) * i, 0]) {
-                translate([0, 0, WOOD_BOARD_THICKNESS - BREMOUNTA_SCREW_HOLE_OD_DEPTH])
-                    cylinder(d = BREMOUNTA_SCREW_HOLE_OD, h = BREMOUNTA_SCREW_HOLE_OD_DEPTH, $fn = FN);
-                rotate([180, 0, 0]) screw(BREMOUNTA_SCREW_OD, 30, true);
-                translate([PLATE_WIDTH - SOCKET_WIDTH, 0, PLATE_SCREW_OD]) screw(PLATE_SCREW_OD, 12, true);
-            }
+        translate([SOCKET_WIDTH / 2, (PLATE_DEPTH - BREMOUNTA_SCREW_DIST) / 2 +
+                BREMOUNTA_SCREW_DIST * i, 0]) {
+            translate([0, 0, WOOD_BOARD_THICKNESS - BREMOUNTA_SCREW_HOLE_OD_DEPTH])
+                cylinder(d = BREMOUNTA_SCREW_HOLE_OD, h = BREMOUNTA_SCREW_HOLE_OD_DEPTH, $fn = FN);
+            rotate([180, 0, 0]) screw(BREMOUNTA_SCREW_OD, 30, true);
+            translate([PLATE_WIDTH - SOCKET_WIDTH, 0, PLATE_SCREW_OD]) screw(PLATE_SCREW_OD, 12, true);
         }
         if (WOOD_BOARD_THICKNESS > PLATE_SCREW_OD * 2) {
             translate([SOCKET_WIDTH * 1.75, (PLATE_DEPTH - WOOD_BOARD_SCREW_DIST) / 2 + WOOD_BOARD_SCREW_DIST * i,
