@@ -8,7 +8,7 @@ MATERIAL_THICKNESS = 2.5;
 DISTANCE_X = 2;
 DISTANCE_Z = DISTANCE_X;
 
-ZIP_TIES = 4;
+ZIP_TIES = 2;
 ZIP_TIE_WIDTH = 2.5;
 ZIP_TIE_THICKNESS = 2;
 
@@ -78,7 +78,7 @@ module generate_elements(screws, cutout = true) {
                     DEPTH / 2, MATERIAL_THICKNESS])
                 if (cutout) screw(SCREW_DIAMETER, MATERIAL_THICKNESS * 2, true);
         } else {
-            translate([xPos_ziptie, DEPTH / 2, MATERIAL_THICKNESS]) rotate([90, 90, 90])
+            translate([xPos_ziptie, DEPTH / 2, MATERIAL_THICKNESS]) rotate([0, 90, 90])
                 ziptiepoint(ZIP_TIE_WIDTH, ZIP_TIE_THICKNESS, cutout);
         }
     }
