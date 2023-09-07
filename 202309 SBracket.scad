@@ -7,12 +7,12 @@ THICKNESS = 3;
 SCREW_OD = 3.5;
 
 SCREWS_2 = true;
-SCREWS_2_DIST = 25;  // fixme: 2.54 ??
+SCREWS_2_DIST = 25;  // IKEA PLATSA hole distance
 
-BRACKET_INNER_HEIGHT = 20;
+BRACKET_INNER_HEIGHT = 26;  // height tplink ethernet switch 8 port
 BRACKET_SCREW_DEPTH = 12;
 BRACKET_UPPER_WIDTH = 12;
-BRACKET_WIDTH = SCREWS_2_DIST + SCREW_OD * 2 + 1.5 * 2; // if too low SCREWS_2 has priority
+BRACKET_WIDTH = SCREWS_2_DIST + SCREW_OD * 2 + 1.5 * 2;  // if too low SCREWS_2 has priority
 
 difference() {
     translate([0, BRACKET_WIDTH, 0]) rotate([90, 0, 0])
