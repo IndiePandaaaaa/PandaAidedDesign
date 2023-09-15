@@ -10,7 +10,7 @@ SCREW_OD = 3.5;
 SCREW_SOCKET = SCREW_OD * 2 * 1.5;
 $fn = 50;
 
-WOOD_WIDTH = 44;
+WOOD_WIDTH = 42;
 WOOD_DEPTH = 24;
 
 ANGLE = 60;
@@ -126,5 +126,5 @@ translate([100, 0, 0]) {
 
 // LBracket
 translate([150, 0, 0]) {
-    LBracket(3, 40);
+    LBracket(3, WOOD_WIDTH);
 }
