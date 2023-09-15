@@ -4,7 +4,7 @@ $fn = 50;
 
 function cone_diameter(diameter) = diameter * 2;
 
-function cone_diameter_cutout(diameter) = diameter * 2 + 0.25;
+function cone_diameter_cutout(diameter) = diameter * 2 + 0.5;
 
 function cone_height(diameter) = diameter * 0.75;
 
@@ -54,7 +54,7 @@ module screw(diameter, length, cutout_sample = false) {
             }
     } else {
         offset = 0;
-        diameter = diameter + 0.25;
+        diameter = cone_diameter_cutout(diameter) / 2;  // is duplicated by function, used to reduce error
         translate([0, 0, - length - offset / 2])
             base_model(diameter, length, cone_height(diameter), cone_diameter(diameter), offset);
     }
