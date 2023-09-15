@@ -4,6 +4,8 @@ $fn = 50;
 
 function cone_diameter(diameter) = diameter * 2;
 
+function cone_diameter_cutout(diameter) = diameter * 2 + 0.25;
+
 function cone_height(diameter) = diameter * 0.75;
 
 module screw(diameter, length, cutout_sample = false) {
