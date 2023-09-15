@@ -128,3 +128,25 @@ translate([100, 0, 0]) {
 translate([150, 0, 0]) {
     LBracket(3, WOOD_WIDTH);
 }
+
+// stabilizer bracket
+translate([200, 0, 0]) {
+    difference() {
+        SCREW_SOCKET_5 = 5 * 2 * 1.5;
+    union() {
+        cube([WOOD_WIDTH * 2 + THICKNESS, THICKNESS, SCREW_SOCKET_5]);
+        cube([THICKNESS, WOOD_WIDTH / 2 + SCREW_SOCKET_5 / 2, SCREW_SOCKET_5]);
+    }
+        translate([0, 0, SCREW_SOCKET_5 / 2]) {
+            rotate([90, 0, 0]) {
+                translate([THICKNESS + WOOD_WIDTH / 2, 0, 0]) screw(SCREW_OD, 16, true);
+                for (i = [0:1]) {
+                    translate([THICKNESS + WOOD_WIDTH + WOOD_WIDTH / 4 + WOOD_WIDTH / 2 * i, 0, 0]) screw(SCREW_OD, 16,
+                    true
+                    );
+                }
+            }
+            rotate([0, - 90, 0]) translate([0, WOOD_WIDTH / 2, 0]) screw(5, 70, true);
+        }
+}
+}
