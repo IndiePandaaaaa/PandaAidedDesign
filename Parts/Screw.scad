@@ -1,15 +1,15 @@
 // created by IndiePandaaaaa | Lukas
 
+$fn = 50;
+
 function cone_diameter(diameter) = diameter * 2;
 
 function cone_height(diameter) = diameter * 0.75;
 
-module screw(diameter, length, cutout_sample = false, fs = 0.1, fa = 1) {
-    //$fs = 0.1; [size in mm] | $fa = 1; [degrees]
-    //$fn = 100; [defined faces]
+module screw(diameter, length, cutout_sample = false) {
 
-    module base_model(diameter, length, cone_height, cone_diameter, offset = 0, fs = 0.1, fa = 1) {
-        rotate_extrude($fs = fs) {
+    module base_model(diameter, length, cone_height, cone_diameter, offset = 0) {
+        rotate_extrude() {
             polygon([
                     [0, 0],
                     [(diameter + offset) / 2, 0],
@@ -32,26 +32,27 @@ module screw(diameter, length, cutout_sample = false, fs = 0.1, fa = 1) {
                 base_model(diameter, length, cone_height(diameter), cone_diameter(diameter));
 
                 // top cross part
-                translate([0, 0, length + 0.1 - (cone_height(diameter) - diameter / 2)])
+                translate([0, 0, length - (cone_height(diameter) - diameter / 2)])
                     difference() {
                         rotate([0, 0, 45])
-                            rotate_extrude($fn = 4) {
+                            rotate_extrude() {
                                 polygon([
                                         [0, 0],
                                         [diameter * 1.4 / 2, 0],
-                                        [cone_diameter(diameter) / 2, cone_height(diameter) - diameter / 2],
+                                        [cone_diameter(diameter) / 3, cone_height(diameter) - diameter / 2],
                                         [0, cone_height(diameter) - diameter / 2],
                                     ]);
                             }
                         for (i = [0 : 1 : 3]) {
                             rotate([0, 0, 90 * i])
-                                translate([diameter / 3.18 / 2, diameter / 3.18 / 2, - 0.1])
-                                    cube(cone_height(diameter) + 0.2);
+                                translate([diameter / 3.18 / 2, diameter / 3.18 / 2, 0])
+                                    cube(cone_height(diameter));
                         }
                     }
             }
     } else {
-        offset = 0.2;
+        offset = 0;
+        diameter = diameter + 0.25;
         translate([0, 0, - length - offset / 2])
             base_model(diameter, length, cone_height(diameter), cone_diameter(diameter), offset);
     }
