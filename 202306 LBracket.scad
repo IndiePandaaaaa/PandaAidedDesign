@@ -2,60 +2,61 @@
 
 use <Parts/Screw.scad>
 
-TOLERANCE = 0.15;
-THICKNESS = 3.5;
-SCREW_OD = 3.5;
+SCREWS = 1;  // per width
+WIDTH = 18; // width of the bracket
 
-screws = 3;
-width = 40; // WOOD - CHAMFER
-chamfer = 1;
+module LBracket(screws, width, chamfer = 1, screw_od = 3.5, thickness = 3.5) {
+    width_needed = (cone_diameter_cutout(screw_od) + 1 * 2 + thickness) * screws + thickness;
 
-module LBracket(SCREWS, WIDTH, CHAMFER = 1) {
-    SIDES = 12 + THICKNESS;
-    SOLIDIFIER = SCREWS - 1;
+    if (width < width_needed) {
+        echo("GIVEN WIDTH IS TOO SMALL!");
+        echo("=> CHANGING WIDTH TO: ", width_needed);
+    }
+    width_used = width < width_needed ? width_needed:width;
+
+    sides = cone_diameter_cutout(screw_od) + 1 * 2 + chamfer * 3 + thickness;
+    solidifier = screws + 1;
+    width_inbetween = (width_used - thickness * solidifier) / screws;
+
     difference() {
-        width_inbetween = (WIDTH - THICKNESS * SOLIDIFIER) / SCREWS;
         union() {
-            linear_extrude(WIDTH) {
+            linear_extrude(width_used) {
                 polygon([
                         [0, 0],
-                        [THICKNESS, 0],
-                        [THICKNESS, SIDES - THICKNESS - CHAMFER],
-                        [THICKNESS + CHAMFER, SIDES - THICKNESS],
-                        [SIDES, SIDES - THICKNESS],
-                        [SIDES, SIDES],
-                        [CHAMFER, SIDES],
-                        [0, SIDES - CHAMFER],
+                        [thickness, 0],
+                        [thickness, sides - thickness - chamfer],
+                        [thickness + chamfer, sides - thickness],
+                        [sides, sides - thickness],
+                        [sides, sides],
+                        [chamfer, sides],
+                        [0, sides - chamfer],
                     ]);
             }
 
-            for (i = [1:SOLIDIFIER]) {
-                offset_z_solidifier = width_inbetween * i + THICKNESS * (i - 1);
-                translate([CHAMFER, 0, offset_z_solidifier])
-                    cube([SIDES - CHAMFER, SIDES - CHAMFER, THICKNESS]);
+            for (i = [1:solidifier]) {
+                offset_z_solidifier = width_inbetween * (i - 1) + thickness * (i - 1);
+                translate([chamfer, 0, offset_z_solidifier])
+                    cube([sides - chamfer, sides - chamfer, thickness]);
             }
         }
-        translate([THICKNESS - CHAMFER, 0, 0]) rotate([0, 0, - 45]) cube(WIDTH);
+        cube_size = sides * 1.2 > width_used ? sides * 1.2:width_used;
+        translate([thickness - chamfer * 1.25, - chamfer / 2, - chamfer / 2]) rotate([0, 0, - 45])
+            cube(cube_size + chamfer);
 
-        for (i = [0:SCREWS - 1]) {
-            offset_z_screw = width_inbetween / 2 + (THICKNESS + width_inbetween) * i;
-            rotation = i % 2 == 1 ? [0, 90, - 90]:[0, 90, 0];
-            translation = i % 2 == 1 ? [THICKNESS + (SIDES - THICKNESS) / 2, SIDES - THICKNESS,
-                offset_z_screw]:[THICKNESS, (SIDES - THICKNESS) / 2, offset_z_screw];
-    for (i = [0:SCREWS - 1]) {
-        offset_z_screw = width_inbetween / 2 + (MATERIAL_THICKNESS + width_inbetween) * i;
-        rotation = i % 2 == 1 ? [0, 90, - 90]:[0, 90, 0];
-        translation = i % 2 == 1 ? [MATERIAL_THICKNESS + (SIDES - MATERIAL_THICKNESS) / 2, SIDES - MATERIAL_THICKNESS,
-            offset_z_screw]:  [MATERIAL_THICKNESS, (SIDES - MATERIAL_THICKNESS) / 2, offset_z_screw];
-        rotation = i % 2 == 1 ? [0, 90, - 90]:[0, 90, 0];
-        translation = i % 2 == 1 ? [MATERIAL_THICKNESS + (SIDES - MATERIAL_THICKNESS) / 2, SIDES - MATERIAL_THICKNESS,
-            offset_z_screw]:[MATERIAL_THICKNESS, (SIDES - MATERIAL_THICKNESS) / 2, offset_z_screw];
+        for (i = [0:screws - 1]) {
+            offset_z_screw = thickness + width_inbetween / 2 + (thickness + width_inbetween) * i;
+            rotation = [[0, 90, 0], [0, 90, - 90]];
+            translation = [[thickness, (sides - thickness) / 2, offset_z_screw],
+                    [thickness + (sides - thickness) / 2, sides - thickness, offset_z_screw]];
 
-            translate(translation)
-                rotate(rotation)
-                    screw(SCREW_OD, THICKNESS * 2, true);
+            if (screws == 1 || screws == 2) {
+                translate(translation[(i + 1) % 2]) rotate(rotation[(i + 1) % 2])
+                    screw(screw_od, thickness * 2, true);
+            }
+
+            translate(translation[i % 2]) rotate(rotation[i % 2]) screw(screw_od, thickness * 2, true);
         }
     }
 }
 
-LBracket(screws, width, chamfer);
+LBracket(SCREWS, WIDTH);
