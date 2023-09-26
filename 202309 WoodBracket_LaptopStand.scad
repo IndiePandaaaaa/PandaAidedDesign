@@ -15,6 +15,12 @@ WOOD_DEPTH = 24;
 
 ANGLE = 60;
 
+// ---
+
+TOP_THREADING_HOLES = false;
+
+// --------------
+
 AB = WOOD_DEPTH;
 CD = THICKNESS;
 EF = SCREW_SOCKET;  // SCSO
@@ -51,21 +57,22 @@ H_3D = [HO, BC + AO, 0];
 function get_shape() = shape;
 
 module M4_sockets(GH, WOOD_WIDTH, cutout = false) {
+    height = 12;
+    m4_socket = 6.5;
     for (x = [0:1]) {
         for (z = [0:1]) {
-            translate([GH / 5 + GH / 5 * 3 * x, 0, WOOD_WIDTH / 5 + WOOD_WIDTH / 5 * 3 * z])
+            translate([GH / 5 + GH / 5 * 3 * x, height, WOOD_WIDTH / 5 + WOOD_WIDTH / 5 * 3 * z]) {
                 rotate([90, 0, 0]) {
-                    height = 8;
-                    m4_socket = 6.5;
-                    translate([0, 0, - height]) {
-                        difference() {
-                            cylinder(h = height, d = m4_socket);
+                    difference() {
+                        cylinder(h = height, d = m4_socket);
+                        if (TOP_THREADING_HOLES) {
                             cylinder(h = height, d = core_hole_M4());
                         }
-                        if (cutout)
-                            cylinder(h = height + 2, d = core_hole_M4());
                     }
+                    if (cutout)
+                        cylinder(h = height + 2, d = core_hole_M4());
                 }
+            }
         }
     }
 }
@@ -85,15 +92,21 @@ module angled_bracket(angle, wood_depth, wood_width, screw_socket, thickness, GH
                 ]);
         }
 
-        translate([WOOD_DEPTH / 2, BC + THICKNESS * 1.5, WOOD_WIDTH / 2]) rotate([- 90, 0, 0]) {
-            screw(SCREW_OD, 50, true);
-            cylinder(h = 20, d = cone_diameter_cutout(SCREW_OD));
+        translate([WOOD_DEPTH - SCREW_OD * 1.5, BC + THICKNESS * 1.5, WOOD_WIDTH / 2]) rotate([- 90, 0, 0]) {
+            if (TOP_THREADING_HOLES) {
+                screw(SCREW_OD, WOOD_WIDTH, true);
+                cylinder(h = WOOD_WIDTH, d = cone_diameter_cutout(SCREW_OD));
+            } else {
+                translate([0, 0, - WOOD_WIDTH / 2]) cylinder(h = WOOD_WIDTH, d = SCREW_OD + 1);
+            }
         }
         for (i = [0:1]) {
             translate([WOOD_DEPTH + THICKNESS, SCREW_SOCKET / 2, WOOD_WIDTH / 4 + WOOD_WIDTH / 2 * i])
                 rotate([0, 90, 0]) screw(SCREW_OD, 20, true);
         }
-        translate(H) rotate([0, 0, - 90 + angle]) M4_sockets(GH, WOOD_WIDTH, true);
+        if (TOP_THREADING_HOLES) {
+            translate(H) rotate([0, 0, - 90 + angle]) M4_sockets(GH, WOOD_WIDTH, true);
+        }
     }
     translate(H) rotate([0, 0, - 90 + angle]) M4_sockets(GH, WOOD_WIDTH, false);
 }
@@ -133,10 +146,10 @@ translate([150, 0, 0]) {
 translate([200, 0, 0]) {
     difference() {
         SCREW_SOCKET_5 = 5 * 2 * 1.5;
-    union() {
-        cube([WOOD_WIDTH * 2 + THICKNESS, THICKNESS, SCREW_SOCKET_5]);
-        cube([THICKNESS, WOOD_WIDTH / 2 + SCREW_SOCKET_5 / 2, SCREW_SOCKET_5]);
-    }
+        union() {
+            cube([WOOD_WIDTH * 2 + THICKNESS, THICKNESS, SCREW_SOCKET_5]);
+            cube([THICKNESS, WOOD_WIDTH / 2 + SCREW_SOCKET_5 / 2, SCREW_SOCKET_5]);
+        }
         translate([0, 0, SCREW_SOCKET_5 / 2]) {
             rotate([90, 0, 0]) {
                 translate([THICKNESS + WOOD_WIDTH / 2, 0, 0]) screw(SCREW_OD, 16, true);
@@ -148,5 +161,5 @@ translate([200, 0, 0]) {
             }
             rotate([0, - 90, 0]) translate([0, WOOD_WIDTH / 2, 0]) screw(5, 70, true);
         }
-}
+    }
 }
