@@ -10,9 +10,9 @@ $fn = 75;
 WOOD_SIZE = 53;
 CHAMFER = 2.0;
 
-HEIGHT = SCREW_OD * 5;
 outer_width = WOOD_SIZE + THICKNESS * 2 + TOLERANCE;
 inner_width = WOOD_SIZE + TOLERANCE;
+HEIGHT = outer_width; //  SCREW_OD * 4 + 34;
 translate([- outer_width / 2, - outer_width / 2, 0]) {
     difference() {
         linear_extrude(HEIGHT) {
@@ -40,19 +40,19 @@ translate([- outer_width / 2, - outer_width / 2, 0]) {
             }
         }
         for (i = [0:1]) {
-            rotate([90, 0, - 90 * i]) translate([outer_width / 4 - outer_width * i, HEIGHT / 3, 0]) screw(SCREW_OD, 35,
-            true
-            );
-            rotate([90, 0, - 180 - 90 * i]) translate([outer_width / 4 + outer_width * (- 1 + i), HEIGHT / 3,
-                outer_width])
-                screw(SCREW_OD, 35, true);
+            rotate([90, 0, - 90 * i])
+                translate([outer_width / 4 - outer_width * i, SCREW_OD * 2, 0])
+                    screw(SCREW_OD, 35, true);
+            rotate([90, 0, - 180 - 90 * i])
+                translate([outer_width / 4 + outer_width * (- 1 + i), SCREW_OD * 2, outer_width])
+                    screw(SCREW_OD, 35, true);
 
-            rotate([90, 0, 90 * i]) translate([outer_width / 4 * 3, HEIGHT / 3 * 2, outer_width * i]) screw(SCREW_OD, 35
-            ,
-            true);
-
+            rotate([90, 0, 90 * i])
+                translate([outer_width / 4 * 3, HEIGHT - SCREW_OD * 2, outer_width * i])
+                    screw(SCREW_OD, 35, true);
             rotate([90, 0, 180 + 90 * i])
-                translate([outer_width / 4 * 3 + outer_width * - 1, HEIGHT / 3 * 2, - outer_width * (i == 1 ? 0:- 1)])
+                translate([outer_width / 4 * 3 + outer_width * - 1, HEIGHT - SCREW_OD * 2, - outer_width * (i == 1 ? 0:-
+                1)])
                     screw(SCREW_OD, 35, true);
         }
     }
