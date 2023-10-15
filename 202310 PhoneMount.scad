@@ -3,20 +3,19 @@
 THICKNESS = 3.25;
 TOLERANCE = 0.1;
 CHAMFER = 1.5;
-SCREW_OD = 3.5;
 $fn = 75;
 
 DESK_THICKNESS = 21;
 PHONE_THICKNESS = 12;
 PHONE_ANGLE = 10;
 
-module phone_mount(desk_thickness, phone_thickness, phone_angle = 10, thickness = 3, chamfer = 1, tolerance = 0.1) {
-    linear_extrude(1) {
+module phone_mount(desk_thickness, phone_thickness, phone_angle = 14, thickness = 3, chamfer = 1, tolerance = 0.1) {
+    linear_extrude(50) {
         depth = desk_thickness * 2;
         height = desk_thickness * 2;
         slope_angle = 30;
         polygon([
-                [0, 0],
+                [chamfer, 0],
                 [depth, 0],
                 [depth, thickness],
                 [depth * 0.55, thickness],
@@ -30,9 +29,11 @@ module phone_mount(desk_thickness, phone_thickness, phone_angle = 10, thickness 
                 + thickness / cos(phone_angle), height - thickness * sin(phone_angle)],
                 [(thickness + phone_thickness + tolerance) + (height - thickness) / tan(90 - phone_angle), height],
                 [(thickness + phone_thickness + tolerance), thickness],
-                [thickness, thickness],
+                [thickness + chamfer, thickness],
+                [thickness, thickness + chamfer],
                 [thickness + tan(phone_angle) * 5, thickness + 5],
                 [0, thickness + 5],
+                [0, chamfer],
             ]);
     }
 }
