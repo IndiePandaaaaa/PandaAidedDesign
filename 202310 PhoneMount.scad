@@ -10,6 +10,8 @@ PHONE_THICKNESS = 12;
 PHONE_ANGLE = 10;
 HORIZONTAL = true; // for vertical mount set to false
 
+// todo add vertical mount optinon
+// todo add coords for vertical mount
 module phone_mount(board_thickness, phone_thickness, horizontal = true, phone_angle = 14, thickness = 3, chamfer = 1,
 tolerance = 0.1) {
     difference() {
