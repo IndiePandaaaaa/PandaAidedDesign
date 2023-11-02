@@ -2,8 +2,8 @@
 
 use <Parts/Screw.scad>
 
-SCREWS = 1;  // per width
-WIDTH = 18; // width of the bracket
+SCREWS = 3;  // per width
+WIDTH = 42; // width of the bracket
 
 module LBracket(screws, width, chamfer = 1, screw_od = 3.5, thickness = 3.5) {
     width_needed = (cone_diameter_cutout(screw_od) + 1 * 2 + thickness) * screws + thickness;
@@ -11,6 +11,10 @@ module LBracket(screws, width, chamfer = 1, screw_od = 3.5, thickness = 3.5) {
     if (width < width_needed) {
         echo("GIVEN WIDTH IS TOO SMALL!");
         echo("=> CHANGING WIDTH TO: ", width_needed);
+
+        linear_extrude(1) {
+            translate([screw_od * 7, 0, 0]) text("width changed! (review log)", 15);
+        }
     }
     width_used = width < width_needed ? width_needed:width;
 
