@@ -3,14 +3,17 @@
 use <Parts/Screw.scad>
 
 THICKNESS = 2.5;
-TOLERANCE = 0.1;
-CHAMFER = 1.5;
+TOLERANCE_TIGHT = 0.1;
+TOLERANCE_LOOSE = 0.25;
+CHAMFER = 1;
 SCREW_OD = 3.5;
 $fn = 75;
 
+AXIS_OD = 6;
+AXIS_LENGTH = 30;
 WHEEL_OD = 21;
-WHEEL_ID = 5;
-WHEEL_WIDTH = 12;
+WHEEL_ID = AXIS_OD + TOLERANCE_TIGHT;
+WHEEL_WIDTH = AXIS_LENGTH - (THICKNESS * 2);
 
 module wheel(id, od, width, chamfer = 1.5, thickness = 2.5) {
     translate([- width / 2, 0, 0]) rotate([0, 90, 0])
@@ -27,15 +30,15 @@ module wheel(id, od, width, chamfer = 1.5, thickness = 2.5) {
             }
 
             for (i = [0:6]) {
-                rotate([0, 0, 60 * i]) translate([0, id + thickness * 0.75, - width / 2]) rotate([0, 0, 30])
+                rotate([0, 0, 60 * i]) translate([0, id + chamfer, - width / 2]) rotate([0, 0, 30])
                     cylinder(h = width * 2, d = (od - chamfer - thickness - id) / 2, $fn = 3);
             }
         }
 }
 
 module bracket(id, od, wheel_width, screw_od, thickness, tolerance = 0.5) {
-    height = od * 1.5;
-    bracket_depth = wheel_width + screw_od * 8;
+    height = od * 1.25;
+    bracket_depth = wheel_width + screw_od * 2;
     bracket_width = wheel_width + thickness * 2 + tolerance;
     axis_height = height - id * 1.25;
 
@@ -56,7 +59,7 @@ module bracket(id, od, wheel_width, screw_od, thickness, tolerance = 0.5) {
                 }
                 translate([- thickness, axis_height, bracket_depth / 2])
                     rotate([0, 90, 0])
-                        cylinder(h = wheel_width + THICKNESS * 4, d = id);
+                        cylinder(h = wheel_width + THICKNESS * 4, d = id + tolerance);
 
                 translate([bracket_width / 2, thickness, screw_od * 1.5])
                     rotate([- 90, 0, 0]) screw(screw_od, 12, true);
@@ -69,7 +72,7 @@ module bracket(id, od, wheel_width, screw_od, thickness, tolerance = 0.5) {
         }
 }
 
-translate([0, 0, - WHEEL_WIDTH * 2]) wheel(WHEEL_ID, WHEEL_OD, WHEEL_WIDTH, CHAMFER, THICKNESS);
+translate([0, 0, - WHEEL_WIDTH]) wheel(WHEEL_ID, WHEEL_OD, WHEEL_WIDTH, CHAMFER, THICKNESS);
 bracket(WHEEL_ID, WHEEL_OD, WHEEL_WIDTH, SCREW_OD, THICKNESS);
 
 
