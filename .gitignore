@@ -2,6 +2,9 @@
 .idea
 out
 
+# additional repositories
+rcolyer_threads-scad
+
 # compilation files
 *.stl
 
