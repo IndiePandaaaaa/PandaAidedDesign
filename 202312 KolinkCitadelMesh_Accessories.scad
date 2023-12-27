@@ -8,8 +8,11 @@ THICKNESS = 3;
 CHAMFER = 2;
 $fn = 70;
 
-CASEFOOT_DIAMETER = 40;
-CASEFOOT_HEIGHT = 15; // original: 
+CASEFOOT_DIAMETER = 40; // original: 40
+CASEFOOT_HEIGHT = 15; // original: 15
+
+COVER_HEIGHT = 5;
+COVER_OVERLAP = 3;
 
 module casefoot(height, diameter) {
   casefoot_hollow_diameter = 34.6;
@@ -50,4 +53,23 @@ module casefoot(height, diameter) {
   }
 }
 
-casefoot(CASEFOOT_HEIGHT, CASEFOOT_DIAMETER);
+module radiator_pump_cover(height, overlap, thickness = 2, tolerance = .1) {
+  // todo: square cover for radiator cutout with round cutout for the pump
+
+  module silhouette(overlap, height, tolerance = .1) {
+    rad_width = 140;
+    rad_depth_cover = 40;
+    pump_agb_diameter = 60;
+    pump_agb_depth = 70;
+
+    linear_extrude(height) {
+      polygon([
+        [0, 0],
+      ]);
+    }
+
+  }
+}
+
+//casefoot(CASEFOOT_HEIGHT, CASEFOOT_DIAMETER);
+radiator_pump_cover(COVER_HEIGHT, COVER_OVERLAP, THICKNESS, TOLERANCE);
