@@ -14,13 +14,14 @@ CASEFOOT_HEIGHT = 15; // original: 15
 COVER_HEIGHT = 5;
 COVER_OVERLAP = 3;
 
-module casefoot(height, diameter) {
+module casefoot(height, diameter, thickness = 2, tolerance = .15) {
   casefoot_hollow_diameter = 34.6;
   casefoot_hollow_height = 10.8;
   casefoot_inner_diameter = 37.5;
   casefoot_outer_diameter_height = 12.2;
   casefoot_locating_diameter = 4.8;
   casefoot_locating_height = 11.9;
+  casefoot_locating_offset = 9.7;
   casefoot_holder_diameter = 8.4;
   casefoot_holder_height = 9.9;
   casefoot_bottom_plate_height = height - casefoot_hollow_height;
@@ -29,7 +30,7 @@ module casefoot(height, diameter) {
     union() {
       for (i = [1:3]) {
         rotate([0, 0, 120 * (i - 1)]) {
-          translate([9.7, 0, 0])
+          translate([casefoot_locating_offset, 0, 0])
             cylinder(d = casefoot_locating_diameter, h = casefoot_bottom_plate_height + casefoot_locating_height);
           
           rotate([0, 0, 30]) translate([-1, 0, 0])
@@ -51,6 +52,12 @@ module casefoot(height, diameter) {
     
     cylinder(d = core_hole_M4(), h = height);
   }
+  difference() {
+    translate([0, 0, height])
+      cylinder(d = casefoot_locating_offset + casefoot_locating_diameter / 2, h = thickness);
+    translate([0, 0, height])
+      cylinder(d = 4, h = thickness);
+  }
 }
 
 module radiator_pump_cover(height, overlap, thickness = 2, tolerance = .1) {
@@ -71,5 +78,6 @@ module radiator_pump_cover(height, overlap, thickness = 2, tolerance = .1) {
   }
 }
 
-//casefoot(CASEFOOT_HEIGHT, CASEFOOT_DIAMETER);
-radiator_pump_cover(COVER_HEIGHT, COVER_OVERLAP, THICKNESS, TOLERANCE);
+translate([0, 0, -50])
+  casefoot(CASEFOOT_HEIGHT, CASEFOOT_DIAMETER);
+//radiator_pump_cover(COVER_HEIGHT, COVER_OVERLAP, THICKNESS, TOLERANCE);
