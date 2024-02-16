@@ -17,11 +17,13 @@ function comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_bor
 
 function comb_depth(cable_rows, cable_od, cable_distance, outer_border = 1) = outer_border * 2 + cable_rows * (cable_od + cable_distance) - cable_distance;
 
+function comb_chamfer(cable_od) = cable_od / 2;
+
 module comb(cable_count, cable_rows, cable_od, cable_distance = 1, thickness = 2, tolerance = .1) {
   outer_border = 1;
   width = comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_border);
   depth = comb_depth(cable_rows, cable_od, cable_distance, outer_border);
-  chamfer = cable_od / 2;
+  chamfer = comb_chamfer(cable_od);
 
   difference() {
     linear_extrude(thickness) {
@@ -53,27 +55,30 @@ module comb(cable_count, cable_rows, cable_od, cable_distance = 1, thickness = 2
 } 
 
 module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od, cable_distance, thickness = 2, outer_border = 1, tolerance = .1) {
-  module border(cable_angle, cable_radius, width) {
-    union() {
-      difference() {
-        cylinder(d = cable_radius * 2 + width / 2, h = thickness);
-        translate([0, 0, -thickness * 0.25]) cylinder(d = cable_radius * 2 - width / 2, h = thickness * 1.5);
 
-        translate([0, 0, -thickness * 0.25]) {
-          cubew = cable_radius + width / 2;
-          translate([-cubew, 0, 0]) cube(cubew);
-          if (cable_angle <= 90)
-            translate([0, -cubew, 0]) cube(cubew);
-          if (cable_angle <= 180)
-            translate([-cubew, -cubew, 0]) cube(cubew);
-        }
+  module border_inside(cable_angle, cable_radius, comb_width, cable_od, comb_depth, thickness = 2, tolerance = .1) {
+    cylinder_od = cable_radius * 2 - comb_depth / 2 - comb_chamfer(cable_od) * 2 + tolerance;
+    cylinder_id = cylinder_od - thickness * 2;
+    difference() {
+      cylinder(d = cylinder_od, h = comb_width - comb_chamfer(cable_od) * 2);
+      translate([0, 0, -0.05]) cylinder(d = cylinder_id, h = comb_width - comb_chamfer(cable_od) * 2 + 0.1);
+
+      translate([0, 0, -thickness * 0.25]) {
+        cubew = comb_width;
+
+        cube(cubew);
+        if (cable_angle <=  90) translate([.1, 0, 0]) rotate([0, 0, 180]) cube(cubew);
+        if (cable_angle <= 180) translate([0, .1, 0]) rotate([0, 0, 270]) cube(cubew);
       }
-
-      blockw = width / 2 - (PI / 2 / 100);
-      translate([0, cable_radius - width / 4, 0]) rotate([0, 0, 90]) cube([blockw, thickness / 2, thickness]);
-      rotate([0, 0, 90 - cable_angle]) translate([cable_radius - width / 4, -thickness / 2, 0]) cube([blockw, thickness / 2, thickness]);
     }
+    translate([- thickness / 2, cylinder_id / 2, 0])
+      cube([thickness, thickness, comb_width - comb_chamfer(cable_od) * 2]);
+    
+    rotate([0, 0, cable_angle])
+      translate([- thickness / 2, cylinder_id / 2, 0])
+        cube([thickness, thickness, comb_width - comb_chamfer(cable_od) * 2]);
   }
+
   module segments(cable_angle, cable_radius, width, cable_count, cable_rows, cable_od, cable_distance, thickness, cutout = false, tolerance = .1, angle_steps = 45) {
     thickness_cutout = cutout == false ? thickness : thickness + tolerance;
     cwidth = comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_border);
@@ -82,11 +87,9 @@ module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od,
         translate([0, cable_radius - width / 2, -thickness_cutout / 2]) {
           comb(cable_count, cable_rows, cable_od, cable_distance, thickness_cutout);
 
-          blockw = cutout == false ? width / 2 - (PI / 2 / 100) : width;
-          rotate([0, 0, 90]) {
-            translate([cutout == false ? blockw / 2 : 0, 0, 0]) cube([blockw, thickness_cutout / 2, thickness_cutout]);
-            translate([cutout == false ? blockw / 2 : 0, -cwidth - thickness_cutout / 2 + 0.01, 0]) cube([blockw, thickness_cutout / 2, thickness_cutout]);
-          }
+          blockw = cutout == false ? 0 : 1;
+          translate([comb_chamfer(cable_od) - tolerance * blockw, -comb_chamfer(cable_od) / 2 - blockw * tolerance / 2, 0])
+            cube([cwidth - comb_chamfer(cable_od) * 2 + 2 * tolerance * blockw, thickness_cutout / 2, thickness_cutout]);
         }
     }
   }
@@ -95,10 +98,7 @@ module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od,
   cyld = comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_border);
 
   difference() {
-    rotate([0, -90, 0]) { 
-      border(cable_angle, cable_radius, cylw);
-      translate([0, 0, -cyld - thickness + 0.01]) border(cable_angle, cable_radius, cylw);
-    }
+    rotate([0, 90, 0]) translate([0, 0, comb_chamfer(cable_od)]) border_inside(cable_angle, cable_radius, cyld, cable_od, cylw, thickness, tolerance);
     segments(cable_angle, cable_radius, cylw, cable_count, cable_rows, cable_od, cable_distance, thickness, true, .15, 45);
   }
   segments(cable_angle, cable_radius, cylw, cable_count, cable_rows, cable_od, cable_distance, thickness, false, .1, 45);
