@@ -18,6 +18,7 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
   mic_screw_offset = 35;
   width_mic_brackets = material_width + tolerance;
   side_bracket_mounting_width = core_hole("M3") * 5 + material_width;
+  side_bracket_mounting_thickness = 5;
   material_thickness_screw = 2;
 
   module side_bracket(width, mic_hole, height, mounting_width_screw, tolerance = .15, material_thickness = 5) {
@@ -52,7 +53,7 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
           cylinder(d = cord_od, h = material_thickness + .1);
     }
 
-    translate([mic_diameter / 2 - width_mic_brackets + material_thickness + tolerance, - (width_mic_brackets + tolerance) / 2 , material_thickness_screw])
+    translate([mic_diameter / 2 - width_mic_brackets + side_bracket_mounting_thickness + tolerance, - (width_mic_brackets + tolerance) / 2 , material_thickness_screw])
       cube(width_mic_brackets + tolerance);
 
     translate([mic_diameter / 2 + core_hole("M3"), -width_mic_brackets / 2 + core_hole("M3"), -.1]) {
@@ -62,7 +63,7 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
     }
 
     rotate([0, 0, 180]) { 
-      translate([mic_diameter / 2 - width_mic_brackets + material_thickness + tolerance, - (width_mic_brackets + tolerance) / 2, material_thickness_screw]) 
+      translate([mic_diameter / 2 - width_mic_brackets + side_bracket_mounting_thickness + tolerance, - (width_mic_brackets + tolerance) / 2, material_thickness_screw]) 
         cube(width_mic_brackets + tolerance);
 
       translate([mic_diameter / 2 + core_hole("M3"), -width_mic_brackets / 2 + core_hole("M3"), -.1]) {
@@ -74,9 +75,9 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
   }
 
   translate([mic_diameter / 2, 0, material_thickness_screw + tolerance])
-    side_bracket(width_mic_brackets, mic_screw_diameter, mic_screw_offset, side_bracket_mounting_width);
+    side_bracket(width_mic_brackets, mic_screw_diameter, mic_screw_offset, side_bracket_mounting_width, material_thickness = side_bracket_mounting_thickness);
   rotate([0, 0, 180]) translate([mic_diameter / 2, 0, material_thickness_screw + tolerance])
-    side_bracket(width_mic_brackets, mic_screw_diameter, mic_screw_offset, side_bracket_mounting_width);
+    side_bracket(width_mic_brackets, mic_screw_diameter, mic_screw_offset, side_bracket_mounting_width, material_thickness = side_bracket_mounting_thickness);
 }
 
 module suspension_base(cord_od, cord_holes, id, mounting_screw_od, material_thickness = 3, tolerance = .15) {
