@@ -18,8 +18,9 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
   mic_screw_offset = 35;
   width_mic_brackets = material_width + tolerance;
   side_bracket_mounting_width = core_hole("M3") * 5 + material_width;
+  material_thickness_screw = 2;
 
-  module side_bracket(width, mic_hole, height, mounting_width_screw, tolerance = .15, material_thickness = 4) {
+  module side_bracket(width, mic_hole, height, mounting_width_screw, tolerance = .15, material_thickness = 5) {
     mounting_offset = (70 - 66.9) / 2;
     mounting_diameter = 12.25;
 
@@ -30,16 +31,13 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
           translate([0, 0, height - width / 2]) rotate([0, 90, 0]) cylinder(d = width, h = material_thickness);
           translate([- mounting_offset, 0, height - width / 2]) 
             rotate([0, 90, 0]) cylinder(d1 = mounting_diameter, d2 = width, h = mounting_offset);
-
-          translate([0, -mounting_width_screw / 2, material_thickness + tolerance])
-            cube([core_hole("M3") * 2, mounting_width_screw, 2]);
         }
+
         translate([-.1 - mounting_offset, 0, height - width / 2])
           rotate([0, 90, 0]) cylinder(d = mic_hole, h = material_thickness + mounting_offset + .2);
-        translate([core_hole("M3"), mounting_width_screw / 2 - core_hole("M3"), material_thickness])
-          cylinder(d = 3, h = material_thickness);
-        translate([core_hole("M3"), -mounting_width_screw / 2 + core_hole("M3"), material_thickness])
-          cylinder(d = 3, h = material_thickness);
+
+        translate([material_thickness / 2, width / 2 - core_hole("M3"), -.1]) cylinder(d = core_hole("M3"), h = 15);
+        translate([material_thickness / 2, -width / 2 + core_hole("M3"), -.1]) cylinder(d = core_hole("M3"), h = 15);
       }
     }
   }
@@ -54,30 +52,30 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
           cylinder(d = cord_od, h = material_thickness + .1);
     }
 
-    translate([mic_diameter / 2 - width_mic_brackets + material_thickness + tolerance, - (width_mic_brackets + tolerance) / 2 , -.1])
+    translate([mic_diameter / 2 - width_mic_brackets + material_thickness + tolerance, - (width_mic_brackets + tolerance) / 2 , material_thickness_screw])
       cube(width_mic_brackets + tolerance);
 
-    translate([mic_diameter / 2 + core_hole("M3"), -side_bracket_mounting_width / 2 + core_hole("M3"), -.1]) {
-      cylinder(d = core_hole("M3"), h = material_thickness + .2);
-      translate([0, side_bracket_mounting_width - core_hole("M3") * 2, 0])
-        cylinder(d = core_hole("M3"), h = material_thickness + .2);
+    translate([mic_diameter / 2 + core_hole("M3"), -width_mic_brackets / 2 + core_hole("M3"), -.1]) {
+      cylinder(d = 3, h = material_thickness + .2);
+      translate([0, width_mic_brackets - core_hole("M3") * 2, 0])
+        cylinder(d = 3, h = material_thickness + .2);
     }
 
     rotate([0, 0, 180]) { 
-      translate([mic_diameter / 2 - width_mic_brackets + material_thickness + tolerance, - (width_mic_brackets + tolerance) / 2, -.1]) 
+      translate([mic_diameter / 2 - width_mic_brackets + material_thickness + tolerance, - (width_mic_brackets + tolerance) / 2, material_thickness_screw]) 
         cube(width_mic_brackets + tolerance);
 
-      translate([mic_diameter / 2 + core_hole("M3"), -side_bracket_mounting_width / 2 + core_hole("M3"), -.1]) {
-        cylinder(d = core_hole("M3"), h = material_thickness + .2);
-        translate([0, side_bracket_mounting_width - core_hole("M3") * 2, 0])
-          cylinder(d = core_hole("M3"), h = material_thickness + .2);
+      translate([mic_diameter / 2 + core_hole("M3"), -width_mic_brackets / 2 + core_hole("M3"), -.1]) {
+        cylinder(d = 3, h = material_thickness + .2);
+        translate([0, width_mic_brackets - core_hole("M3") * 2, 0])
+          cylinder(d = 3, h = material_thickness + .2);
       }
     }
   }
 
-  translate([mic_diameter / 2, 0, 0])
+  translate([mic_diameter / 2, 0, material_thickness_screw + tolerance])
     side_bracket(width_mic_brackets, mic_screw_diameter, mic_screw_offset, side_bracket_mounting_width);
-  rotate([0, 0, 180]) translate([mic_diameter / 2, 0, 0])
+  rotate([0, 0, 180]) translate([mic_diameter / 2, 0, material_thickness_screw + tolerance])
     side_bracket(width_mic_brackets, mic_screw_diameter, mic_screw_offset, side_bracket_mounting_width);
 }
 
