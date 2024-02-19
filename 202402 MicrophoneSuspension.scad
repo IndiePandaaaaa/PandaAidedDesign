@@ -15,7 +15,7 @@ MOUNTING_SCREW_OD = 5.5;
 module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thickness = 3, tolerance = .15) {
   mic_diameter = 70;
   mic_screw_diameter = 6.5;
-  mic_screw_offset = 35;
+  mic_screw_offset = 45;
   width_mic_brackets = material_width + tolerance;
   side_bracket_mounting_width = core_hole("M3") * 5 + material_width;
   side_bracket_mounting_thickness = 5;
@@ -37,8 +37,8 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
         translate([-.1 - mounting_offset, 0, height - width / 2])
           rotate([0, 90, 0]) cylinder(d = mic_hole, h = material_thickness + mounting_offset + .2);
 
-        translate([material_thickness / 2, width / 2 - core_hole("M3"), -.1]) cylinder(d = core_hole("M3"), h = 15);
-        translate([material_thickness / 2, -width / 2 + core_hole("M3"), -.1]) cylinder(d = core_hole("M3"), h = 15);
+        translate([material_thickness / 2, width / 2 - core_hole("M3"), -.1]) cylinder(d = core_hole("M3"), h = mic_screw_offset - 20);
+        translate([material_thickness / 2, -width / 2 + core_hole("M3"), -.1]) cylinder(d = core_hole("M3"), h = mic_screw_offset - 20);
       }
     }
   }
