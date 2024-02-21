@@ -14,7 +14,7 @@ FAN_SCREW_DISTANCE = 105;
 HEX_SIZE = 12;
 
 module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1) {
-  screw_diameter = 4.3 + .5;
+  screw_diameter = core_hole("M4"); // fan screw hole: 4.3 mm
   screw_offset = (diameter - screw_distance) / 2;
 
   union() {
@@ -30,12 +30,11 @@ module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1) 
 
       translate([diameter / 2, diameter / 2, -.1]) cylinder(d = hexagon, h = thickness + .2, $fn = 6);
 
-      translate([screw_offset, screw_offset, -.1]) {
-        cylinder(d = screw_diameter, h = thickness + .2 + 20);
-        translate([screw_distance, 0, 0]) cylinder(d = screw_diameter, h = thickness + .2 + 20);
-        translate([0, screw_distance, 0]) cylinder(d = screw_diameter, h = thickness + .2 + 20);
-        translate([screw_distance, screw_distance, 0])
-          cylinder(d = screw_diameter, h = thickness + .2 + 20);
+      translate([screw_offset, screw_offset, thickness + .1]) {
+        screw(screw_diameter, 12, true);
+        translate([screw_distance, 0, 0]) screw(screw_diameter, 12, true);
+        translate([0, screw_distance, 0]) screw(screw_diameter, 12, true);
+        translate([screw_distance, screw_distance, 0]) screw(screw_diameter, 12, true);
       }
     }
 
@@ -46,7 +45,7 @@ module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1) 
   }
 }
 
-module fan_mount(diameter, screw_distance, thickness, tolerance = .1, screw_standard = "M3") {
+module fan_mount(diameter, screw_distance, thickness, tolerance = .1, screw_standard = "M4") {
   wood_screws = 3.5;
   screw_offset = (diameter - screw_distance) / 2;
 
