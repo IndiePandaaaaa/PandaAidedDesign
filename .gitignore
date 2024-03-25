@@ -11,3 +11,6 @@ rcolyer_threads-scad
 # temporary files
 *.txt
 *~
+
+# testing files
+./TestPieces/*
