@@ -1,6 +1,8 @@
 use <Parts/Screw.scad>
 
-DEVICE_WIDTH = 10; DEVICE_HEIGHT = 20; // DEFAULT VALUES
+// DEFAULT VALUES
+DEVICE_WIDTH = 82;
+DEVICE_HEIGHT = 14;
 
 //DIGITUS Ultra Slim HDMI Splitter DS-45322 DEVICE_WIDTH = 83.1; DEVICE_HEIGHT = 8.9;
 //LOGILINK Digital to Analog Audio Converter CA0101 v2 DEVICE_WIDTH = 53.5; DEVICE_HEIGHT = 21.5;
@@ -32,14 +34,19 @@ module Bracket(screwSocketWidth, thicknessBracket, deviceWidth, deviceHeight, ch
             ]);
     }
 }
+
 difference() {
     screwSocketWidth = SCREW_DIAMETER * 2 + 5;
+
     Bracket(screwSocketWidth, thicknessBracket = MATERIAL_THICKNESS, deviceWidth = DEVICE_WIDTH, deviceHeight = DEVICE_HEIGHT);
-    translate([screwSocketWidth / 2, MATERIAL_THICKNESS, screwSocketWidth / 2])
-        rotate([- 90, 0, 0]) screw(SCREW_DIAMETER, MATERIAL_THICKNESS * 2, true);
-    translate([screwSocketWidth + DEVICE_WIDTH + MATERIAL_THICKNESS * 2, 0, 0])
-        translate([screwSocketWidth / 2, MATERIAL_THICKNESS, screwSocketWidth / 2])
-            rotate([- 90, 0, 0]) screw(3.5, 5, true);
+
+    for (i = [0:1]) {
+        translate([screwSocketWidth/2 + (screwSocketWidth + DEVICE_WIDTH + MATERIAL_THICKNESS * 2) * i,
+                   MATERIAL_THICKNESS + .1, screwSocketWidth / 2])
+          rotate([-90,0,0])
+            screw(SCREW_DIAMETER, 12, true);
+
+    }
 }
 
 
