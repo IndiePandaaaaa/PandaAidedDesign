@@ -1,5 +1,7 @@
 // created by IndiePandaaaaa|Lukas
 
+use <Variables/Threading.scad>
+
 TOLERANCE = .1;
 THICKNESS = 2.5;
 PRINT_SEPARATED = true;
@@ -19,11 +21,11 @@ function comb_depth(cable_rows, cable_od, cable_distance, outer_border = 1) = ou
 
 function comb_chamfer(cable_od) = cable_od / 2;
 
-module comb(cable_count, cable_rows, cable_od, cable_distance = 1, thickness = 2, tolerance = .1) {
+module comb(cable_count, cable_rows, cable_od, cable_distance = 1, thickness = 2, with_chamfer = true, tolerance = .1) {
   outer_border = 1;
   width = comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_border);
   depth = comb_depth(cable_rows, cable_od, cable_distance, outer_border);
-  chamfer = comb_chamfer(cable_od);
+  chamfer = with_chamfer ? comb_chamfer(cable_od) : 0;
 
   difference() {
     linear_extrude(thickness) {
@@ -53,6 +55,30 @@ module comb(cable_count, cable_rows, cable_od, cable_distance = 1, thickness = 2
       cube([width - outer_border * 2 - cable_od * cutout, depth - outer_border * 2 - cable_od * cutout, thickness * 1.5 * cutout]);
   }
 } 
+
+module threaded_comb(cable_count, cable_rows, cable_od, cable_distance = 1, screw_od = 3, tolerance = .1) {
+  module mounting_cube(width, thickness, screw_od) {
+    difference() {
+      cube([thickness, width, thickness]);
+      translate([thickness / 2, width / 2, -.1])
+        cylinder(d = core_hole(screw_od), h = thickness + .2);
+      translate([thickness / 2, -.1, thickness / 2]) rotate([-90, 0, 0])
+        cylinder(d = core_hole(screw_od), h = width + .2);
+    }
+  }
+
+  thickness = screw_od * 2;
+  mount_cube_width = comb_depth(cable_rows, cable_od, cable_distance);
+
+  union() {
+    mounting_cube(mount_cube_width, thickness, screw_od);
+    translate([thickness, 0, 0]) {
+      comb(cable_count, cable_rows, cable_od, cable_distance, thickness, with_chamfer = false);
+      translate([comb_width(cable_count, cable_rows, cable_od, cable_distance), 0, 0])
+        mounting_cube(mount_cube_width, thickness, screw_od);
+    }
+  }
+}
 
 module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od, cable_distance, thickness = 2, outer_border = 1, tolerance = .1) {
 
@@ -97,11 +123,13 @@ module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od,
   cylw = comb_depth(cable_rows, cable_od, cable_distance, outer_border);
   cyld = comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_border);
 
-  difference() {
-    rotate([0, 90, 0]) translate([0, 0, comb_chamfer(cable_od)]) border_inside(cable_angle, cable_radius, cyld, cable_od, cylw, thickness, tolerance);
-    segments(cable_angle, cable_radius, cylw, cable_count, cable_rows, cable_od, cable_distance, thickness, true, .15, 45);
+  translate([0, 0, thickness / 2]) union() {
+    difference() {
+      rotate([0, 90, 0]) translate([0, 0, comb_chamfer(cable_od)]) border_inside(cable_angle, cable_radius, cyld, cable_od, cylw, thickness, tolerance);
+      segments(cable_angle, cable_radius, cylw, cable_count, cable_rows, cable_od, cable_distance, thickness, true, .15, 45);
+    }
+    segments(cable_angle, cable_radius, cylw, cable_count, cable_rows, cable_od, cable_distance, thickness, false, .1, 45);
   }
-  segments(cable_angle, cable_radius, cylw, cable_count, cable_rows, cable_od, cable_distance, thickness, false, .1, 45);
 }
 
 angled_comb(CABLE_ANGLE, CABLE_RADIUS, CABLE_COUNT, CABLE_ROWS, CABLE_OD, CABLE_DISTANCE, THICKNESS);
