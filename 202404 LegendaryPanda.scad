@@ -7,7 +7,7 @@ use <202312 CableCombs.scad>
 module cable_combs() {
   module panda_comb(cables, combs = 0, sorter = 0, rows = 2, distance = .42, cable_od = 3.5) {
     translate([-comb_width(cables, rows, cable_od, distance) - 2, 17, 0]) rotate([0, 0, 0]) 
-      angled_comb(180, 10, cables, rows, cable_od, distance);
+      angled_comb(180, 12, cables, rows, cable_od, distance);
 
     if (combs != 0) {
       for (i = [0:combs - 1]) {
