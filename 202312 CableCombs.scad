@@ -84,12 +84,15 @@ module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od,
 
   module border_inside(cable_angle, cable_radius, comb_width, cable_od, comb_depth, thickness = 2, tolerance = .1) {
     cylinder_od = cable_radius * 2 - comb_depth / 2 - comb_chamfer(cable_od) * 2 + tolerance;
-    cylinder_id = cylinder_od - thickness * 2;
+    cylinder_id = cylinder_od - thickness * 3;
+    
     difference() {
       cylinder(d = cylinder_od, h = comb_width - comb_chamfer(cable_od) * 2);
-      translate([0, 0, -0.05]) cylinder(d = cylinder_id, h = comb_width - comb_chamfer(cable_od) * 2 + 0.1);
 
-      translate([0, 0, -thickness * 0.25]) {
+      if (cable_radius > 12)
+        translate([0, 0, -0.05]) cylinder(d = cylinder_id, h = comb_width * 2);
+
+      translate([thickness / 2, -thickness / 2, -thickness * .25]) {
         cubew = comb_width;
 
         cube(cubew);
@@ -97,12 +100,6 @@ module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od,
         if (cable_angle <= 180) translate([0, .1, 0]) rotate([0, 0, 270]) cube(cubew);
       }
     }
-    translate([- thickness / 2, cylinder_id / 2, 0])
-      cube([thickness, thickness, comb_width - comb_chamfer(cable_od) * 2]);
-    
-    rotate([0, 0, cable_angle])
-      translate([- thickness / 2, cylinder_id / 2, 0])
-        cube([thickness, thickness, comb_width - comb_chamfer(cable_od) * 2]);
   }
 
   module segments(cable_angle, cable_radius, width, cable_count, cable_rows, cable_od, cable_distance, thickness, cutout = false, tolerance = .1, angle_steps = 45) {
@@ -134,4 +131,5 @@ module angled_comb(cable_angle, cable_radius, cable_count, cable_rows, cable_od,
 
 angled_comb(CABLE_ANGLE, CABLE_RADIUS, CABLE_COUNT, CABLE_ROWS, CABLE_OD, CABLE_DISTANCE, THICKNESS);
 
-translate([0, 35, 0]) comb(CABLE_COUNT, CABLE_ROWS, CABLE_OD, CABLE_DISTANCE, THICKNESS);
+translate([0, 25, 0]) comb(CABLE_COUNT, CABLE_ROWS, CABLE_OD, CABLE_DISTANCE, THICKNESS);
+
