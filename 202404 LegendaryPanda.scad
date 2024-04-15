@@ -70,5 +70,41 @@ module pcie_riser_socket(thickness = 3) {
   }
 }
 
+module psu_brackets(thickness = 1.5) {
+  module psu_bracket(thickness = 1.5) {
+    // Seasonic Prime-Connect 80PLUS 750W
+    height = 22.5;
+    width = 64;
+    depth = 7;
+    thread_socket_width = 10;
+
+    difference() {
+      cube([width + thread_socket_width * 2, depth, height + thickness]);
+
+      translate([thread_socket_width, -.1, -.1]) cube([width, depth + .2, height + .1]);
+      translate([thread_socket_width / 2, depth / 2, -.1]) {
+        cylinder(d = core_hole_M3(), h = height + thickness + .2);
+        translate([width + thread_socket_width, 0, 0]) cylinder(d = core_hole_M3(), h = height + thickness + .2);
+      }
+    }
+  }
+
+  psu_bracket(thickness);
+  translate([0, 10, 0]) psu_bracket(thickness);
+}
+
+module psu_shroud() {
+  // case: Kolink Citadel Mesh
+  depth_possible = 10.5;
+  depth_minimal = 4.9;
+  height = 66.5;
+  width = 116.7;
+  radius = 10;
+
+
+}
+
 //cable_combs();
-pcie_riser_socket();
+translate([0, 30, 0]) pcie_riser_socket();
+translate([0, 70, 0]) psu_brackets();
+translate([0, 0, 0]) psu_shroud();
