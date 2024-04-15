@@ -3,6 +3,8 @@
 
 use <202312 CableCombs.scad>
 use <Variables/Threading.scad>
+use <Functions/Fillet.scad>
+use <Logo/logo.scad>
 
 
 $fn = 75;
@@ -93,15 +95,50 @@ module psu_brackets(thickness = 1.5) {
   translate([0, 10, 0]) psu_bracket(thickness);
 }
 
-module psu_shroud() {
+module psu_shroud(thickness = 2, tolerance = .25) {
   // case: Kolink Citadel Mesh
   depth_possible = 10.5;
-  depth_minimal = 4.9;
-  height = 66.5;
-  width = 116.7;
+  depth_minimal = 4.6;
+  height = 66.5 - tolerance;
+  width = 116.7 - tolerance;
   radius = 10;
+  metal_thickness = 1;
+  additional_size = 7;
+  holes = [ 
+    [0, 0], 
+    [width + additional_size + metal_thickness * 2, 0], 
+    [width + additional_size + metal_thickness * 2, height + additional_size + metal_thickness * 2], 
+    [0, height + additional_size + metal_thickness * 2] 
+  ];
 
+  rotate([90, 0, 0]) {
+    difference() {
+      union() {
+        additional = (additional_size + metal_thickness) * 2;
+        translate([additional / 2, additional / 2, thickness]) difference() {
+          cube([width, height, depth_minimal]);
+          fillet_rectangle(radius, width, height, depth_minimal);
+        }
+        
+        cube([width + additional, height + additional, thickness]);
+        
+        translate([0, 0, thickness]) difference() {
+          cube([width + additional, height + additional, depth_minimal - .2]);
+          translate([additional_size, additional_size, -.1]) 
+            cube([width + metal_thickness * 2, height + metal_thickness * 2, depth_minimal]);
+        }
 
+        position = [width, height - 10];
+        translate([additional / 2 + (width - position[0]) / 2, additional / 2 + (height - position[1]) / 2, thickness + depth_minimal]) 
+          color("black") generate_logo(position[0], position[1], 2);
+      }
+
+      for (i = [0:3]) {
+        translate([additional_size / 2 + holes[i][0], additional_size / 2 + holes[i][1], -.1]) 
+          cylinder(d = core_hole_M3(), h = thickness + depth_minimal);
+      }
+    }
+  }
 }
 
 //cable_combs();
