@@ -141,7 +141,100 @@ module psu_shroud(thickness = 2, tolerance = .25) {
   }
 }
 
+module ssd_cover(thickness = 2, tolerance = .1) {
+  width = 100;
+  height = 69.8;
+  radius = 5;
+
+  rotate([90, 0, 0]) union() {
+    difference() {
+      cube([width, height, thickness]);
+      fillet_rectangle(radius, width, height, thickness);
+    }
+    position = [ width, height - 15 ];
+    translate([(width - position[0]) / 2, (height - position[1]) / 2, thickness]) 
+      color("black") generate_logo(position[0], position[1], thickness);
+  }
+}
+
+module mainboard_tray_cover(thickness = 2, tolerance = .15) {
+  width = 83;
+  height = 215;
+
+  // x, y, width, height
+  cutout_sata = [ 0, 105, 5, 9 ];
+  cutout_atx24 = [ 40, 35, comb_depth(2, 3.5, 1), comb_width(24, 2, 3.5, 1) ];
+
+  rotate([-90, 0, 180]) translate([-width, -height, 0]) union() {
+    difference() {
+      cube([width, height, thickness]);
+
+      translate([cutout_sata[0] - .1, cutout_sata[1], -.1]) 
+        cube([cutout_sata[2] - .1, cutout_sata[3], thickness + .2]);
+
+      translate([cutout_atx24[0] + .1, cutout_atx24[1] + .1, -.1])
+        cube([cutout_atx24[2] - .2, cutout_atx24[3] - .2, thickness + .2]);
+
+      translate([cutout_atx24[0] + cutout_atx24[2] / 2, cutout_atx24[1] - cutout_atx24[2] / 2, -.1]) {
+        cylinder(d = 3.2, h = thickness + .2);
+        translate([0, comb_mounting_distance(24, 2, 3.5), 0])
+          cylinder(d = 3.2, h = thickness + .2);
+      }
+    }
+    translate([cutout_atx24[0] + cutout_atx24[2], cutout_atx24[1], 0]) rotate([0, 0, 90])
+      comb(24, 2, 3.5, with_chamfer = false);
+  }
+}
+
+module matrix_mounting(thickness = 4, tolerance = .1) {
+  width = 40;
+  border = 2;
+  cutout = 9.5;
+  mounting = 7;
+  threading = [ [0, 0], [width + mounting, 0], [width + mounting, width + mounting], [0, width + mounting] ];
+
+  rotate([90, 0, 0]) difference() {
+    cube([width + mounting * 2, width + mounting * 2, thickness]);
+
+    translate([mounting + border, mounting, -.1]) {
+      cube([cutout, width, thickness + .2]);
+      translate([width - cutout - border * 2, 0, 0])
+        cube([cutout, width, thickness + .2]);
+
+      translate([-border, 0, 2.1]) cube([width, width, thickness]);
+    }
+
+    translate([mounting / 2, mounting / 2, -.1]) {
+      for (i = [0:3]) {
+        translate([threading[i][0], threading[i][1], 0])
+          cylinder(d = core_hole_M3(), h = thickness + .2);
+      }
+    }
+  }
+}
+
+module pandargb_case(thickness = 2, tolerance = .1) {
+  width = 46.3;
+  depth = 64.2;
+  hole_offset = 15;
+  height = 5;
+  
+  rotate([90, 0, 0]) difference() {
+    cube([width + thickness * 2, depth + thickness * 2, height + thickness]);
+
+    translate([thickness, thickness, thickness])
+      cube([width, depth, height + .1]);
+
+    translate([thickness + hole_offset, thickness + hole_offset, -.1])
+      cube([width - (thickness + hole_offset) * 2, depth - (thickness + hole_offset) * 2, height + .2]);
+  }
+}
+
 //cable_combs();
-translate([0, 30, 0]) pcie_riser_socket();
-translate([0, 70, 0]) psu_brackets();
-translate([0, 0, 0]) psu_shroud();
+translate([0, 20, 0]) pcie_riser_socket();
+translate([0, 52, 0]) psu_brackets();
+translate([0, 75, 0]) matrix_mounting();
+translate([60, 75, 0]) pandargb_case();
+translate([0, 80, 60]) ssd_cover();
+translate([0, 90, 130]) psu_shroud();
+//translate([0, 95, 0]) mainboard_tray_cover();
