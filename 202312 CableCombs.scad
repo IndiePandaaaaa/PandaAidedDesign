@@ -21,6 +21,8 @@ function comb_depth(cable_rows, cable_od, cable_distance, outer_border = 1) = ou
 
 function comb_chamfer(cable_od) = cable_od / 2;
 
+function comb_mounting_distance(cable_count, cable_rows, cable_od, cable_distance = 1, outer_border = 1) = comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_border) + comb_depth(cable_rows, cable_od, cable_distance, outer_border);
+
 module comb(cable_count, cable_rows, cable_od, cable_distance = 1, thickness = 2, with_chamfer = true, tolerance = .1) {
   outer_border = 1;
   width = comb_width(cable_count, cable_rows, cable_od, cable_distance, outer_border);
