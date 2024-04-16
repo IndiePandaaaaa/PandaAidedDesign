@@ -234,7 +234,7 @@ module pandargb_case(thickness = 2, tolerance = .1) {
 translate([0, 20, 0]) pcie_riser_socket();
 translate([0, 52, 0]) psu_brackets();
 translate([0, 75, 0]) matrix_mounting();
-translate([60, 75, 0]) pandargb_case();
+translate([90, 75, 0]) pandargb_case();
 translate([0, 80, 60]) ssd_cover();
 translate([0, 90, 130]) psu_shroud();
-//translate([0, 95, 0]) mainboard_tray_cover();
+translate([0, 100, 0]) mainboard_tray_cover();
