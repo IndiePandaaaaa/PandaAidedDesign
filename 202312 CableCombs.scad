@@ -58,7 +58,7 @@ module comb(cable_count, cable_rows, cable_od, cable_distance = 1, thickness = 2
   }
 } 
 
-module threaded_comb(cable_count, cable_rows, cable_od, cable_distance = 1, screw_od = 3, tolerance = .1) {
+module threaded_comb(cable_count, cable_rows, cable_od, cable_distance = 1, screw_od = 3, offset_mounting = false, tolerance = .1) {
   module mounting_cube(width, thickness, screw_od) {
     difference() {
       cube([thickness, width, thickness]);
@@ -75,6 +75,17 @@ module threaded_comb(cable_count, cable_rows, cable_od, cable_distance = 1, scre
   union() {
     mounting_cube(mount_cube_width, thickness, screw_od);
     translate([thickness, 0, 0]) {
+      if (offset_mounting) {
+        cube([comb_width(cable_count, cable_rows, cable_od, cable_distance), mount_cube_width, thickness]);
+        translate([0, -comb_depth(cable_rows, cable_od, cable_distance), 0]) {
+          comb(cable_count, cable_rows, cable_od, cable_distance, thickness, with_chamfer = true);
+          translate([0, comb_depth(cable_rows, cable_od, cable_distance) - comb_chamfer(cable_od), 0])
+            rotate([0, 0, 45]) cube([comb_chamfer(cable_od) * 2, comb_chamfer(cable_od) * 2, thickness]);
+
+          translate([comb_width(cable_count, cable_rows, cable_od, cable_distance), comb_depth(cable_rows, cable_od, cable_distance) - comb_chamfer(cable_od), 0])
+            rotate([0, 0, 45]) cube([comb_chamfer(cable_od) * 2, comb_chamfer(cable_od) * 2, thickness]);
+        }
+      }
       comb(cable_count, cable_rows, cable_od, cable_distance, thickness, with_chamfer = false);
       translate([comb_width(cable_count, cable_rows, cable_od, cable_distance), 0, 0])
         mounting_cube(mount_cube_width, thickness, screw_od);
