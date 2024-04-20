@@ -10,9 +10,13 @@ use <Logo/logo.scad>
 $fn = 75;
 
 module cable_combs() {
-  module panda_comb(cables, combs = 0, sorter = 0, rows = 2, distance = .42, cable_od = 3.5) {
-    translate([-comb_width(cables, rows, cable_od, distance) - 2, 17, 0]) rotate([0, 0, 0]) 
-      angled_comb(180, 12, cables, rows, cable_od, distance);
+  module panda_comb(cables, combs = 0, sorter = 0, angled = 0, rows = 2, distance = .42, cable_od = 3.5) {
+    if (angled != 0) {
+      for (i = [0:angled - 1]) {
+        translate([-comb_width(cables, rows, cable_od, distance) - 2, 17, 0]) rotate([0, 0, 0]) 
+          angled_comb(180, 12, cables, rows, cable_od, distance);
+      }
+    }
 
     if (combs != 0) {
       for (i = [0:combs - 1]) {
@@ -29,9 +33,47 @@ module cable_combs() {
     }
   }
 
-  panda_comb(24, 2, 2);
-  translate([0, 35, 0]) panda_comb(12, 1, 3);
-  translate([0, 70, 0]) panda_comb(8, 5, 7);
+  module angled_bracket(height, times = 1, rows = 2, cable_od = 3.5, tolerance = .1) {
+    screw_od = 3;
+    mounting_thickness = 2;
+    width = screw_od * 4 + mounting_thickness + screw_od * 2 + tolerance;
+    depth = screw_od * 2;
+
+    for (i = [0:times - 1]) {
+      translate([width * 1.2 * i, 0, 0]) difference() {
+        union() {
+          cube([width, depth, height]);
+          translate([screw_od * 2, 0, 0])
+            cube([mounting_thickness, depth, height + comb_depth(rows, cable_od, 1) + tolerance]);
+        }
+
+        translate([screw_od, screw_od, -.1]) {
+          cylinder(d = core_hole_M3(), h = height + comb_depth(rows, cable_od, 1) * 2);
+          translate([width - screw_od * 2, 0, 0])
+            cylinder(d = core_hole_M3(), h = height + comb_depth(rows, cable_od, 1) * 2);
+        }
+
+        translate([screw_od, screw_od, height + comb_depth(rows, cable_od, 1) / 2 + tolerance])
+          rotate([0, 90, 0]) cylinder(d = 3.2, h = height);
+      }
+    }
+  }
+
+  module threaded_offset_mount(cables, times = 1, rows = 2, cable_od = 3.5, distance = 1) {
+    for (i = [0:times-1]) {
+      translate([(6 * 2 + comb_width(cables, rows, cable_od, distance)) * 1.1 * i, 0, 0])
+        threaded_comb(cables, rows, cable_od, distance, offset_mounting = true);
+    }
+  }
+
+  // angled combs will not work due to tolerances for this build
+  translate([0,   0, 0]) panda_comb(24, 2, 2, 0);
+  translate([0,  30, 0]) panda_comb(12, 2, 3, 0);
+  translate([0,  60, 0]) panda_comb(8, 5, 7, 0);
+
+  translate([0,  90, 0]) angled_bracket(7, 3);
+
+  translate([0, 110, 0]) threaded_offset_mount(12, 2);
 }
 
 module pcie_riser_socket(thickness = 3) {
@@ -162,7 +204,7 @@ module mainboard_tray_cover(thickness = 2, tolerance = .15) {
   height = 215;
 
   // x, y, width, height
-  cutout_sata = [ 0, 105, 5, 9 ];
+  cutout_sata = [ 0, 105, 9, 9 ];
   cutout_atx24 = [ 40, 35, comb_depth(2, 3.5, 1), comb_width(24, 2, 3.5, 1) ];
 
   rotate([-90, 0, 180]) translate([-width, -height, 0]) union() {
@@ -175,7 +217,7 @@ module mainboard_tray_cover(thickness = 2, tolerance = .15) {
       translate([cutout_atx24[0] + .1, cutout_atx24[1] + .1, -.1])
         cube([cutout_atx24[2] - .2, cutout_atx24[3] - .2, thickness + .2]);
 
-      translate([cutout_atx24[0] + cutout_atx24[2] / 2, cutout_atx24[1] - cutout_atx24[2] / 2, -.1]) {
+      translate([cutout_atx24[0] + cutout_atx24[2] / 2, cutout_atx24[1] - core_hole_M3() - .5, -.1]) {
         cylinder(d = 3.2, h = thickness + .2);
         translate([0, comb_mounting_distance(24, 2, 3.5), 0])
           cylinder(d = 3.2, h = thickness + .2);
@@ -193,24 +235,40 @@ module matrix_mounting(thickness = 4, tolerance = .1) {
   mounting = 7;
   threading = [ [0, 0], [width + mounting, 0], [width + mounting, width + mounting], [0, width + mounting] ];
 
-  rotate([90, 0, 0]) difference() {
-    cube([width + mounting * 2, width + mounting * 2, thickness]);
+  module back_mounting(width, thickness, thread_diameter = core_hole_M3(), full_cutout = false, additional_size = 5) {
 
-    translate([mounting + border, mounting, -.1]) {
-      cube([cutout, width, thickness + .2]);
-      translate([width - cutout - border * 2, 0, 0])
+    rotate([90, 0, 0]) difference() {
+      if (full_cutout) {
+        translate([-additional_size / 2, -additional_size / 2, 0])
+          cube([width + mounting * 2 + additional_size, width + mounting * 2 + additional_size, thickness]);
+      } else {
+        cube([width + mounting * 2, width + mounting * 2, thickness]);
+      }
+
+      translate([mounting + border, mounting, -.1]) {
         cube([cutout, width, thickness + .2]);
+        translate([width - cutout - border * 2, 0, 0])
+          cube([cutout, width, thickness + .2]);
 
-      translate([-border, 0, 2.1]) cube([width, width, thickness]);
-    }
+        translate([-border, 0, 2.1]) cube([width, width, thickness]);
 
-    translate([mounting / 2, mounting / 2, -.1]) {
-      for (i = [0:3]) {
-        translate([threading[i][0], threading[i][1], 0])
-          cylinder(d = core_hole_M3(), h = thickness + .2);
+        if (full_cutout) {
+          translate([-border, 0, 0])
+            cube([width, width, thickness + .2]);
+        }
+      }
+
+      translate([mounting / 2, mounting / 2, -.1]) {
+        for (i = [0:3]) {
+          translate([threading[i][0], threading[i][1], 0])
+            cylinder(d = thread_diameter, h = thickness + .2);
+        }
       }
     }
   }
+
+  translate([0, 5, 0]) back_mounting(width, thickness);
+  back_mounting(width, 1.5, 3.2, true);
 }
 
 module pandargb_case(thickness = 2, tolerance = .1) {
@@ -230,11 +288,42 @@ module pandargb_case(thickness = 2, tolerance = .1) {
   }
 }
 
-//cable_combs();
-translate([0, 20, 0]) pcie_riser_socket();
-translate([0, 52, 0]) psu_brackets();
-translate([0, 75, 0]) matrix_mounting();
+module pump_plate(thickness = 2, tolerance = .15) {
+  front_offset = 43;
+  left_offset = 5;
+  width = 165;
+  tube_od = 14 + 2 + tolerance;
+  agb_od = 60 + tolerance;
+
+  rotate([90, 0, 0]) difference() {
+    linear_extrude(thickness) {
+      polygon([
+        [0, 43 - front_offset],
+        [width, 43 - front_offset],
+        [width, 95 - front_offset],
+        [width - 35, 95 - front_offset],
+        [width - 35, 130 - front_offset],
+        [width - 145, 130 - front_offset],
+        [width - 145, 80 - front_offset],
+        [0, 80 - front_offset],
+      ]);
+    }
+
+    translate([95, 90 - front_offset, -.1]) union() {
+      translate([-55, 15, 0]) cylinder(d = tube_od, h = thickness + .2);
+      cylinder(d = agb_od, h = thickness + .2);
+      translate([55, -15, 0]) cylinder(d = tube_od, h = thickness + .2);
+    }
+  }
+}
+
+
+rotate([0, 0, 90]) translate([0, 10, 0]) cable_combs();
+translate([0,  20, 0]) pcie_riser_socket();
+translate([0,  52, 0]) psu_brackets();
+translate([0,  75, 0]) matrix_mounting();
 translate([90, 75, 0]) pandargb_case();
-translate([0, 80, 60]) ssd_cover();
-translate([0, 90, 130]) psu_shroud();
-translate([0, 100, 0]) mainboard_tray_cover();
+translate([0,  80, 60]) ssd_cover();
+translate([0,  90, 130]) psu_shroud();
+translate([0,  100, 0]) mainboard_tray_cover();
+translate([0,  120, 0]) pump_plate();
