@@ -73,7 +73,10 @@ module cable_combs() {
 
   translate([0,  90, 0]) angled_bracket(7, 3);
 
-  translate([0, 110, 0]) threaded_offset_mount(12, 2);
+  //translate([0, 110, 0]) threaded_offset_mount(12, 2);
+  translate([0, 130, 0]) threaded_offset_mount(5, 2, 1);
+
+  translate([0, 140, 0]) panda_comb(5, 8, 0, 0, 1);
 }
 
 module pcie_riser_socket(thickness = 3) {
@@ -289,30 +292,32 @@ module pandargb_case(thickness = 2, tolerance = .1) {
 }
 
 module pump_plate(thickness = 2, tolerance = .15) {
-  front_offset = 43;
+  front_offset = 46;
   left_offset = 5;
   width = 165;
-  tube_od = 14 + 2 + tolerance;
-  agb_od = 60 + tolerance;
+  tube_od = 14 + 1 + tolerance;
+  agb_od = 60 + 1 + tolerance;
+  tube_y = 54;
+  tube_x = 15;
 
   rotate([90, 0, 0]) difference() {
     linear_extrude(thickness) {
       polygon([
-        [0, 43 - front_offset],
-        [width, 43 - front_offset],
+        [0, 0],
+        [width, 0],
         [width, 95 - front_offset],
-        [width - 35, 95 - front_offset],
-        [width - 35, 130 - front_offset],
-        [width - 145, 130 - front_offset],
+        [width - 30, 95 - front_offset],
+        [width - 30, 135 - front_offset],
+        [width - 145, 135 - front_offset],
         [width - 145, 80 - front_offset],
         [0, 80 - front_offset],
       ]);
     }
 
     translate([95, 90 - front_offset, -.1]) union() {
-      translate([-55, 15, 0]) cylinder(d = tube_od, h = thickness + .2);
+      translate([-tube_y + 1, tube_x - 1, 0]) cylinder(d = tube_od, h = thickness + .2);
       cylinder(d = agb_od, h = thickness + .2);
-      translate([55, -15, 0]) cylinder(d = tube_od, h = thickness + .2);
+      translate([tube_y, -tube_x, 0]) cylinder(d = tube_od, h = thickness + .2);
     }
   }
 }
