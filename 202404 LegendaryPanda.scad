@@ -296,6 +296,8 @@ module pump_plate(thickness = 2, tolerance = .15) {
   left_offset = 5;
   width = 165;
   tube_od = 14 + 1 + tolerance;
+  tube_front_od = 20 + 1 + tolerance;
+  tube_back_od = tube_od;
   agb_od = 60 + 1 + tolerance;
   tube_y = 54;
   tube_x = 15;
@@ -315,9 +317,9 @@ module pump_plate(thickness = 2, tolerance = .15) {
     }
 
     translate([95, 90 - front_offset, -.1]) union() {
-      translate([-tube_y + 1, tube_x - 1, 0]) cylinder(d = tube_od, h = thickness + .2);
+      translate([-tube_y + 1, tube_x - 1, 0]) cylinder(d = tube_front_od, h = thickness + .2);
       cylinder(d = agb_od, h = thickness + .2);
-      translate([tube_y, -tube_x, 0]) cylinder(d = tube_od, h = thickness + .2);
+      translate([tube_y, -tube_x, 0]) cylinder(d = tube_back_od, h = thickness + .2);
     }
   }
 }
