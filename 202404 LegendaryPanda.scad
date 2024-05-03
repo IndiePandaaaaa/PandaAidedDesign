@@ -324,6 +324,31 @@ module pump_plate(thickness = 2, tolerance = .15) {
   }
 }
 
+module pcie_power_plate(cables = 8, thickness = 2, tolerance = .15) {
+  height = comb_width(cables, 2, 3.5, 1) + 7 * 4;
+  width = comb_depth(2, 3.5, 1) + 7 * 2;
+
+  // x, y, width, height
+  cutout_atx24 = [ 7, 14, comb_depth(2, 3.5, 1), comb_width(cables, 2, 3.5, 1) ];
+
+  rotate([-90, 0, 180]) translate([-width, -height, 0]) union() {
+    difference() {
+      cube([width, height, thickness]);
+
+      translate([cutout_atx24[0] + .1, cutout_atx24[1] + .1, -.1])
+        cube([cutout_atx24[2] - .2, cutout_atx24[3] - .2, thickness + .2]);
+
+      translate([cutout_atx24[0] + cutout_atx24[2] / 2, cutout_atx24[1] - core_hole_M3() - .5, -.1]) {
+        cylinder(d = 3.2, h = thickness + .2);
+        translate([0, comb_mounting_distance(cables, 2, 3.5), 0])
+          cylinder(d = 3.2, h = thickness + .2);
+      }
+    }
+    translate([cutout_atx24[0] + cutout_atx24[2], cutout_atx24[1], 0]) rotate([0, 0, 90])
+      comb(cables, 2, 3.5, with_chamfer = false);
+  }
+}
+
 
 rotate([0, 0, 90]) translate([0, 10, 0]) cable_combs();
 translate([0,  20, 0]) pcie_riser_socket();
@@ -334,3 +359,4 @@ translate([0,  80, 60]) ssd_cover();
 translate([0,  90, 130]) psu_shroud();
 translate([0,  100, 0]) mainboard_tray_cover();
 translate([0,  120, 0]) pump_plate();
+translate([0, 130, 0]) pcie_power_plate();
