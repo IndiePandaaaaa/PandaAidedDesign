@@ -42,7 +42,7 @@ module casefoot(height, diameter, thickness = 2, tolerance = .15) {
 
       difference() {
         union() {
-          cylinder(d = casefoot_inner_diameter, h = height);
+          cylinder(d = casefoot_inner_diameter, h = height - .1);
           cylinder(d = diameter, h = casefoot_outer_diameter_height);
         }
         translate([0, 0, height - casefoot_hollow_height])
@@ -55,29 +55,9 @@ module casefoot(height, diameter, thickness = 2, tolerance = .15) {
   difference() {
     translate([0, 0, height])
       cylinder(d = casefoot_locating_offset + casefoot_locating_diameter / 2, h = thickness);
-    translate([0, 0, height])
-      cylinder(d = 4, h = thickness);
+    translate([0, 0, height - .1])
+      cylinder(d = 4.2, h = thickness + .2);
   }
 }
 
-module radiator_pump_cover(height, overlap, thickness = 2, tolerance = .1) {
-  // todo: square cover for radiator cutout with round cutout for the pump
-
-  module silhouette(overlap, height, tolerance = .1) {
-    rad_width = 140;
-    rad_depth_cover = 40;
-    pump_agb_diameter = 60;
-    pump_agb_depth = 70;
-
-    linear_extrude(height) {
-      polygon([
-        [0, 0],
-      ]);
-    }
-
-  }
-}
-
-translate([0, 0, -50])
-  casefoot(CASEFOOT_HEIGHT, CASEFOOT_DIAMETER);
-//radiator_pump_cover(COVER_HEIGHT, COVER_OVERLAP, THICKNESS, TOLERANCE);
+casefoot(CASEFOOT_HEIGHT, CASEFOOT_DIAMETER);
