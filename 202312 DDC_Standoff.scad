@@ -3,45 +3,44 @@
 
 use <Variables/Threading.scad>
 
-// DDC for reference: EK Quantum Kinect DDC 120
-
-THICKNESS = 3;
-TOLERANCE = .1;
-CHAMFER = 1;
 $fn = 75;
 
-SCREW_DISTANCE = 50;
-SCREW_DIAMETER = 4;
-SCREW_HEAD_HEIGHT = 3;
-SCREW_HEAD_DIAMETER = 7;
-SCREW_TOLERANCE = 1;
+// DDC for reference: EK Quantum Kinect DDC 120
+module ddc_standoff(plate_height, thickness = 3, tolerance = .1, chamfer = 1) {
+  screw_distance = 50;
+  screw_diameter = 4;
+  screw_head_height = 3;
+  screw_head_diameter = 7;
+  screw_tolerance = 1;
 
-PLATE_SIZE = 64;
-PLATE_HEIGHT = 13.5;
+  plate_size = screw_distance + screw_head_diameter * 2;
 
-difference() {
-  linear_extrude(PLATE_HEIGHT) {
-    polygon([
-      [CHAMFER, 0],
-      [PLATE_SIZE - CHAMFER, 0],
-      [PLATE_SIZE, CHAMFER],
-      [PLATE_SIZE, PLATE_SIZE - CHAMFER],
-      [PLATE_SIZE - CHAMFER, PLATE_SIZE],
-      [CHAMFER, PLATE_SIZE],
-      [0, PLATE_SIZE - CHAMFER],
-      [0, CHAMFER],
-    ]);
-  }
+  difference() {
+    linear_extrude(plate_height) {
+      polygon([
+        [chamfer, 0],
+        [plate_size - chamfer, 0],
+        [plate_size, chamfer],
+        [plate_size, plate_size - chamfer],
+        [plate_size - chamfer, plate_size],
+        [chamfer, plate_size],
+        [0, plate_size - chamfer],
+        [0, chamfer],
+      ]);
+    }
 
-  for (y = [0:1]) {
-    for (x = [0:1]) {
-      edge_dist = PLATE_SIZE > SCREW_DISTANCE ? (PLATE_SIZE - SCREW_DISTANCE) / 2 : SCREW_HEAD_DIAMETER + SCREW_TOLERANCE;
-      translate([edge_dist + SCREW_DISTANCE * x, edge_dist + SCREW_DISTANCE * y, 0]) {
-        cylinder(d = SCREW_DIAMETER + SCREW_TOLERANCE, h = PLATE_HEIGHT);
-        cylinder(d = SCREW_HEAD_DIAMETER + SCREW_TOLERANCE, h = PLATE_HEIGHT - SCREW_TOLERANCE * 2);
+    for (y = [0:1]) {
+      for (x = [0:1]) {
+        edge_dist = plate_size > screw_distance ? (plate_size - screw_distance) / 2 : screw_head_diameter + screw_tolerance;
+        translate([edge_dist + screw_distance * x, edge_dist + screw_distance * y, -.1]) {
+          cylinder(d = screw_diameter + screw_tolerance, h = plate_height + .2);
+          cylinder(d = screw_head_diameter + screw_tolerance, h = plate_height - screw_tolerance * 2 + .1);
+        }
+        translate([edge_dist + screw_distance * y, plate_size / 2, -.1])
+          cylinder(d = core_hole_M4(), h = plate_size + .2);
       }
-      translate([edge_dist + SCREW_DISTANCE * y, PLATE_SIZE / 2, 0])
-        cylinder(d = core_hole_M4(), h = PLATE_SIZE);
     }
   }
 }
+
+ddc_standoff(plate_height = 13.5);
