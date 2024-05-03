@@ -2,6 +2,8 @@
 // encoding: utf-8
 
 use <202312 CableCombs.scad>
+use <202312 DDC_Standoff.scad>
+use <202312 KolinkCitadelMesh_Accessories.scad>
 use <Variables/Threading.scad>
 use <Functions/Fillet.scad>
 use <Logo/logo.scad>
@@ -77,6 +79,15 @@ module cable_combs() {
   translate([0, 130, 0]) threaded_offset_mount(5, 2, 1);
 
   translate([0, 140, 0]) panda_comb(5, 8, 0, 0, 1);
+}
+
+module ddc_standoff_plate() {
+  rotate([90, 0, 0]) ddc_standoff(plate_height = 13.5);
+}
+
+module case_feet_citadel_mesh(diameter = 40, height = 15) {
+  for (i = [0:3]) 
+    translate([0, 0, 20 * i]) casefoot(height, diameter);
 }
 
 module pcie_riser_socket(thickness = 3) {
@@ -356,7 +367,9 @@ translate([0,  52, 0]) psu_brackets();
 translate([0,  75, 0]) matrix_mounting();
 translate([90, 75, 0]) pandargb_case();
 translate([0,  80, 60]) ssd_cover();
-translate([0,  90, 130]) psu_shroud();
-translate([0,  100, 0]) mainboard_tray_cover();
-translate([0,  120, 0]) pump_plate();
-translate([0, 130, 0]) pcie_power_plate();
+translate([0,  80, 135]) psu_shroud();
+translate([0,  85, 0]) mainboard_tray_cover();
+translate([0,  90, 0]) pump_plate();
+translate([0,  90, 95]) pcie_power_plate();
+translate([0, 110, 0]) ddc_standoff_plate();
+translate([0, 135, 0]) case_feet_citadel_mesh();
