@@ -80,14 +80,20 @@ module interface_yeti_x(cord_od, cord_holes, material_width = 14, material_thick
     side_bracket(width_mic_brackets, mic_screw_diameter, mic_screw_offset, side_bracket_mounting_width, material_thickness = side_bracket_mounting_thickness);
 }
 
-module suspension_base(cord_od, cord_holes, id, mounting_screw_od, material_thickness = 3, tolerance = .15) {
+module suspension_base(cord_od, cord_holes, id, mounting_screw_od, mounting_nut_od = 27, material_thickness = 3, tolerance = .15) {
   width = cord_od * 3 + mounting_screw_od;
+  thickness_mounting = material_thickness * 2;
 
   difference() {
     union() {
-      cylinder(d = id + width * 2, h = material_thickness);
-      rotate([0, 0, 90]) translate([id / 2 + width - mounting_screw_od, 0, 0]) scale([1, 30.5 / (mounting_screw_od * 2), 1])
-        cylinder(d = mounting_screw_od * 2, h = material_thickness * 2);
+      difference() {
+        cylinder(d = id + width * 2, h = thickness_mounting);
+        translate([0, 0, material_thickness]) cylinder(d = id + width * 2 - material_thickness * 3, h = material_thickness + .1);
+      }
+
+      rotate([0, 0, 90]) translate([id / 2 + width - mounting_screw_od, 0, 0]) {
+        cylinder(d = mounting_nut_od, h = thickness_mounting);
+      }
     }
 
     translate([0, 0, -.1]) cylinder(d = id, h = material_thickness + .2);
@@ -103,4 +109,4 @@ module suspension_base(cord_od, cord_holes, id, mounting_screw_od, material_thic
 
 interface_yeti_x(CORD_OD, CORD_HOLES, material_thickness = THICKNESS);
 
-suspension_base(CORD_OD, CORD_HOLES, BASE_ID, MOUNTING_SCREW_OD, THICKNESS, TOLERANCE);
+suspension_base(CORD_OD, CORD_HOLES, BASE_ID, MOUNTING_SCREW_OD, material_thickness = THICKNESS, tolerance = TOLERANCE);
