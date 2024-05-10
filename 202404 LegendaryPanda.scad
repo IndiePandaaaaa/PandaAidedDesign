@@ -360,7 +360,22 @@ module pcie_power_plate(cables = 8, thickness = 2, tolerance = .15) {
   }
 }
 
+module drain_cover(od = 32, chamfer = 1, height_from_case = 4.6) {
+  through_hole_thickness = 2.54;
+  through_hole_diameter = 21;
+  thickness = height_from_case - through_hole_thickness;
 
+  rotate([90, 0, 0]) translate([od / 2, od / 2, 0]) intersection() {
+    difference() {
+      cylinder(d = od, h = through_hole_thickness);
+      translate([0, 0, -.1]) cylinder(d = through_hole_diameter, h = through_hole_thickness + .2);
+    }
+    translate([0, 0, -.1])
+      cylinder(d2 = od - chamfer * 2, d1 = od + (through_hole_thickness - chamfer) * 2, h = through_hole_thickness + .2);
+  }
+}
+
+drain_cover();
 rotate([0, 0, 90]) translate([0, 10, 0]) cable_combs();
 translate([0,  20, 0]) pcie_riser_socket();
 translate([0,  52, 0]) psu_brackets();
