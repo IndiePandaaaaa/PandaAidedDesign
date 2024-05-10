@@ -3,7 +3,11 @@
 
 $fn = 75;
 
-module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, thickness = 3, tolerance = .2) {
+VICE_PART = true;
+TUBE_DIAMETER = 14;
+BEND_RADIUS = 14;
+
+module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, thickness = 2.5, tolerance = .2) {
   module tube(diameter, radius, angle, size = 100) {
     union() {
       rotate_extrude(angle = angle) {
@@ -32,28 +36,31 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
     difference() {
       cube([size, size, plate_height]);
       for (i = [0:len(angle) - 1]) {
-        translate([radius / 2 + diameter * 1.25 * i, radius / 2 + diameter * i, thickness + diameter / 2]) 
+        translate([border_offset(radius, diameter) + diameter * 1.25 * i,
+          border_offset(radius, diameter) + diameter * i, thickness + diameter / 2]) 
           stacked_tube(diameter + tolerance, radius, angle[i], height = plate_height - thickness);
       }
     }
   }
 
-  plate_height = for_vice ? thickness + diameter * 0.45 : thickness + diameter / 3 * 2;
-  size = diameter * (len(angle) + 2);
+  function border_offset(radius, diameter) = radius;
+
+  plate_height = for_vice ? thickness + diameter * 0.48 : thickness + diameter * 2 / 3;
+  size = (border_offset(radius, diameter) * 2 / 3 + diameter * 1.25) * len(angle);
 
 
   
   for (m = [0:for_vice ? 1 : 0]) {
     difference() {
-      mirror([m, 0, 0]) translate([diameter * m, 0, 0]) {
+      mirror([m, 0, 0]) translate([5 * m, 0, 0]) {
         bending_plate(diameter, radius, angle, for_vice, thickness, tolerance);
       }
 
-      translate([1 - diameter * 2 * m, 2, plate_height - 1.5]) linear_extrude(1.6) {
+      translate([1 - (radius + 4) * m, 2, plate_height - 1.5]) linear_extrude(1.6) {
         text(str(radius), size = radius / 2, font = "FiraCode Nerd Font:style=Retina");
       }
     }
   }
 }
 
-bending_guide(14, radius = 14, for_vice = true);
+bending_guide(TUBE_DIAMETER, radius = BEND_RADIUS, for_vice = VICE_PART);
