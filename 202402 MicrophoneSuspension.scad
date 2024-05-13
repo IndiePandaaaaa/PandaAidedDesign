@@ -46,10 +46,12 @@ module suspension_base(cord_od, cord_holes, mounting_screw_od, mic_diameter = 70
   }
 }
 
-module interface_base(microphone_od, cord_holes, cord_od, depth = 14, thickness = 3, tolerance = .15) {
+module interface_base(microphone_od, cord_holes, cord_od, depth = 14, thickness = 3, tolerance = .15, hollow = true) {
   difference() {
     cylinder(d = interface_od(microphone_od, depth), h = thickness);
-    translate([0, 0, -.1]) cylinder(d = microphone_od, h = thickness + .2);
+
+    if (hollow)
+      translate([0, 0, -.1]) cylinder(d = microphone_od, h = thickness + .2);
     
     for (i = [1 : cord_holes]) {
       rotate([0, 0, 360 / cord_holes * i])
@@ -120,8 +122,29 @@ module interface_yeti_x(cord_od, cord_holes, mic_diameter = 70, material_width =
 }
 
 module interface_threaded38(cord_od, cord_holes, mic_diameter, depth = 14, thickness = 3, tolerance = .15) {
+  screw_head_od = 16.1;
+  screw_head_height = 6.1;
+  screw_thread_od = 9.4;
+  mounting_screws = 2;
 
-  interface_base(mic_diameter, cord_holes, cord_od, depth, thickness, tolerance);
+  difference() {
+    union() {
+      interface_base(mic_diameter, cord_holes, cord_od, depth, thickness, tolerance, hollow = false);
+      translate([0, 0, thickness + 1.5]) color("navy") cylinder(d = mic_diameter, h = thickness);
+    }
+    
+    translate([0, 0, thickness / 2]) {
+      cylinder(d = screw_head_od + tolerance, h = screw_head_height, $fn = 6);
+      cylinder(d = screw_thread_od + tolerance, h = thickness * 5);
+    }
+    
+    for (i = [0:mounting_screws]) {
+      rotate([0, 0, 360 / mounting_screws * i]) translate([mic_diameter / 2 - cord_od, 0, -.1]) {
+        cylinder(d = core_hole("M3"), h = thickness * 3);
+        translate([0, 0, thickness + tolerance]) cylinder(d = 3.5, h = thickness * 3);
+      }
+    }
+  }
 }
 
 
