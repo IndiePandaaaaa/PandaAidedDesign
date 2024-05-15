@@ -375,7 +375,51 @@ module drain_cover(od = 32, chamfer = 1, height_from_case = 4.6) {
   }
 }
 
-drain_cover();
+module ddc_vtx_adapter() {
+  chamfer = 4;
+  screw_distance = 50;
+  vtx_mounting_depth = 4.2;
+  mounting_id = 3.8;
+  mounting_od = 8;
+  mounting_depth = 4;
+  height_difference = 44 - 33.5;
+  width = 62;
+  circular_cutout = 42;
+  plate_thickness = height_difference - vtx_mounting_depth;
+
+
+  rotate([90, 0, 0]) difference() {
+    screw_offcenter = width / 2 - (width - screw_distance) / 2;
+    union() {
+      translate([-width/2, -width/2, 0]) linear_extrude(plate_thickness) {
+        polygon([
+          [0, chamfer],
+          [chamfer, 0],
+          [width - chamfer, 0],
+          [width, chamfer],
+          [width, width - chamfer],
+          [width - chamfer, width],
+          [chamfer, width],
+          [0, width - chamfer],
+        ]);
+      }
+      for (i = [0:3])
+        rotate([0, 0, 360 / 4 * i])
+          translate([-screw_offcenter, -screw_offcenter, plate_thickness])
+            cylinder(d = mounting_od, h = mounting_depth);
+    }
+    for (i = [0:3])
+      rotate([0, 0, 360 / 4 * i])
+        translate([-screw_offcenter, -screw_offcenter, -.1]) 
+          cylinder(d = mounting_id, h = height_difference);
+
+    translate([0, 0, -.1])
+      cylinder(d = circular_cutout, h = plate_thickness + .2);
+  }
+}
+
+translate([100, 0, 0]) ddc_vtx_adapter();
+translate([0,   0, 0]) drain_cover();
 rotate([0, 0, 90]) translate([0, 10, 0]) cable_combs();
 translate([0,  20, 0]) pcie_riser_socket();
 translate([0,  52, 0]) psu_brackets();
