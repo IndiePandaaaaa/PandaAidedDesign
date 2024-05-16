@@ -3,7 +3,7 @@
 
 $fn = 75;
 
-VICE_PART = true;
+VICE_PART = false;
 TUBE_DIAMETER = 14;
 BEND_RADIUS = 14;
 
@@ -32,7 +32,7 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
     }
   }
   
-  module bending_plate(diameter, radius, angle, for_vice, thickness, tolerance) {
+  module bending_plate(diameter, radius, size, plate_height, angle, for_vice, thickness, tolerance) {
     difference() {
       cube([size, size, plate_height]);
       for (i = [0:len(angle) - 1]) {
@@ -43,17 +43,26 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
     }
   }
 
+  module perpendicular_only(diameter, radius, size, plate_height, angle, thickness, tolerance) {
+    difference() {
+      cube([size, size, plate_height]);
+
+      translate([size - radius * 1.875, size - radius * 1.875, thickness + diameter / 2])
+        stacked_tube(diameter + tolerance, radius, angle, height = plate_height - thickness);
+
+      translate([-radius * 1.75, -radius * 1.75, -.1]) cube([size, size, plate_height + .2]);
+    }
+  }
+
   function border_offset(radius, diameter) = radius;
 
-  plate_height = for_vice ? thickness + diameter * 0.48 : thickness + diameter * 2 / 3;
+  plate_height = for_vice ? thickness + diameter * 0.48 : thickness + diameter * 0.75;
   size = (border_offset(radius, diameter) * 2 / 3 + diameter * 1.25) * len(angle);
-
-
   
   for (m = [0:for_vice ? 1 : 0]) {
     difference() {
       mirror([m, 0, 0]) translate([5 * m, 0, 0]) {
-        bending_plate(diameter, radius, angle, for_vice, thickness, tolerance);
+        bending_plate(diameter, radius, size, plate_height, angle, for_vice, thickness, tolerance);
       }
 
       translate([1 - (radius + 4) * m, 2, plate_height - 1.5]) linear_extrude(1.6) {
@@ -61,6 +70,7 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
       }
     }
   }
+  translate([0, 0, 20]) perpendicular_only(diameter, radius, size, plate_height, 90, thickness, tolerance);
 }
 
 bending_guide(TUBE_DIAMETER, radius = BEND_RADIUS, for_vice = VICE_PART);
