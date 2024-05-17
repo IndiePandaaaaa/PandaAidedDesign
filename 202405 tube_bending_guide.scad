@@ -51,6 +51,15 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
         stacked_tube(diameter + tolerance, radius, angle, height = plate_height - thickness);
 
       translate([-radius * 1.75, -radius * 1.75, -.1]) cube([size, size, plate_height + .2]);
+      /*
+      distance = radius * 1.5;
+      cube([size, size, plate_height]);
+
+      translate([size - distance, size - distance, thickness + diameter / 2])
+        stacked_tube(diameter + tolerance, radius, angle, height = plate_height - thickness);
+
+      translate([-distance * 0.75, -distance * 0.75, -.1]) cube([size, size, plate_height + .2]);
+      */
     }
   }
 
