@@ -6,6 +6,9 @@ TOLERANCE = .15;
 THICKNESS = 4;
 $fn = 100;
 
+THREAD_14_INCH = 6.4;  // Elgato Wave Mic Arm LP
+THREAD_38_INCH = 9.6;  // Rode PSA-1 Threading
+
 CORD_OD = 4.5;
 CORD_HOLES = 16;
 
@@ -18,29 +21,40 @@ function interface_od(mic_diameter, depth = 14) = mic_diameter + depth * 2;
 
 function base_id(mic_diameter, floating_space, depth = 14) = interface_od(mic_diameter, depth) + floating_space * 2;
 
-module suspension_base(cord_od, cord_holes, id, mounting_screw_od, mic_diameter = 70, depth = 14, mounting_nut_od = 27, material_thickness = 3, tolerance = .15) {
-  width = cord_od * 3 + mounting_screw_od;
+module suspension_base(cord_od, cord_holes, id, mounting_screw_od, mic_diameter = 70, depth = 14, mounting_nut_od = 27, material_thickness = 3, wall_thickness = 2.5, tolerance = .15) {
+  width = cord_od * 2 + mounting_screw_od;
+  height = width * 0.75;
   thickness_mounting = material_thickness * 2;
 
   difference() {
     union() {
-      difference() {
-        cylinder(d = id + width * 2, h = thickness_mounting);
-        translate([0, 0, material_thickness]) cylinder(d = id + width * 2 - material_thickness * 3, h = material_thickness + .1);
+      rotate_extrude() {
+        translate([id / 2, 0, 0]) difference() {
+          polygon([
+            [0, 0],
+            [width - 1, 0],
+            [width, 1.5],
+            [width, height],
+            [width - wall_thickness, height],
+            [0, material_thickness],
+          ]);
+          translate([0, width + (material_thickness - wall_thickness)]) circle(width - wall_thickness);
+        }
       }
 
       rotate([0, 0, 90]) translate([id / 2 + width - mounting_screw_od, 0, 0]) {
-        cylinder(d = mounting_nut_od, h = thickness_mounting);
+        cylinder(d = mounting_nut_od, h = height + .1);
       }
     }
-
-    translate([0, 0, -.1]) cylinder(d = id, h = material_thickness + .2);
-
+    
     rotate([0, 0, 90]) translate([id / 2 + width - mounting_screw_od, 0, -.1])
-      cylinder(d = mounting_screw_od, h = material_thickness * 2 + .2);
+      cylinder(d = mounting_screw_od, h = width + .2);
     
     for (i = [1 : cord_holes]) {
-      rotate([0, 0, 360 / cord_holes * (i + .5)]) translate([id / 2 + cord_od, 0, -.1]) cylinder(d = cord_od, h = material_thickness * 2 + .2);
+      rotate([0, 0, 360 / cord_holes * (i + .5)]) translate([id / 2, 0, material_thickness / 2]) 
+        rotate([90, 0, 0]) rotate_extrude() {
+          translate([cord_od * 1.25, 0, 0]) circle(d=cord_od + 0.5);
+        }
     }
   }
 }
@@ -153,6 +167,6 @@ module interface_threaded38(cord_od, cord_holes, mic_diameter, depth = 14, thick
 }
 
 
-suspension_base(CORD_OD, CORD_HOLES, base_id(MICROPHONE_OD, FLOATING_SPACE), MIC_ARM_THREAING_OD, mic_diameter = MICROPHONE_OD, material_thickness = THICKNESS, tolerance = TOLERANCE);
+suspension_base(CORD_OD, CORD_HOLES, base_id(MICROPHONE_OD, FLOATING_SPACE), THREAD_38_INCH, mic_diameter = MICROPHONE_OD, material_thickness = THICKNESS, tolerance = TOLERANCE);
 //interface_yeti_x(CORD_OD, CORD_HOLES, mic_diameter = MICROPHONE_OD, material_thickness = THICKNESS);
-interface_threaded38(CORD_OD, CORD_HOLES, mic_diameter = MICROPHONE_OD, thickness = THICKNESS);
+//interface_threaded38(CORD_OD, CORD_HOLES, mic_diameter = MICROPHONE_OD, thickness = THICKNESS);
