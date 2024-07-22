@@ -379,7 +379,7 @@ module ddc_vtx_adapter() {
   chamfer = 4;
   screw_distance = 50;
   vtx_mounting_depth = 4.2;
-  mounting_id = 3.8;
+  mounting_id = 4.2;
   mounting_od = 8;
   mounting_depth = 4;
   height_difference = 44 - 33.5;
