@@ -1,6 +1,7 @@
 // created by IndiePandaaaaa
 
 use <Variables/Threading.scad>
+use <Logo/logo.scad>
 
 TOLERANCE = .15;
 THICKNESS = 4;
@@ -73,7 +74,6 @@ module interface_base(microphone_od, cord_holes, cord_od, thickness = 3, toleran
           rotate([90, 60, 0]) rotate_extrude(angle = 120) {
           translate([-cord_od * 1.25, 0, 0]) circle(d = cord_od + 0.5);
         }
-          cylinder(d = cord_od, h = thickness + .2);
     }
   }
 }
@@ -164,6 +164,16 @@ module interface_threaded38(cord_od, cord_holes, mic_diameter, thickness = 3, to
         translate([0, 0, thickness + mounting_height_offset + mounting_screw_head_height])
           cylinder(d1 = core_hole("M3"), d2 = 6, h = mounting_screw_head_height);
       }
+    }
+    translate([-10.5, -10.5, -.1]) generate_logo(21, 21, 1);
+  }
+
+  // mic standoff protection for treaded insert
+  mic_protect_height = [12, 10];
+  for (i = [0:len(mic_protect_height) - 1]) {
+    translate([0, 0, 12 + 15 * i]) difference() {
+      cylinder(d = 21, h = mic_protect_height[i]);
+      translate([0, 0, -.1]) cylinder(d = screw_thread_od, h = mic_protect_height[i] + .2);
     }
   }
 }
