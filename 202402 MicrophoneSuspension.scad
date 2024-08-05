@@ -22,7 +22,7 @@ function interface_od(mic_diameter) = mic_diameter + (CORD_OD + CORD_OD * 1.25) 
 
 function base_id(mic_diameter, floating_space) = interface_od(mic_diameter) + floating_space * 2;
 
-module suspension_base(cord_od, cord_holes, id, mounting_screw_od, mic_diameter = 70, depth = 14, mounting_nut_od = 27, material_thickness = 3, wall_thickness = 2.5, tolerance = .15) {
+module suspension_base(cord_od, cord_holes, id, mounting_screw_od, mic_diameter = 70, depth = 14, mounting_nut_od = 28, material_thickness = 3, wall_thickness = 2.5, tolerance = .15) {
   width = cord_od * 2 + mounting_screw_od;
   height = width * 0.75;
   thickness_mounting = material_thickness * 2;
@@ -50,7 +50,7 @@ module suspension_base(cord_od, cord_holes, id, mounting_screw_od, mic_diameter 
     }
     
     rotate([0, 0, 90]) translate([id / 2 + width - mounting_screw_od, 0, -.1])
-      cylinder(d = mounting_screw_od, h = width + .2);
+      cylinder(d = mounting_screw_od + 0.5, h = width + .2);
     
     for (i = [1 : cord_holes]) {
       rotate([0, 0, 360 / cord_holes * (i + .5)]) translate([id / 2, 0, material_thickness / 2]) 
@@ -168,12 +168,17 @@ module interface_threaded38(cord_od, cord_holes, mic_diameter, thickness = 3, to
     translate([-10.5, -10.5, -.1]) generate_logo(21, 21, 1);
   }
 
-  // mic standoff protection for treaded insert
   mic_protect_height = [12, 10];
   for (i = [0:len(mic_protect_height) - 1]) {
+    // standoff ring to protect threading in the microphon
     translate([0, 0, 12 + 15 * i]) difference() {
       cylinder(d = 21, h = mic_protect_height[i]);
       translate([0, 0, -.1]) cylinder(d = screw_thread_od, h = mic_protect_height[i] + .2);
+    }
+    // standoff rings for the suspension from the arm
+    translate([0, 0, 40 + 12 * i]) difference() {
+      cylinder(d = screw_thread_od * 1.5, h = screw_thread_od - screw_head_od * .25 * i);
+      translate([0, 0, -.1]) cylinder(d = screw_thread_od + .5, h = screw_thread_od + .2);
     }
   }
 }
@@ -182,3 +187,4 @@ module interface_threaded38(cord_od, cord_holes, mic_diameter, thickness = 3, to
 suspension_base(CORD_OD, CORD_HOLES, base_id(MICROPHONE_OD, FLOATING_SPACE), THREAD_38_INCH, mic_diameter = MICROPHONE_OD, material_thickness = THICKNESS, tolerance = TOLERANCE);
 //interface_yeti_x(CORD_OD, CORD_HOLES, mic_diameter = MICROPHONE_OD, material_thickness = THICKNESS);
 interface_threaded38(CORD_OD, CORD_HOLES, mic_diameter = MICROPHONE_OD, thickness = THICKNESS);
+
