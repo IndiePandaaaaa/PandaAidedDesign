@@ -2,11 +2,11 @@
 // encoding: utf-8
 
 PARTS_SEPARATED = true;
-THICKNESS = 3;
+THICKNESS = 2.5;
 TOLERANCE = .1;
 $fn = 75;
 
-module perpendicular_angle(width, depth, ruler_depth = 15, ruler_mode = 2.5) {
+module perpendicular_angle(width, depth, ruler_depth = 13, ruler_mode = 2.5) {
   // ruler_mode: 10 => cm; 5 => cm, 5 mm; 2.5 => cm, 2.5 mm; 1 => cm, mm; 0 => no ruler
   module ruler(width, mode, mirrored = false) {
     module marker(mode, label, mirrored = false) {
@@ -49,8 +49,8 @@ module perpendicular_angle(width, depth, ruler_depth = 15, ruler_mode = 2.5) {
       linear_extrude(THICKNESS) {
         polygon([
           [0, 0],
-          [ruler_depth + TOLERANCE, 0],
-          [ruler_depth + TOLERANCE , depth - ruler_depth],
+          [(ruler_depth - THICKNESS) / 2 + TOLERANCE, 0],
+          [(ruler_depth - THICKNESS) / 2 + TOLERANCE , depth - ruler_depth],
           [width + TOLERANCE, depth - ruler_depth],
           [width + TOLERANCE, depth],
           [0, depth],
