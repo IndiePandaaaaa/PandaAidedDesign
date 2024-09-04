@@ -4,7 +4,7 @@
 use <Variables/Threading.scad>
 
 CHAMFER = .5;
-TOLERANCE = .15;
+TOLERANCE = .2;
 $fn = 75;
 
 module mounting_base(inner_width, inner_height, inner_height_offset, base_depth, material_thickness = 3, round_cutout = false) {
@@ -38,5 +38,19 @@ module mounting_base(inner_width, inner_height, inner_height_offset, base_depth,
     }
   }
 }
+//mounting_base(inner_width, inner_height, inner_height_offset, base_depth, round_cutout = false) 
 
-mounting_base(5, 20, 3, 15, round_cutout = false);
+brackets = [
+  [4, 6.2, 22, 8.5, 20, false, "wolfcraft 80x200"],
+];
+
+for (i = [0:len(brackets)-1]) {
+  translate([0, 30 * i, 0]) {
+    thickness = 3;
+    rotate([0, 180, 0]) translate([brackets[i][1] + thickness, 0, 0]) text(brackets[i][6]);
+    for (j = [0:brackets[i][0]-1]) {
+      translate([(brackets[i][1] + thickness * 2 + 5) * j, 0, 0]) 
+        mounting_base(brackets[i][1], brackets[i][2], brackets[i][3], brackets[i][4], round_cutout = brackets[i][5]);
+    }
+  }
+}
