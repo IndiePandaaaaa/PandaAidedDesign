@@ -8,12 +8,13 @@ $fn = 75;
 BOARD_THICKNESS = 20.8;
 PHONE_THICKNESS = 12;
 PHONE_ANGLE = 10;
-HORIZONTAL = false; // for vertical mount set to false
+HORIZONTAL = true; // for vertical mount set to false
 
 // todo: add 3 degree angle to shrink the board for better stability when used
-module phone_mount(board_thickness, phone_thickness, horizontal = true, phone_angle = 14, thickness = 3, chamfer = 1, tolerance = 0.1) {
+module phone_mount(board_thickness, phone_thickness, horizontal = true, phone_angle = 14, thickness = 3, chamfer = 1, tolerance = 0.1, pinch_angle = 2) {
     rotate([90, 0, 90]) difference() {
         linear_extrude(42) {
+            pinch_offset = tan(pinch_angle) * board_thickness;
             angle_depth = board_thickness / tan(90 - phone_angle) + thickness;
             depth = thickness * 2 + tolerance * 2 + phone_thickness + board_thickness + angle_depth;
             height = thickness * 2 + board_thickness * 1.5;
@@ -22,14 +23,14 @@ module phone_mount(board_thickness, phone_thickness, horizontal = true, phone_an
             A = [0, chamfer];
             B = [chamfer, 0];
             Ch = [depth, 0];
-            Dh = [depth, thickness];
+            Dh = [depth, thickness + pinch_offset];
             Eh = [middle_point, thickness];
             Fh = [middle_point, thickness + board_thickness + tolerance];
             Gh = [depth, Fh[1]];
             Cv = [middle_point, 0];
             Dv = Fh;
             Ev = [depth - thickness, thickness + board_thickness + tolerance];
-            Fv = [depth - thickness, 0];
+            Fv = [depth - thickness - pinch_offset, 0];
             Gv = [depth, 0];
             H = [depth, thickness * 2 + board_thickness + tolerance - chamfer];
             I = [H[0] - chamfer, H[1] + chamfer];
