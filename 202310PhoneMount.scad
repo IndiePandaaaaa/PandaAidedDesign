@@ -11,7 +11,6 @@ PHONE_ANGLE = 10;
 HORIZONTAL = false; // for vertical mount set to false
 
 // todo: add 3 degree angle to shrink the board for better stability when used
-// todo: add more chamfers
 module phone_mount(board_thickness, phone_thickness, horizontal = true, phone_angle = 14, thickness = 3, chamfer = 1, tolerance = 0.1) {
     rotate([90, 0, 90]) difference() {
         linear_extrude(42) {
@@ -36,8 +35,8 @@ module phone_mount(board_thickness, phone_thickness, horizontal = true, phone_an
             I = [H[0] - chamfer, H[1] + chamfer];
             J = [depth * 0.8, thickness * 2 + board_thickness + tolerance];
             L = [(thickness + phone_thickness + tolerance) 
-                  + (height - thickness) / tan(90 - phone_angle), height];
-            K = [L[0] + thickness / cos(phone_angle), height - thickness * sin(phone_angle)];
+                  + (height - thickness) / tan(90 - phone_angle), height - chamfer];
+            K = [L[0] + chamfer, height - thickness * sin(phone_angle)];
             M = [(thickness + phone_thickness + tolerance), thickness];
             N = [thickness + chamfer, thickness];
             O = [thickness, thickness + chamfer];
