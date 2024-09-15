@@ -8,12 +8,15 @@ TOLERANCE = .15;
 THICKNESS = 3;
 $fn = 75;
 
+// 120mm: 120, 105
+// 140mm: 140, 125
+
 FAN_DIAMETER = 120;
 FAN_SCREW_DISTANCE = 105;
 
 HEX_SIZE = 12;
 
-module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1) {
+module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1, plate_only = false) {
   screw_diameter = 4.2; // fan screw hole: 4.3 mm
   screw_offset = (diameter - screw_distance) / 2;
   hexagon = diameter - 3;
@@ -23,13 +26,16 @@ module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1) 
     difference() {
       intersection() {
         cube([diameter, diameter, thickness]);
-        translate([diameter / 2, diameter / 2, -.1]) rotate([0, 0, 45]) translate([-cube_chamfer / 2, -cube_chamfer / 2, 0]) 
+        translate([diameter / 2, diameter / 2, -.1]) 
+          rotate([0, 0, 45]) translate([-cube_chamfer / 2, -cube_chamfer / 2, 0]) 
           cube([cube_chamfer, cube_chamfer, thickness + .2]);
       }
 
-      translate([diameter / 2, diameter / 2, -.1]) intersection() {
-        cylinder(d = hexagon, h = thickness + .2, $fn = 6);
-        cylinder(d = diameter - 7, h = thickness + .2);
+      if (!plate_only) {
+        translate([diameter / 2, diameter / 2, -.1]) intersection() {
+          cylinder(d = hexagon, h = thickness + .2, $fn = 6);
+          cylinder(d = diameter - 7, h = thickness + .2);
+        }
       }
 
       translate([screw_offset, screw_offset, thickness + .1]) {
@@ -40,10 +46,24 @@ module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1) 
       }
     }
 
-    translate([-11.5, 2, 0]) difference() {
-      translate([diameter / 2 + 11.5, diameter / 2 - 2, 0]) cylinder(d = hexagon, h = thickness, $fn = 6);
-      translate([0, 0, -.1]) hexagon_pattern(diameter * 2, diameter * 2, thickness + .2, hex_size);
+    if (!plate_only) {
+      translate([-11.5, 2, 0]) difference() {
+        translate([diameter / 2 + 11.5, diameter / 2 - 2, 0]) cylinder(d = hexagon, h = thickness, $fn = 6);
+        translate([0, 0, -.1]) hexagon_pattern(diameter * 2, diameter * 2, thickness + .2, hex_size);
+      }
     }
+  }
+}
+
+module fan_filter(diameter, screw_distance, thickness, tolerance = .1, filter_thickness = 1.5) {
+  translate([diameter/2, diameter/2, 0]) union() {
+    difference() {
+      translate([-diameter/2, -diameter/2, 0])
+        fan_grill(diameter, screw_distance, 7, thickness, tolerance, plate_only = true);
+      translate([0, 0, -.1]) cylinder(d = diameter - 5, h = thickness + .2);
+    }
+    translate([0, 0, thickness - filter_thickness])
+      cylinder(d = diameter - 4, h = filter_thickness);
   }
 }
 
@@ -95,7 +115,6 @@ module fan_mount(diameter, screw_distance, thickness, tolerance = .1, screw_stan
   }
 }
 
-translate([0, 0, 25]) fan_grill(FAN_DIAMETER, FAN_SCREW_DISTANCE, HEX_SIZE, THICKNESS / 6 * 5, TOLERANCE);
-
 fan_mount(FAN_DIAMETER, FAN_SCREW_DISTANCE, THICKNESS, TOLERANCE);
-
+translate([0, 0, 25]) fan_grill(FAN_DIAMETER, FAN_SCREW_DISTANCE, HEX_SIZE, THICKNESS / 6 * 5, TOLERANCE);
+translate([0, 0, 42]) fan_filter(FAN_DIAMETER, FAN_SCREW_DISTANCE, thickness = 2, tolerance = TOLERANCE);
