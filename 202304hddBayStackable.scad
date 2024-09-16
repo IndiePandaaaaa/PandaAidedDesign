@@ -95,8 +95,8 @@ module MountingHolesHDD(rubber_od, rubber_od_id, cutout_height) {
 }
 
 module ConnectorSpacer(width, depth, height, offset_x, bottom_screw_depth) {
-    translate([offset_x, - depth - bottom_screw_depth + 2, - 0.01])
-        cube([width, depth, height + 0.01]);
+    translate([offset_x, - depth - bottom_screw_depth + 2, -.1])
+        cube([width, depth, height + 0.2]);
 }
 
 module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout_only = false) {
@@ -133,43 +133,77 @@ module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout
     }
 }
 
-union() {
-    difference() {
-        translate([0, FULLMODEL_DEPTH, 0]) rotate([90, 0, 0])
-            UBase(FULLMODEL_DEPTH, FULLMODEL_HEIGHT, WIDTH_HDD + 2 * RUBBER_WIDTH_ADDITIONAL,
-            TOLERANCE_HDD, UBASE_THICKNESS);
+module hddBayStackable() {
+    union() {
+        difference() {
+            translate([0, FULLMODEL_DEPTH, 0]) rotate([90, 0, 0])
+                UBase(FULLMODEL_DEPTH, FULLMODEL_HEIGHT, WIDTH_HDD + 2 * RUBBER_WIDTH_ADDITIONAL,
+                TOLERANCE_HDD, UBASE_THICKNESS);
 
-        translate([UBASE_THICKNESS + TOLERANCE_HDD / 2 + RUBBER_OD / 2,
-                    HDD_BOTTOM_SCREW_DEPTH + SCREW_LENGTH + 2, 0]) {
-            MountingHolesHDD(RUBBER_OD, RUBBER_OD_ID, UBASE_THICKNESS - RUBBER_HEIGHT_INTERNAL);
-            ConnectorSpacer(HDD_SATA_CONNECTOR_WIDTH, HDD_SATA_CONNECTOR_CABLE_DEPTH, HDD_SATA_CONNECTOR_HEIGHT,
-                HDD_SATA_CONNECTOR_POS_X - HDD_BOTTOM_SCREW_POS_X, HDD_BOTTOM_SCREW_DEPTH);
+            translate([UBASE_THICKNESS + TOLERANCE_HDD / 2 + RUBBER_OD / 2,
+                        HDD_BOTTOM_SCREW_DEPTH + SCREW_LENGTH + 2, 0]) {
+                MountingHolesHDD(RUBBER_OD, RUBBER_OD_ID, UBASE_THICKNESS - RUBBER_HEIGHT_INTERNAL);
+                ConnectorSpacer(HDD_SATA_CONNECTOR_WIDTH, HDD_SATA_CONNECTOR_CABLE_DEPTH, HDD_SATA_CONNECTOR_HEIGHT, HDD_SATA_CONNECTOR_POS_X - HDD_BOTTOM_SCREW_POS_X, HDD_BOTTOM_SCREW_DEPTH);
+            }
+
+            vent_width = FULLMODEL_DEPTH - (SCREW_LENGTH + 2) - SCREW_LENGTH / 2;
+            vent_height = FULLMODEL_HEIGHT - UBASE_THICKNESS * 2;
+            vent_hex_od = 12;
+            vent_pos_y = (SCREW_LENGTH + 2) + (vent_width - hexagon_get_used_width(vent_width, vent_hex_od)) / 2;
+            vent_pos_z = (FULLMODEL_HEIGHT - hexagon_get_used_depth(vent_height, vent_hex_od)) / 2;
+
+            rotate([90, 0, 90]) translate([vent_pos_y, vent_pos_z, 0])
+                hexagon_pattern(vent_width, vent_height, FULLMODEL_WIDTH, vent_hex_od);
+
+            pattern_width = FULLMODEL_WIDTH - (UBASE_THICKNESS + TOLERANCE_HDD + RUBBER_OD) * 2;
+            pattern_hex_od = 19;
+            pattern_pos_x = (FULLMODEL_WIDTH - hexagon_get_used_width(pattern_width, pattern_hex_od)) / 2;
+            pattern_pos_y = SCREW_LENGTH + 7 + (FULLMODEL_DEPTH - (SCREW_LENGTH + 7) -
+                hexagon_get_used_depth(FULLMODEL_DEPTH - (SCREW_LENGTH + 7), pattern_hex_od)) / 2;
+
+            translate([pattern_pos_x, pattern_pos_y, -.1])
+                hexagon_pattern(pattern_width, FULLMODEL_DEPTH - pattern_pos_y, UBASE_THICKNESS + .2, pattern_hex_od);
+
+            // to prepare the space for the screws later
+            translate([0, 0, UBASE_THICKNESS])
+                CaseMountingSocket(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS,
+                FAN_CaseMountingSocket_DISTANCE, FULLMODEL_WIDTH, true);
         }
-
-        vent_width = FULLMODEL_DEPTH - (SCREW_LENGTH + 2) - SCREW_LENGTH / 2;
-        vent_height = FULLMODEL_HEIGHT - UBASE_THICKNESS * 2;
-        vent_hex_od = 12;
-        vent_pos_y = (SCREW_LENGTH + 2) + (vent_width - hexagon_get_used_width(vent_width, vent_hex_od)) / 2;
-        vent_pos_z = (FULLMODEL_HEIGHT - hexagon_get_used_depth(vent_height, vent_hex_od)) / 2;
-
-        rotate([90, 0, 90]) translate([vent_pos_y, vent_pos_z, 0])
-            hexagon_pattern(vent_width, vent_height, FULLMODEL_WIDTH, vent_hex_od);
-
-        pattern_width = FULLMODEL_WIDTH - (UBASE_THICKNESS + TOLERANCE_HDD + RUBBER_OD) * 2;
-        pattern_hex_od = 19;
-        pattern_pos_x = (FULLMODEL_WIDTH - hexagon_get_used_width(pattern_width, pattern_hex_od)) / 2;
-        pattern_pos_y = SCREW_LENGTH + 7 + (FULLMODEL_DEPTH - (SCREW_LENGTH + 7) -
-            hexagon_get_used_depth(FULLMODEL_DEPTH - (SCREW_LENGTH + 7), pattern_hex_od)) / 2;
-
-        translate([pattern_pos_x, pattern_pos_y, 0])
-            hexagon_pattern(pattern_width, FULLMODEL_DEPTH - pattern_pos_y, UBASE_THICKNESS, pattern_hex_od);
-
-        // to prepare the space for the screws later
         translate([0, 0, UBASE_THICKNESS])
             CaseMountingSocket(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS,
-            FAN_CaseMountingSocket_DISTANCE, FULLMODEL_WIDTH, true);
+            FAN_CaseMountingSocket_DISTANCE, FULLMODEL_WIDTH, false);
     }
-    translate([0, 0, UBASE_THICKNESS])
-        CaseMountingSocket(SCREW_SOCKET_WIDTH, SCREW_LENGTH, FULLMODEL_HEIGHT - UBASE_THICKNESS,
-        FAN_CaseMountingSocket_DISTANCE, FULLMODEL_WIDTH, false);
 }
+
+module fan_frame(screw_distance, screw_diameter = 4, thickness = 2.5, tolerance = .1) {
+  frame_od = screw_distance + 2 * screw_diameter;
+  frame_id = screw_distance - 2 * screw_diameter;
+  frame_thickness = thickness * 4;
+  translate([frame_od / 2, frame_od / 2, 0]) union() {
+    difference() {
+      translate([-frame_od / 2, -frame_od / 2, 0]) 
+        cube([frame_od, frame_od, frame_thickness]);
+      translate([-frame_id / 2, -frame_id / 2, -.1]) 
+        cube([frame_id, frame_id, frame_thickness + .2]);
+      translate([-frame_id / 2, -frame_od / 2 -.1, -thickness])
+        cube([frame_id, frame_od +.2, frame_thickness]);
+
+      // fan Screws
+      for (i = [0:3]) {
+        rotate([0, 0, 90 * i])
+          translate([screw_distance / 2, screw_distance / 2, -.1])
+            cylinder(d = screw_diameter, h = frame_thickness + .2);
+      }
+
+      // mounting screws
+    }
+  }
+}
+
+translate([0, 1, ((FAN_CaseMountingSocket_DISTANCE + 4 * 2) - 3 * FULLMODEL_HEIGHT) / 2]) {
+  for (i = [0:2]) {
+    translate([0, 0, FULLMODEL_HEIGHT * i]) hddBayStackable();
+  }
+}
+
+rotate([90, 0, 0]) fan_frame(FAN_CaseMountingSocket_DISTANCE);
