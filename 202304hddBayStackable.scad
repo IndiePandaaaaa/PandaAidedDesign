@@ -3,6 +3,9 @@
 // for use with Lamptron HDD Rubber Screws PRO - https://www.caseking.de/lamptron-hdd-rubber-screws-pro-red-molt-075.html?__shop=2
 
 use <Structures/Hexagon.scad>
+use <Variables/Threading.scad>
+
+$fn = 75;
 
 // HDD IronWolf 20TB 3,5″
 //height_HDD = 26.1;
@@ -109,9 +112,9 @@ module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout
             translate([position_x, - 0.01, height_CaseMountingSocket / 3 / 2 + height_CaseMountingSocket / 3 * i]) {
                 rotate([- 90, 0, 0]) {
                     if (i == 1) {// hole for M3 threading
-                        cylinder(h = depth_CaseMountingSocket + 0.02, d = 2.5, center = false, $fs = 0.1);
+                        cylinder(h = depth_CaseMountingSocket + 0.02, d = core_hole_M3(), center = false, $fs = 0.1);
                     } else {// holes for M4 threading
-                        cylinder(h = depth_CaseMountingSocket + 0.02, d = 3.3, center = false, $fs = 0.1);
+                        cylinder(h = depth_CaseMountingSocket + 0.02, d = core_hole_M4(), center = false, $fs = 0.1);
                     }
                 }
             }
@@ -175,35 +178,49 @@ module hddBayStackable() {
     }
 }
 
-module fan_frame(screw_distance, screw_diameter = 4, thickness = 2.5, tolerance = .1) {
-  frame_od = screw_distance + 2 * screw_diameter;
+module fan_frame(screw_distance, disk_height, frame_width, screw_diameter = 4, thickness = 2.5, disk_count = 3, tolerance = .1) {
   frame_id = screw_distance - 2 * screw_diameter;
   frame_thickness = thickness * 4;
-  translate([frame_od / 2, frame_od / 2, 0]) union() {
+
+  translate([frame_width / 2, frame_width / 2, 0]) color("brown") union() {
     difference() {
-      translate([-frame_od / 2, -frame_od / 2, 0]) 
-        cube([frame_od, frame_od, frame_thickness]);
+      translate([-frame_width / 2, -frame_width / 2, 0])
+        cube([frame_width, frame_width, frame_thickness]);
       translate([-frame_id / 2, -frame_id / 2, -.1]) 
         cube([frame_id, frame_id, frame_thickness + .2]);
-      translate([-frame_id / 2, -frame_od / 2 -.1, -thickness])
-        cube([frame_id, frame_od +.2, frame_thickness]);
+      translate([-frame_id / 2, -frame_width / 2 -.1, -thickness])
+        cube([frame_id, frame_width +.2, frame_thickness]);
 
       // fan Screws
       for (i = [0:3]) {
         rotate([0, 0, 90 * i])
           translate([screw_distance / 2, screw_distance / 2, -.1])
-            cylinder(d = screw_diameter, h = frame_thickness + .2);
+            cylinder(d = screw_diameter == 4 ? core_hole_M4() : core_hole_M3(), h = frame_thickness + .2);
       }
+      // todo: add non-core hole option to CaseMountingSocket
+      // todo: add countersunk for screws within frame
 
       // mounting screws
+      mounting_start_z = (frame_width - disk_height * disk_count) / 2 + .5;
+      rotate([90, 0, 0]) translate([-frame_width / 2, 0, -frame_width / 2]) {
+        for (i = [0:disk_count - 1]) {
+          translate([0, 0, mounting_start_z + disk_height * i])
+          CaseMountingSocket((frame_width - frame_id) / 2, frame_thickness * 2, disk_height - UBASE_THICKNESS, screw_distance, frame_width, for_cutout_only = true);
+        }
+      }
+    }
+    // frame stabilization/cable blocker
+    translate([-frame_width / 2, -frame_width / 2, frame_thickness - thickness]) for (i = [1:disk_count - 1]) {
+      translate([(frame_width - frame_id - .2) / 2, disk_height * i, 0])
+       cube([frame_id + .2, screw_diameter * 2, thickness]);
     }
   }
 }
 
-translate([0, 1, ((FAN_CaseMountingSocket_DISTANCE + 4 * 2) - 3 * FULLMODEL_HEIGHT) / 2]) {
+translate([0, .5, ((FAN_CaseMountingSocket_DISTANCE + 4 * 2) - 3 * FULLMODEL_HEIGHT) / 2]) {
   for (i = [0:2]) {
     translate([0, 0, FULLMODEL_HEIGHT * i]) hddBayStackable();
   }
 }
 
-rotate([90, 0, 0]) fan_frame(FAN_CaseMountingSocket_DISTANCE);
+rotate([90, 0, 0]) fan_frame(FAN_CaseMountingSocket_DISTANCE, FULLMODEL_HEIGHT, FULLMODEL_WIDTH);
