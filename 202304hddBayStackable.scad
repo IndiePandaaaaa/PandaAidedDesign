@@ -172,7 +172,7 @@ module hddBayStackable() {
     }
 }
 
-module fan_frame(screw_distance, disk_height, frame_width, screw_diameter = 4, thickness = 2.5, disk_count = 3, tolerance = .1) {
+module fan_frame(screw_distance, disk_height, frame_width, screw_diameter = 4, thickness = 2.5, disk_count = 3, additional_stabilization = false, tolerance = .1) {
   frame_id = screw_distance - 2 * screw_diameter;
   frame_thickness = thickness * 4;
 
@@ -180,8 +180,8 @@ module fan_frame(screw_distance, disk_height, frame_width, screw_diameter = 4, t
     difference() {
       translate([-frame_width / 2, -frame_width / 2, 0])
         cube([frame_width, frame_width, frame_thickness]);
-      translate([-frame_id / 2, -frame_id / 2, -.1]) 
-        cube([frame_id, frame_id, frame_thickness + .2]);
+      translate([-frame_id / 2, -(additional_stabilization ? frame_id : frame_width + .1) / 2, -.1]) 
+        cube([frame_id, additional_stabilization ? frame_id : frame_width + .2, frame_thickness + .2]);
       translate([-frame_id / 2, -frame_width / 2 -.1, -thickness])
         cube([frame_id, frame_width +.2, frame_thickness]);
 
@@ -205,10 +205,12 @@ module fan_frame(screw_distance, disk_height, frame_width, screw_diameter = 4, t
         }
       }
     }
-    // frame stabilization/cable blocker
-    translate([-frame_width / 2, -frame_width / 2, frame_thickness - thickness]) for (i = [1:disk_count - 1]) {
-      translate([(frame_width - frame_id - .2) / 2, disk_height * i, 0])
-       cube([frame_id + .2, screw_diameter * 2, thickness]);
+    if (additional_stabilization) {
+      // frame stabilization/cable blocker
+      translate([-frame_width / 2, -frame_width / 2, frame_thickness - thickness]) for (i = [1:disk_count - 1]) {
+        translate([(frame_width - frame_id - .2) / 2, disk_height * i, 0])
+          cube([frame_id + .2, screw_diameter * 2, thickness]);
+      }
     }
   }
 }
