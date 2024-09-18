@@ -102,22 +102,16 @@ module ConnectorSpacer(width, depth, height, offset_x, bottom_screw_depth) {
         cube([width, depth, height + 0.2]);
 }
 
-module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout_only = false) {
+module CaseMountingSocket(width, depth, height, distance, full_width, for_cutout_only = false, screw_additional_od = .0) {
     module ScrewHole(width_CaseMountingSocket, depth_CaseMountingSocket, height_CaseMountingSocket, position_x) {
         // https://de.wikipedia.org/wiki/Kernloch
         //  Gewinde	Steigung	Kernloch (core hole)
         //  M4	    x0.7	3.3
         //  M3	    x0.5	2.5
         for (i = [0:2]) {
-            translate([position_x, - 0.01, height_CaseMountingSocket / 3 / 2 + height_CaseMountingSocket / 3 * i]) {
-                rotate([- 90, 0, 0]) {
-                    if (i == 1) {// hole for M3 threading
-                        cylinder(h = depth_CaseMountingSocket + 0.02, d = core_hole_M3(), center = false, $fs = 0.1);
-                    } else {// holes for M4 threading
-                        cylinder(h = depth_CaseMountingSocket + 0.02, d = core_hole_M4(), center = false, $fs = 0.1);
-                    }
-                }
-            }
+          translate([position_x, - 0.01, height_CaseMountingSocket / 3 / 2 + height_CaseMountingSocket / 3 * i])
+            rotate([- 90, 0, 0])
+              cylinder(h = depth_CaseMountingSocket + 0.02, d = (i == 1 ? core_hole_M3() : core_hole_M4()) + screw_additional_od, center = false);
         }
     }
 
@@ -182,7 +176,7 @@ module fan_frame(screw_distance, disk_height, frame_width, screw_diameter = 4, t
   frame_id = screw_distance - 2 * screw_diameter;
   frame_thickness = thickness * 4;
 
-  translate([frame_width / 2, frame_width / 2, 0]) color("brown") union() {
+  translate([frame_width / 2, frame_width / 2, 0]) union() {
     difference() {
       translate([-frame_width / 2, -frame_width / 2, 0])
         cube([frame_width, frame_width, frame_thickness]);
@@ -197,15 +191,17 @@ module fan_frame(screw_distance, disk_height, frame_width, screw_diameter = 4, t
           translate([screw_distance / 2, screw_distance / 2, -.1])
             cylinder(d = screw_diameter == 4 ? core_hole_M4() : core_hole_M3(), h = frame_thickness + .2);
       }
-      // todo: add non-core hole option to CaseMountingSocket
-      // todo: add countersunk for screws within frame
 
       // mounting screws
       mounting_start_z = (frame_width - disk_height * disk_count) / 2 + .5;
       rotate([90, 0, 0]) translate([-frame_width / 2, 0, -frame_width / 2]) {
         for (i = [0:disk_count - 1]) {
-          translate([0, 0, mounting_start_z + disk_height * i])
-          CaseMountingSocket((frame_width - frame_id) / 2, frame_thickness * 2, disk_height - UBASE_THICKNESS, screw_distance, frame_width, for_cutout_only = true);
+          translate([0, 0, mounting_start_z + disk_height * i]) {
+            CaseMountingSocket((frame_width - frame_id) / 2, frame_thickness * 2, disk_height - UBASE_THICKNESS, screw_distance, frame_width, for_cutout_only = true, screw_additional_od = .8);
+            remaining_frame_thickness = 3;
+            translate([0, remaining_frame_thickness, 0])
+              CaseMountingSocket((frame_width - frame_id) / 2, frame_thickness - remaining_frame_thickness, disk_height - UBASE_THICKNESS, screw_distance, frame_width, for_cutout_only = true, screw_additional_od = 4);
+          }
         }
       }
     }
