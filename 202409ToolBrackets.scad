@@ -61,10 +61,13 @@ brackets = [
 mirror([1, 0, 0]) for (i = [0:len(brackets)-1]) {
   translate([0, 30 * i, 0]) {
     thickness = 3;
-    rotate([0, 180, 0]) translate([brackets[i][1] + thickness, 0, 0]) text(brackets[i][6]);
-    rotate([0, 0, brackets[i][6] == "schleifpapier" ? -90 : 0]) for (j = [0:brackets[i][0]-1]) {
-      translate([(brackets[i][1] + thickness * 2 + 5) * j, 0, 0]) 
-        mounting_base(brackets[i][1], brackets[i][2], brackets[i][3], brackets[i][4], round_cutout = brackets[i][5]);
+    if ($preview) { // text = 2D object, darum rendert das model nicht
+      rotate([0, 180, 0]) translate([brackets[i][1] + thickness, 0, 0]) text(brackets[i][6]);
+    }
+    rotate([0, 0, brackets[i][6] == "schleifpapier" ? -90 : 0]) 
+      for (j = [0:brackets[i][0]-1]) {
+        translate([(brackets[i][1] + thickness * 2 + 5) * j, 0, 0]) 
+          mounting_base(brackets[i][1], brackets[i][2], brackets[i][3], brackets[i][4], round_cutout = brackets[i][5]);
     }
   }
 }
