@@ -34,7 +34,9 @@ microphone is used with a microphone arm
 
 Parametric model, cable combs for custom made AWG 16 computer ATX PSU cables.
 
-### [Raspberry Pi Cooling Frame](https://github.com/IndiePandaaaaa/PandaAidedDesign/blob/main/202410PiCoolFrame.scad): combines the Pi with an 80 mm active case fan for noise reduction (vs. 40 mm fan or smaller) and optimal cooling, is also wall mountable.
+### [Raspberry Pi Cooling Frame](https://github.com/IndiePandaaaaa/PandaAidedDesign/blob/main/202410PiCoolFrame.scad)
+
+Combines the Pi with an 80 mm active case fan for noise reduction (vs. 40 mm fan or smaller) and optimal cooling. It's also wall mountable.
 
 - fitting case for Pi 3: [Joy-IT ARMOR CASE](https://joy-it.net/de/products/RB-ALUcase+07)
 - fitting case for Pi 4: [Joy-IT ARMOR CASE](https://joy-it.net/de/products/RB-AlucaseP4+07)
