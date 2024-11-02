@@ -45,7 +45,7 @@ module construction_socket() {
 }
 
 module guide_plate_painting_socket() {
-  location = [ [0, 0], [13, 0], [0, 9.2], [13, 9.2] ];
+  location = [ [0, 0], [11.8, 0], [0, 9.2], [11.8, 9.2] ];
   size = 2.5;
 
   translate([-standard_width/2, -standard_width/2, 0]) difference() {
