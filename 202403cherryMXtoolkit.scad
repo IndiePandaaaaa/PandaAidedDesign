@@ -3,6 +3,8 @@
 $fn = 70;
 
 tolerance = .15;
+thickness = 2;
+standard_width = 20;
 
 function t(para) = para + tolerance;
 
@@ -15,7 +17,7 @@ module construction_socket() {
   MX_case_width = 14.5;
   MX_case_pin_depth = 6.5;
   MX_case_additional_height = 3;
-  full_width = 20;
+  full_width = standard_width;
   full_height = 10;
 
   difference() {
@@ -42,33 +44,17 @@ module construction_socket() {
   }
 }
 
-module cutout_guide_activation_distance_reduce() {
-  cutter_blade_width = .4;
-  thickness = 2;
-  border = 2;
+module guide_plate_painting_socket() {
+  location = [ [0, 0], [13, 0], [0, 9.2], [13, 9.2] ];
+  size = 2.5;
 
-  paper_width = 2;
-  paper_length = 3;
-  elements = 21;
-
-  full_length = elements * paper_width + border * 2;
-  full_width = 7 + paper_length;
-
-  difference() {
-    cube([full_length, full_width, thickness]);
-
-    translate([border, 0, 0]) for (i = [0:elements]) {
-      translate([-t(cutter_blade_width)/2 + paper_width * i, -.1, -.1]) cube([t(cutter_blade_width), paper_length + .1, thickness + .2]);
+  translate([-standard_width/2, -standard_width/2, 0]) difference() {
+    cube([standard_width, standard_width, thickness]);
+    translate([(standard_width-location[3][0])/2, (standard_width-location[3][1])/2, -.1]) for (i = [0:len(location)-1]) {
+      translate([location[i][0], location[i][1], 0]) cylinder(d = size, h = thickness + .2);
     }
-
-    for (i = [0:1]) {
-      translate([-.1 + i * (.2 + full_length - border), -.1, -.1]) cube([border, paper_length + .1, thickness + .2]);
-
-      translate([border, t(paper_length) + (full_width - t(paper_length) - t(cutter_blade_width)) / 2, -.1]) 
-        cube([full_length - border * 2, t(cutter_blade_width), thickness + .2]);
-    } 
   }
 }
 
-translate([-20, 0, 0]) construction_socket();
-cutout_guide_activation_distance_reduce();
+translate([0, 42, 0]) construction_socket();
+translate([0, 0, 0]) guide_plate_painting_socket();
