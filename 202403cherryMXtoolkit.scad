@@ -61,7 +61,9 @@ module switch_assembly_socket() {
   pin_width = 8.5;
   center_height = 3.1 + .1;
   center_od = 3.9 + .1;
-  switch_sunk = 1.8;
+  clip_width = 4.2;
+  clip_height = 2;
+  switch_sunk = 4.8;
   width = 14 + .1;
 
   translate([-standard_width/2, -standard_width/2, 0]) difference() {
@@ -73,12 +75,17 @@ module switch_assembly_socket() {
         cube([center_od, center_od/2 + .1, center_height + standard_height]);
         translate([center_od/2, center_od/2, 0]) cylinder(d=center_od, h=center_height + standard_height);
       }
-      // todo: add little stoppers left/right to block the switch from sliding sideways.
-      translate([-(standard_width - width)/2 - .1, (standard_width - width)/2, pin_height]) cube([standard_width + .2, width, width]);
+      translate([-(standard_width - width)/2 - .1, (standard_width - width)/2, pin_height]) {
+        translate([(standard_width - width)/2, 0, 0]) cube([width, width, width]);
+        for (i = [0:1]) {
+          translate([0, (width - clip_width) * i, 0]) cube([standard_width + .2, clip_width, width]);
+        }
+        translate([(standard_width - clip_width)/2, -(standard_width - width)/2, clip_height -.5]) cube([clip_width, standard_width + .2, width]);
+      }
     }
   }
 }
 
-translate([0, 30, 0]) construction_socket();
-translate([0, 60, 0]) guide_plate_painting_socket();
+//translate([0, 30, 0]) construction_socket();
+//translate([0, 60, 0]) guide_plate_painting_socket();
 translate([0, 0, 0]) switch_assembly_socket();
