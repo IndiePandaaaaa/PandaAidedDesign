@@ -6,6 +6,7 @@ TOLERANCE = .15;
 $fn = $preview ? 50 : 100;
 
 VACUUM_OD = 34.2;
+SPLITTED_PRINT = true;
 
 CENTRAL_CIRCLE_HEIGHT = 17;
 CENTRAL_CIRCLE_OVERLAP = 12;
@@ -51,5 +52,17 @@ difference() {
   translate([0, -OUTER_WIDTH, 0]) cube(OUTER_WIDTH); // front cutoff
   translate([(OUTER_WIDTH - INNER_WIDTH * 2 - .2)/2, 0, HEIGHT - INNER_WIDTH/1.5]) rotate([30, 0, 0]) cube(INNER_WIDTH * 2 + .2); // top cutoff
   translate([(OUTER_WIDTH - INNER_WIDTH * 2 - .2)/2, DEPTH, HEIGHT - INNER_WIDTH*1.5]) rotate([15, 0, 0]) cube(INNER_WIDTH * 2 + .2);
+
+  if (SPLITTED_PRINT) {
+    pos = [ [5, 5], [32, 38] ];
+    translate([(OUTER_WIDTH - SAW_BLADE_OD_WIDTH)/2, -.1, -.1]) cube([.1, DEPTH + .2, HEIGHT + .2]);
+    for (i = [0:len(pos)-1]) {
+      translate([(OUTER_WIDTH - INNER_WIDTH - .2)/2, pos[i][0], CENTRAL_CIRCLE_HEIGHT + pos[i][1]]) rotate([0, 90, 0]) union() {
+        cylinder(d=2.5, h=20);
+        cylinder(d=3.2, h=(INNER_WIDTH - SAW_BLADE_OD_WIDTH + .3)/2);
+        cylinder(d1=6, d2=3.2, h=2.2);
+      }
+    }
+  }
 }
 
