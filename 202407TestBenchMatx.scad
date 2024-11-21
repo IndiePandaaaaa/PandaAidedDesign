@@ -3,7 +3,7 @@
 
 $fn = 75;
 
-SCREW_OD = 3.5;
+SCREW_OD = [7, 2.7];
 mATX_SIZE = [243.8, 243.8];
 mATX_SCREWS = [
   [33.1, 6.4],
@@ -18,7 +18,12 @@ mATX_SCREWS = [
   [237.5, 203.2],
 ];
 
-translate([-mATX_SIZE[0], 0, 0]) rotate([180, 0, 0])
-for (i = [0:len(mATX_SCREWS) - 1]) {
-  translate([mATX_SCREWS[i][0], mATX_SCREWS[i][1], 0]) cylinder(d = SCREW_OD, h = 12);
-}
+
+translate([-mATX_SIZE[0]/2, mATX_SIZE[1]/2, 0]) rotate([180, 0, 0])
+  for (i = [0:len(mATX_SCREWS) - 1]) {
+    standoff_height = 7;
+    translate([mATX_SCREWS[i][0], mATX_SCREWS[i][1], standoff_height/2]) difference() {
+      cylinder(d = SCREW_OD[0], h = standoff_height, center=true);
+      cylinder(d = SCREW_OD[1], h = standoff_height + .2, center=true);
+    }
+  }
