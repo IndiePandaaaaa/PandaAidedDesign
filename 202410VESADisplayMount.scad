@@ -9,59 +9,82 @@ THICKNESS = 3;
 $fn = 75;
 
 // M4 Screws
-M4OD = 7.2;
+M4HEADOD = 7.2;
 M4HEADHEIGHT = 4.5;
+M4OD = 4.0;
+
+// Wood Screws
+SCREWOD = 3.5;
 
 
 VESA = 100;
 
-function plate_thickness() = TOLERANCE + THICKNESS + M4HEADHEIGHT;
-function plate_size() = VESA + M4OD * 2;
+module vesa_plate(vesa_standard, frame_width=12) {
+  frame_thickness = M4HEADHEIGHT + THICKNESS + TOLERANCE;
+  frame_mounting_width = frame_width*1.25;
+  frame_mounting_diff = (frame_mounting_width - frame_width)/2; 
+  monitor_screws = [ [0, 0], [0, vesa_standard], [vesa_standard, 0], [vesa_standard, vesa_standard] ];
+  wood_screws = [ [frame_mounting_width/2, 0], [vesa_standard - frame_mounting_width/2, 0], 
+                  [0, vesa_standard - frame_mounting_width/2], [vesa_standard, vesa_standard - frame_mounting_width/2] ];
 
-module monitor_base() {
-  union() {
-    difference() {
-      cube([plate_size(), plate_size(), plate_thickness()]);
-      fillet_rectangle(M4OD, plate_size(), plate_size(), plate_thickness());
 
-      translate([plate_size() / 2, plate_size() / 2, -.1]) for (i = [0:3]) {
-        rotate([0, 0, 90 * i]) translate([VESA / 2, VESA / 2, 0]) {
-          cylinder(d = 4.2, h = (M4HEADHEIGHT + THICKNESS + TOLERANCE) * 1.5);
-          cylinder(d = M4OD + TOLERANCE, h = M4HEADHEIGHT + TOLERANCE);
+  module wood_screw() {
+    screw(SCREWOD + TOLERANCE, frame_thickness + .2, true);
+    translate([0, 0, -.1]) cylinder(d=cone_diameter_cutout(SCREWOD), h=frame_thickness);
+  }
+
+  difference() {
+    linear_extrude(frame_thickness) {
+      frame_circle_distance = cos(45)*vesa_standard;
+      mounting_screws = [ [frame_mounting_width/2, frame_mounting_diff/2], 
+                          [vesa_standard - frame_mounting_width/2, frame_mounting_diff/2], 
+                          [-vesa_standard + frame_mounting_width/2, frame_mounting_diff/2], 
+                          [-vesa_standard + frame_mounting_width/2, vesa_standard - frame_mounting_diff/2] ];
+  
+      translate([-vesa_standard/2, -vesa_standard/2]) 
+        for (i=[0:len(monitor_screws) - 1]) {translate([monitor_screws[i][0], monitor_screws[i][1]]) circle(d=frame_width);}
+ 
+      rotate([0, 0, 45]) polygon([
+        [-frame_circle_distance, frame_width/2],
+        [-frame_circle_distance, -frame_width/2],
+        [-frame_width/2, -frame_width/2],
+        [-frame_width/2, -frame_circle_distance],
+        [frame_width/2, -frame_circle_distance],
+        [frame_width/2, -frame_width/2],
+        [frame_circle_distance, -frame_width/2],
+        [frame_circle_distance, frame_width/2],
+        [frame_width/2, frame_width/2],
+        [frame_width/2, frame_circle_distance],
+        [-frame_width/2, frame_circle_distance],
+        [-frame_width/2, frame_width/2],
+      ]);
+
+      translate([-vesa_standard/2, -vesa_standard/2]) for (i=[0:len(mounting_screws) - 1]) {
+        rotate([0, 0, i>1 ? -90 : 0]) translate([mounting_screws[i][0], mounting_screws[i][1]])
+          square([frame_mounting_width, frame_width + frame_mounting_diff], center=true);
+      }
+  
+      square(frame_width*2, center=true);
+    }
+
+    translate([-vesa_standard/2, -vesa_standard/2, 0]) {
+      for (i=[0:len(monitor_screws) - 1]) {
+        translate([monitor_screws[i][0], monitor_screws[i][1], -.1]) {
+          cylinder(d=M4OD, h=frame_thickness + .2);
+          cylinder(d=M4HEADOD, h=M4HEADHEIGHT + .1);
+        }
+      }  
+  
+      for (i=[0:len(wood_screws) - 1]) {
+        translate([wood_screws[i][0], wood_screws[i][1], frame_thickness - 1]) {
+          wood_screw();
+          rotate([0, -90, 90]) linear_extrude(12) {projection() rotate([0, 90, 0]) wood_screw(); }
         }
       }
     }
   }
 }
 
-module wall_base(for_cutout = false) {
-  add_size = for_cutout ? .4 : 0;
-  union() {
-    translate([plate_size() / 4, plate_size() / 6, plate_thickness() + add_size / 2]) {
-      rotate([-90, 0, 0]) linear_extrude(VESA / 3 * 2) {
-        polygon([
-          [-add_size, -add_size],
-          [plate_size() / 2 + add_size, -add_size],
-          [plate_size() / 2 - plate_thickness() - add_size, plate_thickness() + add_size],
-          [plate_thickness() + add_size, plate_thickness() + add_size],
-        ]);
-      }
-    }
-    intersection() {
-      translate([plate_size() / 2, plate_size() / 2.4, -add_size / 2]) rotate([0, 0, 225]) cube([plate_size(), plate_size(), plate_thickness() + add_size]);
-      translate([0, -add_size / 2, -add_size / 2]) cube([plate_size() * 1.5, plate_size() * 1.5, plate_thickness() + add_size]);
-    }
-  }
-}
 
-// todo: add thickness to wall part, to acomodate tolerance issues.
+vesa_plate(VESA);
 
-module monitor_part() {
-  difference() {
-    monitor_base();
-    wall_base(true);
-  }
-}
-
-translate([0, 0, 0]) monitor_part();
-color("#505050") wall_base();
