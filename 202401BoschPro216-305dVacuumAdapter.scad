@@ -24,22 +24,25 @@ module saw_base(backspace_shape=false, rotation=0, max_rotation=48) {
   }
 
   module central_connect() {
-    translate([-5, 0, 0]) difference() { // backside cylinder, connecting the wood stops
+    translate([0, 0, 0]) difference() { // backside cylinder, connecting the wood stops
       bs_cy_size = [75.5*2, 15.2, 58, 33];
-      cylinder(d=bs_cy_size[0], h=bs_cy_size[1]); 
-      translate([0, 0, bs_cy_size[0]/2 + 3.5]) sphere(d=bs_cy_size[0] + bs_cy_size[3]/2);
+      translate([0, 0, -.05]) cylinder(d=bs_cy_size[0], h=bs_cy_size[1]); 
+      translate([0, 0, bs_cy_size[0]/2 + 7.6 + 2]) sphere(d=bs_cy_size[0]*1.19);
       translate([0, 0, -.1]) cylinder(r=bs_cy_size[3], h=bs_cy_size[1] + .2);
-      translate([-.1, -bs_cy_size[0]/2, -.1]) cube(bs_cy_size[0]);
+      translate([-.1, -bs_cy_size[0], -bs_cy_size[0]/4]) cube(bs_cy_size[0]*2);
     }
   }
   
   module rotating_base() {
-    translate([0, 0, -40]) rotate([0, 0, rotation]) union() { // rotating base
-      rb_size = [260, 40, 53.7, 2.5];
-      cylinder(d=rb_size[0], h=rb_size[1]);
-      translate([-100 + .1, 0, rb_size[1]]) {
-        rotate([0, -90, 0]) cylinder(d2=90, d1=rb_size[2], h=33.8); // back cone
+    translate([0, 0, -40]) rotate([0, 0, rotation]) difference() {
+      rb_size = [260, 40, 53.7, 2.5, 10, 35];
+      union() { // rotating base
+        cylinder(d=rb_size[0], h=rb_size[1]);
+        translate([-100 + .1, 0, rb_size[1]]) {
+          rotate([0, -90, 0]) cylinder(d2=90, d1=rb_size[2], h=33.8); // back cone
+        }
       }
+      translate([-rb_size[5], -rb_size[4]/2, rb_size[1] - rb_size[4] + .1]) cube([rb_size[0], rb_size[4], rb_size[4]]); // base saw blade cutout
     }
   }
 
@@ -47,7 +50,7 @@ module saw_base(backspace_shape=false, rotation=0, max_rotation=48) {
     if (!backspace_shape) {
       union() {
         wood_stops();
-        rotating_base();
+        color("#aa4400") rotating_base();
         central_connect();
       }
     }
@@ -66,12 +69,11 @@ module saw_base(backspace_shape=false, rotation=0, max_rotation=48) {
       }
     }
   }
-        rb_size = [260, 40, 53.7, 3];
-        translate([-100 -7.9 + rb_size[3], 0, 0]) difference() {
-          rotate([0, 45, 0]) cylinder(d=rb_size[2], h=5);
-          translate([5+rb_size[3], rb_size[2]/2, rb_size[3]-1]) rotate([90, 0, 0]) cylinder(r=rb_size[3], h=rb_size[2]);
-        }
-
+  rb_size = [260, 40, 53.7, 2.5, 10, 35];
+  translate([-100 -7.72 + rb_size[3], 0, -.018]) difference() {
+    rotate([0, 45, 0]) cylinder(d=rb_size[2], h=5);
+    translate([rb_size[3]*3+.3, rb_size[2]/2, rb_size[3]-1]) rotate([90, 0, 0]) cylinder(r=rb_size[3], h=rb_size[2]);
+  }
 }
 
 module saw_head() {
@@ -95,17 +97,54 @@ module saw_head() {
     }
   }
 
-  saw_blade();
-  saw_blade_case();
+  translate([-3, 0, 0]) union() {
+    color("#777777") saw_blade();
+    color("#bbbbbb") saw_blade_case();
+  }
+}
+
+module airchannels() {
+  module sawblade_airchannel() {
+    va_size = [20, 220, 100];
+    translate([va_size[0]/2, 0, 216/2]) rotate([-90, -20 + 90, 0]) rotate_extrude(angle=120) {
+      difference() {
+        scale([va_size[1]/va_size[0], va_size[2]/va_size[0]]) circle(d=va_size[0]);
+        rotate([0, 0, 180]) translate([0, -va_size[2]/2]) square([va_size[1], va_size[2]]);
+      }
+    }
+    translate([-52, 0, 30]) rotate([0, -52, 0]) cylinder(d=va_size[0], h=va_size[2]/2);
+    // todo top channelling arround the blade
+    // todo channel bottom of blade to vacuum
+  }
+
+  module vacuum_airchannel() { // todo: channel on both sides?
+    translate([-80, -15, 35]) {
+      rotate([-100, 0, 7]) {
+        cylinder(d=VACUUM_OD, h=50);
+        scale([VACUUM_OD/10, VACUUM_OD/10, 1]) sphere(d=10);
+      }
+      translate([-6, 40, -8]) rotate([-90, 0, 0]) cylinder(d=VACUUM_OD, h=50);
+    }
+  }
+
+  color("#7777ff") union() {
+    sawblade_airchannel();
+    vacuum_airchannel();
+  }
 }
 
 
-
-difference() { // testpiece
-//  translate([-115, 1.5/2, -1.5]) rotate([90, 0, 0]) cube([90, 65, 1.5]);
+difference() {
+//union() {
+  translate([-112, 0, -1.5]) {
+    width = 80;
+    //translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece
+    translate([0, -width/2, 0]) cube([76, width, 55]);
+  }
   union() {
-    color("#005555") saw_base(false);
-    color("#777777") saw_head();
+    saw_base();
+    saw_head();
+    airchannels();
   }
 }
 
