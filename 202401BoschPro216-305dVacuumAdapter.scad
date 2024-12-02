@@ -27,7 +27,7 @@ module saw_base(backspace_shape=false, rotation=0, max_rotation=48) {
     translate([0, 0, 0]) difference() { // backside cylinder, connecting the wood stops
       bs_cy_size = [75.5*2, 15.2, 58, 33];
       translate([0, 0, -.05]) cylinder(d=bs_cy_size[0], h=bs_cy_size[1]); 
-      translate([0, 0, bs_cy_size[0]/2 + 7.6 + 2]) sphere(d=bs_cy_size[0]*1.19);
+      translate([0, 0, bs_cy_size[0]/2 + 29 + 3]) sphere(d=bs_cy_size[0]*1.45);
       translate([0, 0, -.1]) cylinder(r=bs_cy_size[3], h=bs_cy_size[1] + .2);
       translate([-.1, -bs_cy_size[0], -bs_cy_size[0]/4]) cube(bs_cy_size[0]*2);
     }
@@ -117,7 +117,7 @@ module airchannels() {
     // todo channel bottom of blade to vacuum
   }
 
-  module vacuum_airchannel() { // todo: channel on both sides?
+  module vacuum_airchannel() {
     translate([-80, -15, 35]) {
       rotate([-100, 0, 7]) {
         cylinder(d=VACUUM_OD, h=50);
@@ -138,13 +138,13 @@ difference() {
 //union() {
   translate([-112, 0, -1.5]) {
     width = 80;
-    //translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece
-    translate([0, -width/2, 0]) cube([76, width, 55]);
+    translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece
+//    translate([0, -width/2, 0]) cube([76, width, 55]);
   }
   union() {
     saw_base();
     saw_head();
-    airchannels();
+//    airchannels();
   }
 }
 
