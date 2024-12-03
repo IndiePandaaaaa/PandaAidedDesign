@@ -179,12 +179,12 @@ module vacuum_adapter(vacuum_diameter) {
     }
   
     module vacuum_airchannel() {
-      translate([-80, -15, 35]) {
-        rotate([-100, 0, 7]) {
+      translate([-70, -15, 40]) {
+        rotate([-100, 0, 15]) {
           cylinder(d=vacuum_diameter, h=50);
           scale([vacuum_diameter/10, vacuum_diameter/10, 1]) sphere(d=10);
         }
-        translate([-6, 40, -8]) rotate([-90, 0, 0]) cylinder(d=vacuum_diameter, h=50);
+        translate([-12, 40, -8]) rotate([-90, 0, 0]) cylinder(d=vacuum_diameter, h=50);
       }
     }
   
@@ -195,17 +195,17 @@ module vacuum_adapter(vacuum_diameter) {
   }
   
   
-  difference() {
-  //union() {
+  //difference() {
+  union() {
     translate([-112, 0, -1.5]) {
       width = 80;
-      translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece
-  //    translate([0, -width/2, 0]) cube([76, width, 55]);
+      //translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece
+      //translate([0, -width/2, 0]) cube([76, width, 55]);
     }
     union() {
       saw_base();
       saw_head();
-  //    airchannels();
+      airchannels();
     }
   }
 }
