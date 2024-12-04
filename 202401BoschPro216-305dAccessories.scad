@@ -1,6 +1,8 @@
 // created by IndiePandaaaaa|Lukas
 // encoding: utf-8
 
+use <Parts/Screw.scad>
+
 // made for Bosch Professional 216-305d
 // model number: 1 609 B07 675
 
@@ -103,7 +105,7 @@ module vacuum_adapter(vacuum_diameter) {
             rotate([0, -90, 0]) cylinder(d2=90, d1=rb_size[2], h=33.8); // back cone
           }
         }
-        translate([-rb_size[5], -rb_size[4]/2, rb_size[1] - rb_size[4] + .1]) cube([rb_size[0], rb_size[4], rb_size[4]]); // base saw blade cutout
+        translate([-rb_size[5] + 20, -rb_size[4]/2, rb_size[1] - rb_size[4] + .1]) cube([rb_size[0], rb_size[4], rb_size[4]]); // base saw blade cutout
       }
     }
   
@@ -166,25 +168,31 @@ module vacuum_adapter(vacuum_diameter) {
   
   module airchannels() {
     module sawblade_airchannel() {
-      va_size = [20, 220, 100];
-      translate([va_size[0]/2, 0, 216/2]) rotate([-90, -20 + 90, 0]) rotate_extrude(angle=120) {
-        difference() {
-          scale([va_size[1]/va_size[0], va_size[2]/va_size[0]]) circle(d=va_size[0]);
-          rotate([0, 0, 180]) translate([0, -va_size[2]/2]) square([va_size[1], va_size[2]]);
+      va_size = [214.95, 83.75];
+      difference() {
+        union() {
+          difference() {
+            translate([0, 0, va_size[0]/2]) scale([1, 0.75, 1]) sphere(va_size[0]/2);
+            translate([0, 0, 250/2 + 40]) cube(250, center=true);
+          }
+          translate([0, 0, 42]) scale([1, 0.75, 20/va_size[1]]) sphere(va_size[1]);
+          translate([0, -48/2, 40]) rotate([0, 0, 90]) cube([48, 80, 20]);
         }
+        translate([250/2 - .1, 0, 0]) cube(250, center=true);
       }
-      translate([-52, 0, 30]) rotate([0, -52, 0]) cylinder(d=va_size[0], h=va_size[2]/2);
-      // todo top channelling arround the blade
-      // todo channel bottom of blade to vacuum
+      difference() {
+        translate([-60, 0, 40 + 40]) scale([1, .5, 1]) sphere(52);
+        translate([-60, 0, 50 + 70]) cube(120, center=true);
+      }
     }
   
     module vacuum_airchannel() {
-      translate([-70, -15, 40]) {
+      translate([-70, -15, 42]) {
         rotate([-100, 0, 15]) {
           cylinder(d=vacuum_diameter, h=50);
           scale([vacuum_diameter/10, vacuum_diameter/10, 1]) sphere(d=10);
         }
-        translate([-12, 40, -8]) rotate([-90, 0, 0]) cylinder(d=vacuum_diameter, h=50);
+        translate([-12, 40, -8]) rotate([-90, 0, 0]) cylinder(d=vacuum_diameter, h=70);
       }
     }
   
@@ -194,21 +202,55 @@ module vacuum_adapter(vacuum_diameter) {
     }
   }
   
-  
-  //difference() {
-  union() {
+  module mounting_screws(od=3.5) {
+    color("#222222") union() {
+      for (i = [0:1]) {
+        translate([-116, 30 - 60*i, 67]) rotate([90, 0, -90]) screw(od, 20, true);
+      }
+    }
+  }
+
+  module adapter() {
+    width = 80;
+    height = 58 + 20;
+    height_offset = 17;
+    color("#ff7777") translate([0, -width/2, 0]) union() {
+      linear_extrude(height) {
+        polygon([
+          [0, 0],
+          [42.5, (width - 58)/2],
+          [80, -40],
+          [82, -40],
+          [82, 120],
+          [80, 120],
+          [42, (width + 58)/2],
+          [0, width],
+        ]);
+      }
+      translate([0, 0, height_offset]) cube([60, width, height - height_offset]);
+      translate([40, -20, 30]) cube([42, width + 40, 27]);
+      translate([0, 0, height_offset]) cube([50, 120, 40]);
+      // todo: exchangable adapter
+    }
+  }
+
+  difference() {
+  //union() {
     translate([-112, 0, -1.5]) {
       width = 80;
-      //translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece
-      //translate([0, -width/2, 0]) cube([76, width, 55]);
+      //translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece vertical
+      //translate([25, 0, 1]) cube([width, width/4*3, 2], center=true); // testpiece horizontal
+      //translate([0, -width/2, 0]) cube([76, width, 55]); // test cube
+      adapter();
     }
     union() {
       saw_base();
       saw_head();
       airchannels();
+      mounting_screws();
     }
   }
 }
 
-translate([0, 150, 0]) workpiece_stop();
+//translate([0, 150, 0]) workpiece_stop();
 vacuum_adapter(VACUUM_OD);
