@@ -219,6 +219,9 @@ module vacuum_adapter(vacuum_diameter) {
 
         // vacuum diameter exchange
         translate([-60 - 45*i, 75, 22 + 25*i]) rotate([-90, 0, 0]) screw_corehole(diameter_screw=od[0], diameter_core=od[1], unthreaded_length=5, length=20);
+
+        // cone exchange
+        translate([-100, -30, 30]) rotate([90, 0, -90]) screw_corehole(diameter_screw=od[0], diameter_core=od[1], unthreaded_length=5, length=20);
       }
     }
   }
@@ -230,8 +233,12 @@ module vacuum_adapter(vacuum_diameter) {
     translate([-51, 60 + thickness_walls + 10, 15]) rotate([0, 0, 180]) cube([62, thickness_walls, 42]);
 
     // back cut away
-    translate([-61 - 12, 60 + thickness_walls + 10, -2]) rotate([0, 0, -90]) cube([131, thickness_walls, 80]);
-    // todo cutaway care about bottom radius from central_connect
+    translate([-68, 60 + thickness_walls + 10, -2]) rotate([0, 0, -90]) cube([111, thickness_walls, 80]);
+
+    // cone cutout for exchange
+    translate([-95.05, 40, -2]) rotate([0, 0, -90]) cube([81, thickness_walls, 40]);
+    translate([-95, 40, 38]) rotate([90, 0, -90]) cube([81, thickness_walls, 18]);
+    translate([-95, 40, 38]) rotate([90, 90, -90]) cube([40, thickness_walls, 18]);
   }
 
   module adapter() {
@@ -266,8 +273,8 @@ module vacuum_adapter(vacuum_diameter) {
       adapter();
     }
     union() {
-      //saw_base();
-      //saw_head();
+      saw_base();
+      saw_head();
       airchannels();
       mounting_screws();
 
