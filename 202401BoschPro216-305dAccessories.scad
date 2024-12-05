@@ -187,12 +187,16 @@ module vacuum_adapter(vacuum_diameter) {
     }
   
     module vacuum_airchannel() {
-      translate([-70, -15, 42]) {
+      airchannel_od = 37;
+      translate([-70, -15, 43.5]) {
         rotate([-100, 0, 15]) {
-          cylinder(d=vacuum_diameter, h=50);
-          scale([vacuum_diameter/10, vacuum_diameter/10, 1]) sphere(d=10);
+          cylinder(d=airchannel_od, h=50);
+          scale([airchannel_od/10, airchannel_od/10, 1]) sphere(d=10);
         }
-        translate([-12, 40, -8]) rotate([-90, 0, 0]) cylinder(d=vacuum_diameter, h=70);
+        translate([-12, 40, -8]) rotate([-90, 0, 0]) {
+          cylinder(d=airchannel_od, h=45);
+          translate([0, 0, 55 - (.05 + 10)]) cylinder(d=vacuum_diameter, h=15);
+        }
       }
     }
   
@@ -202,12 +206,32 @@ module vacuum_adapter(vacuum_diameter) {
     }
   }
   
-  module mounting_screws(od=3.5) {
+  module mounting_screws() {
+    // core hole M3 = 2.5;
+    od = [3, 2.5];
+
+    //screw_corehole(diameter_screw=3, diameter_core=2.5, unthreaded_length=15, length=20);
+
     color("#222222") union() {
       for (i = [0:1]) {
-        translate([-116, 30 - 60*i, 67]) rotate([90, 0, -90]) screw(od, 20, true);
+        // top back: mounting accessories
+        translate([-116, 30 - 60*i, 67]) rotate([90, 0, -90]) screw_corehole(diameter_screw=od[0], diameter_core=od[1], unthreaded_length=3.9, length=20);
+
+        // vacuum diameter exchange
+        translate([-60 - 45*i, 75, 22 + 25*i]) rotate([-90, 0, 0]) screw_corehole(diameter_screw=od[0], diameter_core=od[1], unthreaded_length=5, length=20);
       }
     }
+  }
+
+  module split_walls() {
+    thickness_walls = .05;
+    
+    // vacuum diameter exchange part
+    translate([-51, 60 + thickness_walls + 10, 15]) rotate([0, 0, 180]) cube([62, thickness_walls, 42]);
+
+    // back cut away
+    translate([-61 - 12, 60 + thickness_walls + 10, -2]) rotate([0, 0, -90]) cube([131, thickness_walls, 80]);
+    // todo cutaway care about bottom radius from central_connect
   }
 
   module adapter() {
@@ -228,26 +252,28 @@ module vacuum_adapter(vacuum_diameter) {
         ]);
       }
       translate([0, 0, height_offset]) cube([60, width, height - height_offset]);
-      translate([40, -20, 30]) cube([42, width + 40, 27]);
-      translate([0, 0, height_offset]) cube([50, 120, 40]);
-      // todo: exchangable adapter
+      translate([45, -20, 30]) cube([25, 40, 20]);
+      translate([0, 0, height_offset]) cube([75, 110, 40]);
+      translate([0, 110, height_offset]) cube([60, 10, 40]);
+
+      // todo disconnectable parts due to turning the saw
     }
   }
 
-  difference() {
-  //union() {
+  //difference() {
+  union() {
     translate([-112, 0, -1.5]) {
-      width = 80;
-      //translate([0, -1.5/2, 0]) cube([76.5, 1.5, 65]); // testpiece vertical
-      //translate([25, 0, 1]) cube([width, width/4*3, 2], center=true); // testpiece horizontal
-      //translate([0, -width/2, 0]) cube([76, width, 55]); // test cube
       adapter();
     }
     union() {
-      saw_base();
-      saw_head();
+      //saw_base();
+      //saw_head();
       airchannels();
       mounting_screws();
+
+      if (SPLITTED_PRINT) {
+        split_walls();
+      }
     }
   }
 }
