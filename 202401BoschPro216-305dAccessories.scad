@@ -229,9 +229,6 @@ module vacuum_adapter(vacuum_diameter) {
   module split_walls() {
     thickness_walls = .05;
     
-    // vacuum diameter exchange part
-    translate([-51, 60 + thickness_walls + 10, 15]) rotate([0, 0, 180]) cube([62, thickness_walls, 42]);
-
     // back cut away
     translate([-68, 60 + thickness_walls + 10, -2]) rotate([0, 0, -90]) cube([111, thickness_walls, 80]);
 
@@ -261,7 +258,7 @@ module vacuum_adapter(vacuum_diameter) {
       translate([0, 0, height_offset]) cube([60, width, height - height_offset]);
       translate([45, -20, 30]) cube([25, 40, 20]);
       translate([0, 0, height_offset]) cube([75, 110, 40]);
-      translate([0, 110, height_offset]) cube([60, 10, 40]);
+      translate([0, 110.1, height_offset]) cube([60, 10, 40]);
 
       // todo disconnectable parts due to turning the saw
     }
