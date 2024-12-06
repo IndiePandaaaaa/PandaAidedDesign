@@ -255,17 +255,16 @@ module vacuum_adapter(vacuum_diameter) {
           [0, width],
         ]);
       }
+
       translate([0, 0, height_offset]) cube([60, width, height - height_offset]);
       translate([45, -20, 30]) cube([25, 40, 20]);
       translate([0, 0, height_offset]) cube([75, 110, 40]);
       translate([0, 110.1, height_offset]) cube([60, 10, 40]);
-
-      // todo disconnectable parts due to turning the saw
     }
   }
 
-  //difference() {
-  union() {
+  difference() {
+  //union() {
     translate([-112, 0, -1.5]) {
       adapter();
     }
