@@ -14,12 +14,12 @@ DEPTH = 42;
 MOUNT_DEPTH = 30;
 
 linear_extrude(WIDTH) {
-    polygon([
-            [0, 0],
-            [DEPTH + MOUNT_DEPTH, 0],
-            [DEPTH + MOUNT_DEPTH, THICKNESS],
-            [DEPTH, THICKNESS],
-            [DEPTH, HEIGTH],
-            [0, HEIGTH],
-        ]);
+  polygon([
+      [0, 0],
+      [DEPTH + MOUNT_DEPTH, 0],
+      [DEPTH + MOUNT_DEPTH, THICKNESS],
+      [DEPTH, THICKNESS],
+      [DEPTH, HEIGTH],
+      [0, HEIGTH],
+    ]);
 }

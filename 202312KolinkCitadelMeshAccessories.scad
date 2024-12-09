@@ -25,19 +25,19 @@ module casefoot(height, diameter, thickness = 2, tolerance = .15) {
   casefoot_holder_diameter = 8.4;
   casefoot_holder_height = 9.9;
   casefoot_bottom_plate_height = height - casefoot_hollow_height;
-  
+
   difference() {
     union() {
       for (i = [1:3]) {
         rotate([0, 0, 120 * (i - 1)]) {
           translate([casefoot_locating_offset, 0, 0])
             cylinder(d = casefoot_locating_diameter, h = casefoot_bottom_plate_height + casefoot_locating_height);
-          
+
           rotate([0, 0, 30]) translate([-1, 0, 0])
             cube([2, casefoot_inner_diameter / 2 - .5, casefoot_bottom_plate_height + casefoot_holder_height]);
         }
       }
-      
+
       cylinder(d = casefoot_holder_diameter, h = casefoot_bottom_plate_height + casefoot_holder_height);
 
       difference() {
@@ -49,7 +49,7 @@ module casefoot(height, diameter, thickness = 2, tolerance = .15) {
           cylinder(d = casefoot_hollow_diameter, h = casefoot_hollow_height);
       }
     }
-    
+
     cylinder(d = core_hole_M4(), h = height);
   }
   difference() {

@@ -26,9 +26,9 @@ module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1, 
     difference() {
       intersection() {
         cube([diameter, diameter, thickness]);
-        translate([diameter / 2, diameter / 2, -.1]) 
-          rotate([0, 0, 45]) translate([-cube_chamfer / 2, -cube_chamfer / 2, 0]) 
-          cube([cube_chamfer, cube_chamfer, thickness + .2]);
+        translate([diameter / 2, diameter / 2, -.1])
+          rotate([0, 0, 45]) translate([-cube_chamfer / 2, -cube_chamfer / 2, 0])
+            cube([cube_chamfer, cube_chamfer, thickness + .2]);
       }
 
       if (!plate_only) {
@@ -56,9 +56,9 @@ module fan_grill(diameter, screw_distance, hex_size, thickness, tolerance = .1, 
 }
 
 module fan_filter(diameter, screw_distance, thickness, tolerance = .1, filter_thickness = 1.5) {
-  translate([diameter/2, diameter/2, 0]) union() {
+  translate([diameter / 2, diameter / 2, 0]) union() {
     difference() {
-      translate([-diameter/2, -diameter/2, 0])
+      translate([-diameter / 2, -diameter / 2, 0])
         fan_grill(diameter, screw_distance, 7, thickness, tolerance, plate_only = true);
       translate([0, 0, -.1]) cylinder(d = diameter - 5, h = thickness + .2);
     }
@@ -70,12 +70,13 @@ module fan_filter(diameter, screw_distance, thickness, tolerance = .1, filter_th
 module fan_mount(diameter, screw_distance, thickness, tolerance = .1, screw_standard = "M4") {
   module wood_mounting(width, distance, wood_screw_diameter) {
     for (i = [0:1]) {
-      translate([- distance / 2 + distance * i, - (width - distance * 2) / 2, 0]) {
+      translate([-distance / 2 + distance * i, -(width - distance * 2) / 2, 0]) {
         difference() {
           cube([wood_screw_diameter * 4, width, thickness]);
-                
+
           for (k = [0:1]) {
-            translate([wood_screw_diameter * 2, wood_screw_diameter * 2 + (width - wood_screw_diameter * 4) * k, thickness + .1])
+            translate([wood_screw_diameter * 2, wood_screw_diameter * 2 + (width - wood_screw_diameter * 4) * k,
+                thickness + .1])
               screw(wood_screw_diameter, 12, true);
           }
         }
@@ -90,7 +91,7 @@ module fan_mount(diameter, screw_distance, thickness, tolerance = .1, screw_stan
 
   translate([diameter / 2, diameter / 2, 0]) union() {
     difference() {
-      translate([- diameter / 2, - diameter / 2, 0]) {
+      translate([-diameter / 2, -diameter / 2, 0]) {
         cube([diameter, diameter, frame_thickness]);
 
         translate([(diameter - wood_screws * 4) / 2, 0, 0]) {
@@ -99,7 +100,7 @@ module fan_mount(diameter, screw_distance, thickness, tolerance = .1, screw_stan
       }
 
       translate([0, 0, -.1]) rotate([0, 0, 90 / 4]) cylinder(d = diameter - 7, h = frame_thickness + .2);
-    
+
       // outer holes for fan mounting screws
       for (i = [0:3]) {
         rotate([0, 0, 90 * i]) translate([diameter / 2 - screw_offset, diameter / 2 - screw_offset, -.1])
@@ -109,9 +110,9 @@ module fan_mount(diameter, screw_distance, thickness, tolerance = .1, screw_stan
 
     parts = 4;
     for (i = [0:parts])
-      rotate([0, 0, 360 / parts * i])
-        translate([- (diameter - 5) / 2 / 3, - diameter / 2, 0])
-          cube([5, diameter, thickness]);
+    rotate([0, 0, 360 / parts * i])
+      translate([-(diameter - 5) / 2 / 3, -diameter / 2, 0])
+        cube([5, diameter, thickness]);
   }
 }
 

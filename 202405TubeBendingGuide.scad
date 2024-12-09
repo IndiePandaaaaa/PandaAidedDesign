@@ -16,7 +16,7 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
 
       translate([radius, .1, 0]) rotate([90, 0, 0])
         cylinder(d = diameter, h = size);
-      rotate([0, 0, angle]) translate([radius, size - .1, 0]) rotate([90, 0, 0]) 
+      rotate([0, 0, angle]) translate([radius, size - .1, 0]) rotate([90, 0, 0])
         cylinder(d = diameter, h = size);
     }
   }
@@ -31,13 +31,13 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
       }
     }
   }
-  
+
   module bending_plate(diameter, radius, size, plate_height, angle, for_vice, thickness, tolerance) {
     difference() {
       cube([size, size, plate_height]);
       for (i = [0:len(angle) - 1]) {
         translate([border_offset(radius, diameter) + diameter * 1.25 * i,
-          border_offset(radius, diameter) + diameter * i, thickness + diameter / 2]) 
+            border_offset(radius, diameter) + diameter * i, thickness + diameter / 2])
           stacked_tube(diameter + tolerance, radius, angle[i], height = plate_height - thickness);
       }
     }
@@ -67,7 +67,7 @@ module bending_guide(diameter, radius, angle = [90, 60, 45], for_vice = false, t
 
   plate_height = for_vice ? thickness + diameter * 0.48 : thickness + diameter * 0.75;
   size = (border_offset(radius, diameter) * 2 / 3 + diameter * 1.25) * len(angle);
-  
+
   for (m = [0:for_vice ? 1 : 0]) {
     difference() {
       mirror([m, 0, 0]) translate([5 * m, 0, 0]) {

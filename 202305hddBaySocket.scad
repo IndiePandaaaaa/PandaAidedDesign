@@ -35,15 +35,15 @@ FULLMODEL_HEIGHT = UBASE_THICKNESS + 4; // ~ 8 mm total height
 FULLMODEL_WIDTH = UBASE_THICKNESS * 2 + TOLERANCE_HDD * 2 + WIDTH_HDD + 2 * RUBBER_WIDTH_ADDITIONAL;
 
 difference() {
-    translate([0, FULLMODEL_DEPTH, 0]) rotate([90, 0, 0])
-        UBase(FULLMODEL_DEPTH, FULLMODEL_HEIGHT, WIDTH_HDD + 2 * RUBBER_WIDTH_ADDITIONAL,
-        TOLERANCE_HDD, UBASE_THICKNESS);
+  translate([0, FULLMODEL_DEPTH, 0]) rotate([90, 0, 0])
+    UBase(FULLMODEL_DEPTH, FULLMODEL_HEIGHT, WIDTH_HDD + 2 * RUBBER_WIDTH_ADDITIONAL,
+    TOLERANCE_HDD, UBASE_THICKNESS);
 
-    inner_model_width = FULLMODEL_WIDTH - UBASE_THICKNESS * 2;
-    hex_od = 20;
-    pos_x = UBASE_THICKNESS + (inner_model_width - hexagon_get_used_width(inner_model_width, hex_od)) / 2;
-    pos_y = (FULLMODEL_DEPTH - hexagon_get_used_depth(FULLMODEL_DEPTH, hex_od)) / 2;
+  inner_model_width = FULLMODEL_WIDTH - UBASE_THICKNESS * 2;
+  hex_od = 20;
+  pos_x = UBASE_THICKNESS + (inner_model_width - hexagon_get_used_width(inner_model_width, hex_od)) / 2;
+  pos_y = (FULLMODEL_DEPTH - hexagon_get_used_depth(FULLMODEL_DEPTH, hex_od)) / 2;
 
-    translate([pos_x, pos_y, 0])
-        hexagon_pattern(inner_model_width, FULLMODEL_DEPTH, UBASE_THICKNESS, hex_od);
+  translate([pos_x, pos_y, 0])
+    hexagon_pattern(inner_model_width, FULLMODEL_DEPTH, UBASE_THICKNESS, hex_od);
 }

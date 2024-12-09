@@ -18,20 +18,21 @@ module ddc_standoff(plate_height, thickness = 3, tolerance = .1, chamfer = 1) {
   difference() {
     linear_extrude(plate_height) {
       polygon([
-        [chamfer, 0],
-        [plate_size - chamfer, 0],
-        [plate_size, chamfer],
-        [plate_size, plate_size - chamfer],
-        [plate_size - chamfer, plate_size],
-        [chamfer, plate_size],
-        [0, plate_size - chamfer],
-        [0, chamfer],
-      ]);
+          [chamfer, 0],
+          [plate_size - chamfer, 0],
+          [plate_size, chamfer],
+          [plate_size, plate_size - chamfer],
+          [plate_size - chamfer, plate_size],
+          [chamfer, plate_size],
+          [0, plate_size - chamfer],
+          [0, chamfer],
+        ]);
     }
 
     for (y = [0:1]) {
       for (x = [0:1]) {
-        edge_dist = plate_size > screw_distance ? (plate_size - screw_distance) / 2 : screw_head_diameter + screw_tolerance;
+        edge_dist = plate_size > screw_distance ? (plate_size - screw_distance) / 2 : screw_head_diameter +
+          screw_tolerance;
         translate([edge_dist + screw_distance * x, edge_dist + screw_distance * y, -.1]) {
           cylinder(d = screw_diameter + screw_tolerance, h = plate_height + .2);
           cylinder(d = screw_head_diameter + screw_tolerance, h = plate_height - screw_tolerance * 2 + .1);

@@ -7,6 +7,6 @@ SIZE = 42;
 HEIGHT = 2.2;
 
 difference() {
-    cube([42, 42, 2.2]);
-    translate([SIZE / 2, SIZE / 2, HEIGHT]) screw(SCREW_OD, 12, true);
+  cube([42, 42, 2.2]);
+  translate([SIZE / 2, SIZE / 2, HEIGHT]) screw(SCREW_OD, 12, true);
 }

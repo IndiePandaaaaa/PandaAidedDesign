@@ -28,7 +28,7 @@ module screw(diameter, length = 12, cutout_sample = false) {
   }
 
   if (!cutout_sample) {
-    translate([0, 0, - length])
+    translate([0, 0, -length])
       difference() {
         base_model(diameter, length, cone_height(diameter), cone_diameter(diameter));
 
@@ -53,9 +53,9 @@ module screw(diameter, length = 12, cutout_sample = false) {
   } else {
     offset = 0;
     diameter = cone_diameter_cutout(diameter) / 2;  // is duplicated by function, used to reduce error
-    translate([0, 0, - length - offset / 2]) {
+    translate([0, 0, -length - offset / 2]) {
       base_model(diameter, length, cone_height(diameter), cone_diameter(diameter), offset);
-      translate([0, 0, length]) cylinder(r=diameter, h=50);
+      translate([0, 0, length]) cylinder(r = diameter, h = 50);
     }
   }
 }
@@ -63,9 +63,9 @@ module screw(diameter, length = 12, cutout_sample = false) {
 module screw_corehole(diameter_screw, diameter_core, unthreaded_length, length = 12) {
   union() {
     screw(diameter_screw, unthreaded_length, true);
-    translate([0, 0, -length]) cylinder(d=diameter_core, h=length - unthreaded_length + .1);
+    translate([0, 0, -length]) cylinder(d = diameter_core, h = length - unthreaded_length + .1);
   }
 }
 
-translate([20, 0, 0]) screw(3.5, cutout_sample=false);
-screw_corehole(diameter_screw=3, diameter_core=2.5, unthreaded_length=15, length=20);
+translate([20, 0, 0]) screw(3.5, cutout_sample = false);
+screw_corehole(diameter_screw = 3, diameter_core = 2.5, unthreaded_length = 15, length = 20);

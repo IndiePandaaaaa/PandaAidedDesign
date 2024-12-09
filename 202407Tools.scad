@@ -18,16 +18,16 @@ module perpendicular_angle(width, depth, ruler_depth = 13, ruler_mode = 2.5) {
       translate([-width / 2, -length[mode], -depth + TOLERANCE]) {
         cube([width, length[mode], depth]);
 
-        if (label != 0) {  // 0: no label
-          translate([0, - text_size - 1.75, 0]) linear_extrude(depth) {
-            mirror(([mirrored ? 1 : 0, 0, 0])) 
+        if (label != 0) {// 0: no label
+          translate([0, -text_size - 1.75, 0]) linear_extrude(depth) {
+            mirror(([mirrored ? 1 : 0, 0, 0]))
               text(str(label), size = text_size, font = "RecMonoCasualNerdFont", halign = "center");
           }
         }
       }
     }
 
-    if (mode != 0){
+    if (mode != 0) {
       for (i = [0:width - 1]) {
         translate([i, 0, 0]) {
           if (i % 10 == 0) {
@@ -44,21 +44,21 @@ module perpendicular_angle(width, depth, ruler_depth = 13, ruler_mode = 2.5) {
 
   translate([-THICKNESS, 0, 0]) union() {
     translate([0, 0, -(ruler_depth - THICKNESS) / 2]) cube([THICKNESS, depth, ruler_depth]);
- 
+
     translate([THICKNESS, 0, 0]) difference() {
       linear_extrude(THICKNESS) {
         polygon([
-          [0, 0],
-          [(ruler_depth - THICKNESS) / 2 + TOLERANCE, 0],
-          [(ruler_depth - THICKNESS) / 2 + TOLERANCE , depth - ruler_depth],
-          [width + TOLERANCE, depth - ruler_depth],
-          [width + TOLERANCE, depth],
-          [0, depth],
-        ]);
+            [0, 0],
+            [(ruler_depth - THICKNESS) / 2 + TOLERANCE, 0],
+            [(ruler_depth - THICKNESS) / 2 + TOLERANCE, depth - ruler_depth],
+            [width + TOLERANCE, depth - ruler_depth],
+            [width + TOLERANCE, depth],
+            [0, depth],
+          ]);
       }
       for (i = [0:1])
-        translate([0, depth, THICKNESS * i]) 
-          ruler(width, ruler_mode, mirrored = i == 0 ? true : false);
+      translate([0, depth, THICKNESS * i])
+        ruler(width, ruler_mode, mirrored = i == 0 ? true : false);
     }
   }
 }

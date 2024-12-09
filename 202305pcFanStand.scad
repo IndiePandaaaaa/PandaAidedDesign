@@ -47,7 +47,7 @@ module fan_stand(FAN_DIAMETER, FAN_SCREW_DISTANCE, FAN_DEPTH = 25) {
         rotate([90, 0, 0]) screw(SCREW_DIAMETER, FAN_DEPTH + 0.2, true);
 
       // core holes M3
-      translate([0, FRONT_OVERHANG + MATERIAL_THICKNESS + M3_HOLE, - 0.1]) {
+      translate([0, FRONT_OVERHANG + MATERIAL_THICKNESS + M3_HOLE, -0.1]) {
         translate([SCREW_OFFSET + FAN_SCREW_DISTANCE * i, 0, 0])
           cylinder(h = MATERIAL_THICKNESS + 0.2, d = M3_HOLE);
 
@@ -62,7 +62,8 @@ module fan_stand(FAN_DIAMETER, FAN_SCREW_DISTANCE, FAN_DEPTH = 25) {
       }
 
       border_offset = 5;
-      translate([border_offset + i * (FAN_DIAMETER - border_offset * 2), 12, MATERIAL_THICKNESS + .1]) screw(3.5, 12, true);
+      translate([border_offset + i * (FAN_DIAMETER - border_offset * 2), 12, MATERIAL_THICKNESS + .1]) screw(3.5, 12,
+      true);
     }
 
     HEX_OD = FAN_DEPTH - (FAN_DEPTH / 5) - MATERIAL_THICKNESS - 3;
@@ -72,7 +73,7 @@ module fan_stand(FAN_DIAMETER, FAN_SCREW_DISTANCE, FAN_DEPTH = 25) {
           FRONT_OVERHANG + MATERIAL_THICKNESS + (HEX_OD - hexagon_get_used_width(usable_depth, HEX_OD)) / 2, 0
       ])
       rotate([180, 0, 0])
-        translate([0, - FRONT_OVERHANG - MATERIAL_THICKNESS - 2 - usable_depth, - MATERIAL_THICKNESS])
+        translate([0, -FRONT_OVERHANG - MATERIAL_THICKNESS - 2 - usable_depth, -MATERIAL_THICKNESS])
           hexagon_pattern(usable_width, usable_depth, MATERIAL_THICKNESS, HEX_OD);
   }
 }
