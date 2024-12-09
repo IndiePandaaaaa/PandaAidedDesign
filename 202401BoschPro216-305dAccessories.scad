@@ -212,38 +212,73 @@ module vacuum_adapter(vacuum_diameter) {
   }
 
   module mounting_screws() {
+    module screw_nut(length, diameter, square_channel=false) {
+      screw_length = [0, 0, 12, 40];
+      nut_thickness = [0, 0, 2.4, 3.2];
+      nut_diameter = [0, 0, 6.1, 7.8];
+      nut_width = [0, 0, 5.5, 7];
+
+      od_index = diameter - 1;
+
+      rotate([90, 0, -90]) union() {
+        if (!square_channel) {
+          screw(diameter, screw_length[od_index], true);
+          translate([0, 0, -(screw_length[od_index]*2 - nut_thickness[od_index])]) cylinder(d=nut_diameter[od_index] + TOLERANCE, h=screw_length[od_index], $fn=6);
+        } else {
+          screw(diameter, screw_length[od_index] + diameter, true);
+          translate([-nut_diameter[od_index]/2 - TOLERANCE, -(nut_width[od_index]/2), -(screw_length[od_index])]) 
+            cube([nut_diameter[od_index] + screw_length[od_index], nut_width[od_index] + TOLERANCE, nut_thickness[od_index] + TOLERANCE]);
+        }
+      }
+    }
+
     // core hole M3 = 2.5;
-    od = [3, 2.5];
+    odM3 = [3, 2.5];
 
     //screw_corehole(diameter_screw=3, diameter_core=2.5, unthreaded_length=15, length=20);
 
     color("#222222") union() {
       for (i = [0:1]) {
         // top back: mounting accessories
-        translate([-116, 30 - 60 * i, 67]) rotate([90, 0, -90]) screw_corehole(diameter_screw = od[0], diameter_core =
-        od[1], unthreaded_length = 3.9, length = 20);
+        translate([-75, 30 - 60 * i, 67]) screw_nut(45, diameter=4);
+        translate([-72, -50, 23]) screw_nut(42, diameter=4);
 
         // vacuum diameter exchange
-        translate([-60 - 45 * i, 75, 22 + 25 * i]) rotate([-90, 0, 0]) screw_corehole(diameter_screw = od[0],
-        diameter_core = od[1], unthreaded_length = 5, length = 20);
+        translate([-60 - 45 * i, 75, 22 + 25 * i]) rotate([90 + 180*i, 0, -90]) screw_nut(20, diameter=3, square_channel=true);
 
         // cone exchange
-        translate([-100, -30, 30]) rotate([90, 0, -90]) screw_corehole(diameter_screw = od[0], diameter_core = od[1],
-        unthreaded_length = 5, length = 20);
+        translate([-100, -30, 30]) rotate([90, 0, 0]) screw_nut(20, diameter=3, square_channel=true);
       }
     }
+
+    /*translate([-300, 0, 0]) difference() { // testpiece
+      color("#555555") union() {
+        cube([41, 25, 15]);
+        cube([13, 25, 30]);
+      }
+      translate([0, 5, 22]) {
+        screw_nut(12, diameter=3, square_channel=true);
+        translate([0, 14, 0]) screw_nut(12, diameter=3, square_channel=false);
+      }
+      translate([0, 5, 7]) {
+        screw_nut(40, diameter=4, square_channel=true);
+        translate([0, 14, 0]) screw_nut(40, diameter=4, square_channel=false);
+      }
+      translate([30, 12.5, 7]) cylinder(d=7.3, h=20, $fn=6);
+    }*/
   }
 
   module split_walls() {
-    thickness_walls = .05;
+    thickness_walls = .1;
 
     // back cut away
-    translate([-68, 60 + thickness_walls + 10, -2]) rotate([0, 0, -90]) cube([111, thickness_walls, 80]);
+    translate([-68, 60 + thickness_walls + 10, -2]) rotate([0, 0, -90]) cube([131, thickness_walls, 80]);
 
     // cone cutout for exchange
     translate([-95.05, 40, -2]) rotate([0, 0, -90]) cube([81, thickness_walls, 40]);
     translate([-95, 40, 38]) rotate([90, 0, -90]) cube([81, thickness_walls, 18]);
     translate([-95, 40, 38]) rotate([90, 90, -90]) cube([40, thickness_walls, 18]);
+    // todo: fix sealed air channel
   }
 
   module adapter() {
@@ -265,14 +300,14 @@ module vacuum_adapter(vacuum_diameter) {
       }
 
       translate([0, 0, height_offset]) cube([60, width, height - height_offset]);
-      translate([45, -20, 30]) cube([25, 40, 20]);
+      translate([40, -20, height_offset]) cube([25, 40, 33]);
       translate([0, 0, height_offset]) cube([75, 110, 40]);
-      translate([0, 110.1, height_offset]) cube([60, 10, 40]);
+      translate([0, 110.2, height_offset]) cube([60, 10, 40]); // vacuum plate
     }
   }
 
-  difference() {
-    //union() {
+  //difference() {
+  union() {
     translate([-112, 0, -1.5]) {
       adapter();
     }
