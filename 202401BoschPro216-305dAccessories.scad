@@ -215,8 +215,8 @@ module vacuum_adapter(vacuum_diameter) {
     module screw_nut(length, diameter, square_channel=false) {
       screw_length = [0, 0, 12, 40];
       nut_thickness = [0, 0, 2.4, 3.2];
-      nut_diameter = [0, 0, 6.1, 7.8];
-      nut_width = [0, 0, 5.5, 7];
+      nut_diameter = [0, 0, 6.1, 7.95];
+      nut_width = [0, 0, 5.5, 7.15];
 
       od_index = diameter - 1;
 
@@ -248,6 +248,10 @@ module vacuum_adapter(vacuum_diameter) {
 
         // cone exchange
         translate([-100, -30, 30]) rotate([90, 0, 0]) screw_nut(20, diameter=3, square_channel=true);
+        difference() {
+          translate([-107, 46, 20]) rotate([0, 0, -90]) screw_nut(20, diameter=3, square_channel=true);
+          translate([-107, 25 + 70 + .05, 20]) cube([10, 50, 10], center=true);
+        }
       }
     }
 
@@ -269,16 +273,26 @@ module vacuum_adapter(vacuum_diameter) {
   }
 
   module split_walls() {
-    thickness_walls = .1;
+    thickness_walls = .15;
 
     // back cut away
-    translate([-68, 60 + thickness_walls + 10, -2]) rotate([0, 0, -90]) cube([131, thickness_walls, 80]);
+    translate([-68, 70 + thickness_walls, -2]) rotate([0, 0, -90]) cube([160, thickness_walls, 80]);
+    translate([-50, 75 + thickness_walls, -2]) rotate([0, 0, -90]) cube([160, thickness_walls, 80]);
 
     // cone cutout for exchange
-    translate([-95.05, 40, -2]) rotate([0, 0, -90]) cube([81, thickness_walls, 40]);
-    translate([-95, 40, 38]) rotate([90, 0, -90]) cube([81, thickness_walls, 18]);
-    translate([-95, 40, 38]) rotate([90, 90, -90]) cube([40, thickness_walls, 18]);
-    // todo: fix sealed air channel
+    translate([-95, 40, 0]) intersection() {
+      translate([-18, 0, -2]) rotate([0, 0, -90]) cube([81, 18, 40 + thickness_walls]);
+      difference() {
+        pxyz = [0, 5, 10.5, 40, -7, -90 + 15];
+        union() { 
+          translate([-thickness_walls, 0, -2]) rotate([0, 0, -90]) cube([81, thickness_walls, 40]);
+          translate([0, 0, 38]) rotate([90, 0, -90]) cube([81, thickness_walls, 18]);
+          translate([0, 0, 38]) rotate([90, 90, -90]) cube([40, thickness_walls, 18]);
+          translate([pxyz[0], pxyz[1], pxyz[2]]) rotate([pxyz[3], pxyz[4], pxyz[5]]) cube([100, thickness_walls, 40]);
+        }
+        translate([pxyz[0], pxyz[1], pxyz[2] + thickness_walls]) rotate([pxyz[3], pxyz[4], pxyz[5]]) cube([100, 100, 40]);
+      }
+    }
   }
 
   module adapter() {
@@ -306,8 +320,8 @@ module vacuum_adapter(vacuum_diameter) {
     }
   }
 
-  //difference() {
-  union() {
+  difference() {
+  //union() {
     translate([-112, 0, -1.5]) {
       adapter();
     }
