@@ -15,8 +15,10 @@ module LBracket(screws, width, chamfer = 1, screw_od = 3.5, thickness = 3.5, sid
     echo("GIVEN WIDTH IS TOO SMALL!");
     echo("=> CHANGING WIDTH TO: ", width_needed);
 
-    linear_extrude(1) {
-      translate([screw_od * 7, 0, 0]) text("width changed! (review log)", 15);
+    if ($preview) {
+      linear_extrude(1) {
+        translate([screw_od * 7, 0, 0]) text("width changed! (review log)", 15);
+      }
     }
   }
   width_used = width < width_needed ? width_needed:width;
