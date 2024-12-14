@@ -247,7 +247,7 @@ module vacuum_adapter(vacuum_diameter) {
         translate([-60 - 45 * i, 75, 22 + 25 * i]) rotate([90 + 180*i, 0, -90]) screw_nut(20, diameter=3, square_channel=true);
 
         // cone exchange
-        translate([-100, -30, 30]) rotate([90, 0, 0]) screw_nut(20, diameter=3, square_channel=true);
+        translate([-100, -30, 30]) rotate([0, 0, 0]) screw_nut(20, diameter=3, square_channel=true);
         difference() {
           translate([-107, 46, 20]) rotate([0, 0, -90]) screw_nut(20, diameter=3, square_channel=true);
           translate([-107, 25 + 70 + .05, 20]) cube([10, 50, 10], center=true);
@@ -320,8 +320,8 @@ module vacuum_adapter(vacuum_diameter) {
     }
   }
 
-  difference() {
-  //union() {
+  //difference() {
+  union() {
     translate([-112, 0, -1.5]) {
       adapter();
     }
