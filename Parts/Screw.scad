@@ -55,7 +55,7 @@ module screw(diameter, length=12, cutout_sample=false) {
     diameter=cone_diameter_cutout(diameter) / 2;  // is duplicated by function, used to reduce error
     translate([0, 0, -length - offset / 2]) {
       base_model(diameter, length, cone_height(diameter), cone_diameter(diameter), offset);
-      translate([0, 0, length]) cylinder(r=diameter, h=50);
+      translate([0, 0, length -.005]) cylinder(r=diameter, h=50);
     }
   }
 }
