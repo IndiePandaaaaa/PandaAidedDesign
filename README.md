@@ -21,8 +21,8 @@ Parametric model, primarily constructed to be clamped onto an [elgato](https://w
 
 ### [Bosch](https://www.bosch-professional.com/) GCM 305-216 D Professional (miter saw)
 
-- [workpiece stop](https://github.com/IndiePandaaaaa/PandaAidedDesign/blob/main/202310BoschPro216-305dWorkpieceStop.scad): plate with the slot-in mechanism for the material base, as helper to cut multiple parts of the same length
-<!-- - [vacuum adapter](https://github.com/IndiePandaaaaa/PandaAidedDesign/blob/main/202401BoschPro216-305dVacuumAdapter.scad): optimizes the collection of saw dust colleted while sawing -->
+- [workpiece stop](https://github.com/IndiePandaaaaa/PandaAidedDesign/blob/main/202401BoschPro216-305dAccessories.scad): plate with the slot-in mechanism for the material base, as helper to cut multiple parts of the same length
+- [vacuum adapter](https://github.com/IndiePandaaaaa/PandaAidedDesign/blob/main/202401BoschPro216-305dAccessories.scad): optimizes the collection of saw dust colleted while sawing, taking away dust at a second spot (the dust bag is still mounted).
 
 ### [Logitech G](https://www.logitechg.com/) Blue Yeti X
 
