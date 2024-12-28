@@ -43,14 +43,14 @@ module perpendicular_angle(width, depth, ruler_depth = 13, ruler_mode = 2.5) {
   }
 
   translate([-THICKNESS, 0, 0]) union() {
-    translate([0, 0, -(ruler_depth - THICKNESS) / 2]) cube([THICKNESS, depth, ruler_depth]);
+    translate([0, 0, -(10) / 2]) cube([THICKNESS, depth, 10 + THICKNESS]);
 
     translate([THICKNESS, 0, 0]) difference() {
       linear_extrude(THICKNESS) {
         polygon([
             [0, 0],
-            [(ruler_depth - THICKNESS) / 2 + TOLERANCE, 0],
-            [(ruler_depth - THICKNESS) / 2 + TOLERANCE, depth - ruler_depth],
+            [5, 0],
+            [5, depth - ruler_depth],
             [width + TOLERANCE, depth - ruler_depth],
             [width + TOLERANCE, depth],
             [0, depth],
@@ -63,4 +63,4 @@ module perpendicular_angle(width, depth, ruler_depth = 13, ruler_mode = 2.5) {
   }
 }
 
-perpendicular_angle(75, 50);
+perpendicular_angle(75, 50, ruler_depth=10, ruler_mode=0);
