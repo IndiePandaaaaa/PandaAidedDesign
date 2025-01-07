@@ -1,12 +1,13 @@
 // created by IndiePandaaaaa|Lukas
 // encoding: utf-8
 
-TOLERANCE = .15;
-THICKNESS = 2;
+TOLERANCE = .12;
+THICKNESS = 1.5;
 $fn = $preview? 25:125;
 
 KEY_LENGTH = 64.8;
 KEY_WIDTH = 25.3;
+KEY_THICKNESS = 2;
 KEY_RADIUS = 7.2;
 KEY_HOLE = [6.2, 5.2, 5.2]; // diameter, X Pos, Y Pos
 
@@ -38,7 +39,7 @@ module case() {
   }
   
   union() {
-    linear_extrude(THICKNESS*2 + TOLERANCE) { // key border
+    linear_extrude(THICKNESS + KEY_THICKNESS + TOLERANCE) { // key border
       difference() {
         key_shape(size_added=THICKNESS+TOLERANCE);  // outer contour
         key_shape(size_added=0);  // inner contour
