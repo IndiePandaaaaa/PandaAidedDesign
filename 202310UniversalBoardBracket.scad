@@ -60,7 +60,7 @@ module vertical_mount(width = 28.5, height = 58.5)
     }
 }
 
-module bottle_holder(diameter = 19)
+module bottle_holder(diameter = 20)
 {
     size = diameter + THICKNESS * 2 + TOLERANCE;
     union()
@@ -86,4 +86,4 @@ module bottle_holder(diameter = 19)
 
 // translate([ 10, 0, 0 ]) top_mount();
 // translate([ 40, 0, 0 ]) vertical_mount();
-bottle_holder();
+bottle_holder(25);
