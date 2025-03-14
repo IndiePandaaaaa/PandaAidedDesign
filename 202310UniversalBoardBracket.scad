@@ -6,7 +6,7 @@ THICKNESS = 3.5;
 TOLERANCE = 0.1;
 CHAMFER = 1.5;
 SCREW_OD = 3.5;
-$fn = 75;
+$fn = $preview ? 25 : 125;
 
 BOARD_THICKNESS = 20.8;
 MOUNT_HEIGHT = 20;
@@ -66,11 +66,20 @@ module bottle_holder(diameter = 19)
     union()
     {
         vertical_mount(width = size, height = diameter * 1.5);
-        translate([ 0, -size + THICKNESS, 0 ]) cube([ size, size, THICKNESS ]);
-        translate(v = [ size / 2, -size / 2 + THICKNESS, diameter ]) difference()
+        translate([ 0, -size / 2 + THICKNESS, 0 ]) union()
         {
-            cube(size = [ size, size, diameter * .25 ], center = true);
-            cube(size = [ diameter + TOLERANCE, diameter + TOLERANCE, diameter ], center = true);
+            cube([ size, size / 2, THICKNESS ]);
+            translate(v = [ size / 2, 0, 0 ]) cylinder(h = THICKNESS, r = size / 2, center = false);
+        }
+        translate(v = [ 0, -size / 2 + THICKNESS, diameter ]) difference()
+        {
+            union()
+            {
+                cube([ size, size / 2, THICKNESS ]);
+                translate(v = [ size / 2, 0, 0 ]) cylinder(h = THICKNESS, r = size / 2, center = false);
+            }
+            translate(v = [ size / 2, 0, -diameter / 2 ])
+                cylinder(h = diameter, r = (diameter + TOLERANCE) / 2, center = false);
         }
     }
 }
