@@ -96,10 +96,15 @@ module SchukoReferencePlate()
     thickness = 2.5;
     union()
     {
-        translate(v = [ 0, 0, 5 + thickness ]) Schuko3D(height = 10.1);
-        translate(v = [ -PLATE_DEPTH / 2, -52 / 2, 0 ]) cube(size = [ PLATE_DEPTH, 52, thickness ], center = false);
+        Schuko3D(height = 10.1 + thickness, center = false);
+        translate(v = [ -PLATE_DEPTH / 2, -52 / 2, 0 ]) difference()
+        {
+            cube(size = [ PLATE_DEPTH, 52, thickness ], center = false);
+            translate(v = [ (PLATE_DEPTH - 25) / 2, (52 - 25) / 2, -.1 ])
+                cube(size = [ 25, 25, thickness + .2 ], center = false);
+        }
     }
 }
 translate(v = [ 0, 0, 0 ]) SchukoReferencePlate();
-translate(v = [ 70, 0, 0 ]) BremountaPlate();
-translate(v = [ 40, 0, 0 ]) LBracket_short();
+// translate(v = [ 70, 0, 0 ]) BremountaPlate();
+// translate(v = [ 40, 0, 0 ]) LBracket_short();
