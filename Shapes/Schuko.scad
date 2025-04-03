@@ -23,7 +23,7 @@ module Schuko2D()
     }
 }
 
-module Schuko3D(height)
+module Schuko3D(height, center = true)
 {
-    linear_extrude(height = height, center = true, convexity = 10, twist = 0, slices = 20, scale = 1.0) Schuko2D();
+    linear_extrude(height = height, center = center, convexity = 10, twist = 0, slices = 20, scale = 1.0) Schuko2D();
 }
