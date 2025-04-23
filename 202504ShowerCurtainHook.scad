@@ -5,6 +5,8 @@ TOLERANCE = .12;
 THICKNESS = 2.5;
 $fn = $preview ? 25 : 125;
 
+// shower curtain rod diameter 25.05 mm
+
 module base_model()
 {
     rod_part_id = 31.1;
