@@ -6,7 +6,7 @@ use <Variables/Threading.scad>
 PARTS_SEPARATED = true;
 THICKNESS = 2.5;
 TOLERANCE = .1;
-$fn = $preview ? 25 : 125;
+$fa = $preview ? 10 : .01; // add to smaller circles: , $fn=$preview ? 20 : 50
 
 VACUUM_OD = 34.2;
 
@@ -76,12 +76,12 @@ module pocket_holes(drill_diameter = 7.5, board_thickness = 24) {
   module drill_limiter() {
     translate(v=[0, 0, drill_diameter / 2]) difference() {
         union() {
-          cylinder(h=drill_diameter, r=drill_diameter / 2 + THICKNESS, center=true);
+          cylinder(h=drill_diameter, r=drill_diameter / 2 + THICKNESS, center=true, $fn=$preview ? 20 : 50);
           rotate(a=90, v=[1, 0, 0]) translate(v=[0, 0, drill_diameter / 2])
-              cylinder(h=THICKNESS, r=2, center=false);
+              cylinder(h=THICKNESS, r=2, center=false, $fn=$preview ? 20 : 50);
         }
-        cylinder(h=drill_diameter + TOLERANCE * 2, r=drill_diameter / 2 + TOLERANCE, center=true);
-        rotate(a=90, v=[1, 0, 0]) cylinder(h=drill_diameter, r=core_hole_M3() / 2, center=false);
+        cylinder(h=drill_diameter + TOLERANCE * 2, r=drill_diameter / 2 + TOLERANCE, center=true, $fn=$preview ? 20 : 50);
+        rotate(a=90, v=[1, 0, 0]) cylinder(h=drill_diameter, r=core_hole_M3() / 2, center=false, $fn=$preview ? 20 : 50);
       }
   }
 
@@ -116,7 +116,7 @@ module pocket_holes(drill_diameter = 7.5, board_thickness = 24) {
             color(c="grey", alpha=1.0) rotate(a=-90 + angle, v=[1, 0, 0])
                 translate(v=[-width / 2 + width / 4 + width / 2 * i, 0, -height]) union() {
                     cylinder(h=35, r=3.5 / 2, center=false);
-                    translate(v=[0, 0, 35]) cylinder(h=65, r=drill_diameter / 2, center=false);
+                    translate(v=[0, 0, 35]) cylinder(h=65, r=drill_diameter / 2, center=false, $fn=$preview ? 20 : 50);
                   }
           }
           translate(v=[0, width, 15]) cylinder(h=50, r=VACUUM_OD / 2 + TOLERANCE, center=false);
@@ -131,56 +131,5 @@ module pocket_holes(drill_diameter = 7.5, board_thickness = 24) {
   translate(v=[0, 0, 0]) pocket_hole_jig();
 }
 
-module orbital_sander_base(diameter) {
-  // primarily made for makita DBO180 with 125 mm diameter
-  id = diameter / (125 / 101.5);
-  base_thickness = 10;
-  plate_thickness = 3;
-  holes = [
-    // hole_count, hole_diameter, position_diameter, offset_angle
-    [8, 12, 65.2, 0], // standard holes
-    [8, 8, 82.5, 22.5],
-    [8, 6, 57.5, 22.5],
-    // [8, 6, 87.5, 0],
-    [8, 6, 87.5, 7.5],
-    [8, 6, 87.5, -7.5],
-  ];
-
-  module dust_holes(hole_count, hole_diameter, position_diameter, offset_angle, height = 0) {
-    cylinder_height = height == 0 ? base_thickness : height;
-    union() {
-      for (i = [0:hole_count]) {
-        rotate(a=360 / hole_count * i + offset_angle, v=[0, 0, 1]) {
-          translate(v=[position_diameter / 2, 0, 0]) {
-            cylinder(h=cylinder_height + .2, r=hole_diameter / 2, center=true);
-          }
-        }
-      }
-    }
-  }
-
-  translate(v=[0, 0, -(base_thickness - plate_thickness) / 2 + plate_thickness / 2]) {
-    union() {
-      intersection() {
-        difference() {
-          cylinder(h=base_thickness, r1=diameter / 2, r2=id / 2, center=true);
-
-          // starting at 1 to use standard holes for locating
-          for (k = [1:len(holes)]) {
-            dust_holes(hole_count=holes[k][0], hole_diameter=holes[k][1], position_diameter=holes[k][2], offset_angle=holes[k][3]);
-          }
-        }
-        translate(v=[0, 0, (base_thickness - plate_thickness) / 2]) {
-          cylinder(h=plate_thickness, r=id / 2, center=true);
-        }
-      }
-      translate(v=[0, 0, -1]) {
-        dust_holes(hole_count=holes[0][0], hole_diameter=holes[0][1] - TOLERANCE, position_diameter=holes[0][2], offset_angle=holes[0][3], height=3);
-      }
-    }
-  }
-}
-
 // perpendicular_angle(75, 50, ruler_depth = 10, ruler_mode = 0);
-//pocket_holes();
-orbital_sander_base(diameter=125);
+pocket_holes();
