@@ -43,51 +43,53 @@ module DBO180_custom_dust_holes(diameter, sander_plate = false) {
   module pattern_plate(with_support = true) {
     translate(v=[0, 0, -base_thickness]) {
 
-      union() {
-        difference() {
-          union() {
-            if (sander_plate) cylinder(h=base_thickness, r1=diameter / 2, r2=id / 2, center=false);
+      difference() {
+        union() {
+          if (sander_plate) cylinder(h=base_thickness, r1=diameter / 2, r2=id / 2, center=false);
 
-            if (with_support) {
-              translate(v=[0, 0, base_thickness + plate_thickness]) {
-                rotate_extrude(angle=360, convexity=2) {
-                  translate(v=[plate_id / 2, 0]) {
-                    polygon(
-                      points=[
-                        [0, 0],
-                        [(plate_od - plate_id) / 2, 0],
-                        [10.25, 10.5],
-                        [7.25, 10.5],
-                      ]
-                    );
-                  }
+          if (with_support) {
+            translate(v=[0, 0, base_thickness + plate_thickness]) {
+              rotate_extrude(angle=360, convexity=2) {
+                translate(v=[plate_id / 2, 0]) {
+                  polygon(
+                    points=[
+                      [0, 0],
+                      [(plate_od - plate_id) / 2, 0],
+                      [10.25, 7.5],
+                      [7.25, 7.5],
+                    ]
+                  );
                 }
               }
             }
+          }
 
-            translate(v=[0, 0, base_thickness]) {
-              // pattern plate
-              cylinder(h=plate_thickness, r=plate_od / 2, center=false);
+          translate(v=[0, 0, base_thickness]) {
+            // pattern plate
+            cylinder(h=plate_thickness, r=plate_od / 2, center=false);
 
-              // basic holes from the sander, used for locating
-              translate(v=[0, 0, -2.5]) dust_holes(hole_count=holes[0][0], hole_diameter=holes[0][1] - TOLERANCE, position_diameter=holes[0][2], offset_angle=holes[0][3], height=2.6);
+            // basic holes from the sander, used for locating
+            translate(v=[0, 0, -2.5]) dust_holes(hole_count=holes[0][0], hole_diameter=holes[0][1] - TOLERANCE, position_diameter=holes[0][2], offset_angle=holes[0][3], height=2.6);
 
-              // additional dust holes
-              difference() {
-                translate(v=[0, 0, 2]) dust_holes(hole_count=holes[2][0], hole_diameter=holes[2][1] + 4, position_diameter=holes[2][2], offset_angle=holes[2][3], height=14.5, tilt=holes[2][4]);
-                translate(v=[0, 0, -base_thickness]) cylinder(h=base_thickness, r=plate_od, center=false);
-              }
+            // additional dust holes
+            difference() {
+              translate(v=[0, 0, 2]) dust_holes(hole_count=holes[2][0], hole_diameter=holes[2][1] + 4, position_diameter=holes[2][2], offset_angle=holes[2][3], height=14.5, tilt=holes[2][4]);
+              translate(v=[0, 0, -base_thickness]) cylinder(h=base_thickness, r=plate_od, center=false);
             }
           }
-          translate(v=[0, 0, -.1 + base_thickness]) {
-            cylinder(h=plate_thickness + .2, r=plate_id / 2, center=false);
+        }
+        translate(v=[0, 0, -.1 + base_thickness]) {
+          cylinder(h=plate_thickness + .2, r=plate_id / 2, center=false);
 
-            // dust extraction holes
-            for (i = [1:len(holes)]) {
-              dust_holes(hole_count=holes[i][0], hole_diameter=holes[i][1], position_diameter=holes[i][2], offset_angle=holes[i][3], height=0, tilt=holes[i][4]);
-              if (i == 1) { translate(v=[0, 0, -plate_thickness]) dust_holes(hole_count=holes[i][0], hole_diameter=holes[i][1], position_diameter=holes[i][2], offset_angle=holes[i][3], height=0, tilt=holes[i][4]); }
-            }
+          // dust extraction holes
+          for (i = [1:len(holes)]) {
+            dust_holes(hole_count=holes[i][0], hole_diameter=holes[i][1], position_diameter=holes[i][2], offset_angle=holes[i][3], height=0, tilt=holes[i][4]);
+            if (i == 1) { translate(v=[0, 0, -plate_thickness]) dust_holes(hole_count=holes[i][0], hole_diameter=holes[i][1], position_diameter=holes[i][2], offset_angle=holes[i][3], height=0, tilt=holes[i][4]); }
           }
+        }
+
+        if (with_support) {
+          translate(v=[0, 0, base_thickness + plate_thickness + 7.5]) cylinder(h=1, r=plate_od + 1, center=false);
         }
       }
     }
