@@ -134,7 +134,7 @@ module pocket_holes(drill_diameter = 7.5, board_thickness = 24) {
 
 module router_guide_batten_channel(cutting_width, cutting_depth, wood_width, wood_height, router_bit_cutting_height = 25, router_bit_diameter = 16, thickness = 3, screw_od = 3.5) {
   additional_border = screw_od * 4;
-  additional_height_for_router_bit = router_bit_cutting_height + 3 - cutting_depth;
+  additional_height_for_router_bit = router_bit_cutting_height + 3 - cutting_depth / 3;
   additional_width_for_router_bit = wood_width + TOLERANCE + router_bit_diameter;
 
   difference() {
