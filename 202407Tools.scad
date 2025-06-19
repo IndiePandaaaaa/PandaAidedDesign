@@ -2,6 +2,7 @@
 // encoding: utf-8
 
 use <Variables/Threading.scad>
+use <Parts/Screw.scad>
 
 PARTS_SEPARATED = true;
 THICKNESS = 2.5;
@@ -131,5 +132,51 @@ module pocket_holes(drill_diameter = 7.5, board_thickness = 24) {
   translate(v=[0, 0, 0]) pocket_hole_jig();
 }
 
+module router_guide_batten_channel(cutting_width, cutting_depth, wood_width, wood_height, router_bit_cutting_height = 25, router_bit_diameter = 16, thickness = 3, screw_od = 3.5) {
+  additional_border = screw_od * 4;
+  additional_height_for_router_bit = router_bit_cutting_height + 3 - cutting_depth;
+  additional_width_for_router_bit = wood_width + TOLERANCE + router_bit_diameter;
+
+  difference() {
+    union() {
+      translate(v=[0, 0, thickness / 2 + wood_height + additional_height_for_router_bit]) difference() {
+          cube(size=[additional_border * 2 + additional_width_for_router_bit + thickness * 2 + TOLERANCE * 2, additional_border * 2 + cutting_width + thickness * 2 + TOLERANCE * 2, thickness], center=true);
+          cube(size=[additional_width_for_router_bit + TOLERANCE * 2, cutting_width + TOLERANCE * 2, thickness + 1], center=true);
+        }
+      translate(v=[0, 0, additional_height_for_router_bit / 2 + wood_height + TOLERANCE]) difference() {
+          cube(size=[additional_width_for_router_bit + TOLERANCE * 2 + thickness * 2, cutting_width + TOLERANCE * 2 + THICKNESS * 2, additional_height_for_router_bit], center=true);
+          cube(size=[additional_width_for_router_bit + TOLERANCE * 2, cutting_width + TOLERANCE * 2, additional_height_for_router_bit + 1], center=true);
+        }
+
+      // vice helper
+      union() {
+        translate(v=[additional_width_for_router_bit / 2 + thickness + TOLERANCE * 2, -70 / 2, 0])
+          cube(size=[64 - 44 - thickness - TOLERANCE - router_bit_diameter / 2, 70, wood_height + additional_height_for_router_bit - TOLERANCE], center=false);
+        translate(v=[additional_width_for_router_bit / 2 + TOLERANCE - router_bit_diameter / 2, -(cutting_width + TOLERANCE * 2 + THICKNESS * 2) / 2, 0])
+          cube(size=[thickness + TOLERANCE + router_bit_diameter / 2, cutting_width + TOLERANCE * 2 + THICKNESS * 2, wood_height], center=false);
+      }
+    }
+
+    // wood screws 
+    color(c="red", alpha=1.0) union() {
+        for (x = [0:1])
+          for (y = [0:1])
+            translate(v=[(additional_width_for_router_bit / 2 - additional_border / 2) - (additional_width_for_router_bit - additional_border) * x, additional_border / 2 + thickness + cutting_width / 2 - (additional_border + thickness * 2 + cutting_width) * y, wood_height + additional_height_for_router_bit + thickness]) {
+              screw(diameter=screw_od, length=12, cutout_sample=true);
+            }
+      }
+
+    // plastic screws
+    color(c="blue", alpha=1.0) union() {
+        for (y = [0:1])
+          translate(v=[additional_width_for_router_bit / 2 + additional_border / 2 + .5, additional_border / 2 + thickness + cutting_width / 2 - (additional_border + thickness * 2 + cutting_width) * y, wood_height + additional_height_for_router_bit + thickness]) {
+            screw(diameter=3, length=3, cutout_sample=true);
+            translate(v=[0, 0, -thickness - 50]) cylinder(h=50, d=2.7, center=false, $fn=50);
+          }
+      }
+  }
+}
+
 // perpendicular_angle(75, 50, ruler_depth = 10, ruler_mode = 0);
-pocket_holes();
+// pocket_holes();
+router_guide_batten_channel(cutting_width=24, cutting_depth=12, wood_width=44, wood_height=24);
