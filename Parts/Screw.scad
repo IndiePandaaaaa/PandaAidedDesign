@@ -18,7 +18,7 @@ module SCREW_METRIC_COUNTERSUNK(standard, length, unthreaded_length = 0, borehol
     translate(v=[0, 0, -.1]) {
       cylinder(h=.2 + borehole_length, d=SCREW_METRIC_COUNTERSUNK_OD(standard) + tolerance, center=false);
       translate(v=[0, 0, -SCREW_METRIC_COUNTERSUNK_HEIGHT(standard)]) {
-        cylinder(h=SCREW_METRIC_COUNTERSUNK_HEIGHT(standard), d2=SCREW_METRIC_COUNTERSUNK_OD(standard) + tolerance, d1=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
+        cylinder(h=SCREW_METRIC_COUNTERSUNK_HEIGHT(standard) + .01, d2=SCREW_METRIC_COUNTERSUNK_OD(standard) + tolerance, d1=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
         translate(v=[0, 0, -.1]) cylinder(h=.1, d=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
       }
     }
