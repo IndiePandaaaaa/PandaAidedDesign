@@ -11,7 +11,8 @@ function SCREW_METRIC_COREHOLE(standard) = DIAMETER_COREHOLE[standard - 1];
 function SCREW_METRIC_BOREHOLE(standard) = DIAMETER_BOREHOLE[standard - 1];
 
 module SCREW_METRIC_COUNTERSUNK(standard, length, unthreaded_length = 0, tolerance = .15) {
-  countersunk_height = [0, 0, 1.8, 2.5];
+  //                   M1 M2   M3   M4
+  countersunk_height = [0, 0, 2.2, 3.1];
 
   if (countersunk_height[standard - 1] == 0) echo("ERROR: countersunk_height value has not been set yet.");
   if (SCREW_METRIC_COREHOLE(standard=standard) == 0) echo("ERROR: SCREW_METRIC_COREHOLE value has not been set yet.");
@@ -19,8 +20,8 @@ module SCREW_METRIC_COUNTERSUNK(standard, length, unthreaded_length = 0, toleran
 
   union() {
     translate(v=[0, 0, -.1]) cylinder(h=.2, r=standard * 2 + tolerance, center=false);
-    translate(v=[0, 0, -.1 - countersunk_height[standard - 1]]) cylinder(h=countersunk_height[standard - 1], r2=standard * 2 + tolerance, r1=standard + tolerance, center=false);
-    translate(v=[0, 0, -.1 * 2 - countersunk_height[standard - 1]]) cylinder(h=.1, r=standard + tolerance, center=false);
+    translate(v=[0, 0, -.1 - countersunk_height[standard - 1]]) cylinder(h=countersunk_height[standard - 1], r2=standard * 2 + tolerance, r1=SCREW_METRIC_BOREHOLE(standard), center=false);
+    translate(v=[0, 0, -.1 * 2 - countersunk_height[standard - 1]]) cylinder(h=.1, r=SCREW_METRIC_BOREHOLE(standard), center=false);
     translate(v=[0, 0, -length]) cylinder(h=length, r=SCREW_METRIC_COREHOLE(standard) + tolerance, center=false);
 
     // unthreaded part
