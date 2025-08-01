@@ -3,38 +3,29 @@
 TOLERANCE = .1;
 $fn = $preview ? 30 : 75;
 
-// metric standards   M1   M2   M3   M4   M5 M6 M7   M8   M9  M10
-DIAMETER_COREHOLE = [.75, 1.6, 2.5, 3.3, 4.2, 5, 6, 6.8, 7.8, 8.5];
-DIAMETER_BOREHOLE = [0, 0, 3.4, 4.5, 5.5, 6.6, 0, 9, 0, 11];
-
-function SCREW_METRIC_COREHOLE(standard) = DIAMETER_COREHOLE[standard - 1];
-function SCREW_METRIC_BOREHOLE(standard) = DIAMETER_BOREHOLE[standard - 1];
+// metric standards                          M1   M2   M3   M4   M5 M6 M7   M8   M9  M10
+function SCREW_METRIC_COREHOLE(standard) = [.75, 1.6, 2.5, 3.3, 4.2, 5, 6, 6.8, 7.8, 8.5][standard - 1];
+function SCREW_METRIC_BOREHOLE(standard) = [0, 0, 3.4, 4.5, 5.5, 6.6, 0, 9, 0, 11][standard - 1];
+function SCREW_METRIC_COUNTERSUNK_HEIGHT(standard) = [0, 0, 2.2, 3.1, 0, 0, 0, 0, 0, 0][standard - 1];
 
 module SCREW_METRIC_COUNTERSUNK(standard, length, unthreaded_length = 0, tolerance = .15) {
-  //                   M1 M2   M3   M4
-  countersunk_height = [0, 0, 2.2, 3.1];
-
-  if (countersunk_height[standard - 1] == 0) echo("ERROR: countersunk_height value has not been set yet.");
+  if (SCREW_METRIC_COUNTERSUNK_HEIGHT(standard=standard) == 0) echo("ERROR: SCREW_METRIC_COUNTERSUNK_HEIGHT value has not been set yet.");
   if (SCREW_METRIC_COREHOLE(standard=standard) == 0) echo("ERROR: SCREW_METRIC_COREHOLE value has not been set yet.");
   if (SCREW_METRIC_BOREHOLE(standard=standard) == 0) echo("ERROR: SCREW_METRIC_BOREHOLE value has not been set yet.");
 
   union() {
     translate(v=[0, 0, -.1]) cylinder(h=.2, r=standard * 2 + tolerance, center=false);
-    translate(v=[0, 0, -.1 - countersunk_height[standard - 1]]) cylinder(h=countersunk_height[standard - 1], r2=standard * 2 + tolerance, r1=SCREW_METRIC_BOREHOLE(standard), center=false);
-    translate(v=[0, 0, -.1 * 2 - countersunk_height[standard - 1]]) cylinder(h=.1, r=SCREW_METRIC_BOREHOLE(standard), center=false);
+    translate(v=[0, 0, -.1 - SCREW_METRIC_COUNTERSUNK_HEIGHT(standard)]) cylinder(h=SCREW_METRIC_COUNTERSUNK_HEIGHT(standard), r2=standard * 2 + tolerance, r1=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
+    translate(v=[0, 0, -.1 * 2 - SCREW_METRIC_COUNTERSUNK_HEIGHT(standard)]) cylinder(h=.1, r=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
     translate(v=[0, 0, -length]) cylinder(h=length, r=SCREW_METRIC_COREHOLE(standard) + tolerance, center=false);
 
     // unthreaded part
-    translate(v=[0, 0, -.1 - countersunk_height[standard - 1] - unthreaded_length]) cylinder(h=unthreaded_length + .1, r=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
+    translate(v=[0, 0, -.1 - SCREW_METRIC_COUNTERSUNK_HEIGHT(standard) - unthreaded_length]) cylinder(h=unthreaded_length + .1, r=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
   }
 }
 
-SCREW_METRIC_COUNTERSUNK(standard=3, length=12, unthreaded_length=5);
-
 function cone_diameter(diameter) = diameter * 2;
-
 function cone_diameter_cutout(diameter) = diameter * 2 + 0.5;
-
 function cone_height(diameter) = diameter * 0.75;
 
 module screw(diameter, length = 12, cutout_sample = false) {
@@ -126,3 +117,4 @@ module screw_with_nut(screw_length, diameter, square_channel = false, tolerance 
 //translate([0, 0, 0]) screw(diameter=3.5, length=12, cutout_sample=false);
 //translate([20, 0, 0]) screw_corehole(diameter_screw=3, diameter_core=2.5, unthreaded_length=15, length=20);
 //translate([40, 0, 0]) screw_with_nut(screw_length=30, diameter=4, square_channel=false, tolerance=.1);
+SCREW_METRIC_COUNTERSUNK(standard=3, length=12, unthreaded_length=5);
