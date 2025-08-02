@@ -17,6 +17,8 @@ module split_with_screw(screw_standard, screw_count, material_thickness, materia
       translate(v=[-(width_split + .1) / 2, 0, -(bottom_height + .2) / 2]) cube(size=[cut_thickness, material_width + .2, bottom_height + .2], center=true);
       translate(v=[(width_split + .1) / 2, 0, (bottom_height + .2) / 2]) cube(size=[cut_thickness, material_width + .2, bottom_height + .2], center=true);
 
+      // FIX: place screw at the right height with the untreaded part ending in the cutting part
+
       // screws
       for (i = [0:screw_count - 1]) {
         translate(v=[-( (width_split - .2) / 2 - distance_factor / 2 * screw_standard) + i * screw_standard * distance_factor, 0, bottom_height - .5 / 2]) {
