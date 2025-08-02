@@ -4,28 +4,28 @@ TOLERANCE = .1;
 $fn = $preview ? 30 : 75;
 
 // metric standards                          M1   M2   M3   M4   M5 M6 M7   M8   M9  M10
-function SCREW_METRIC_COREHOLE(standard) = [.75, 1.6, 2.5, 3.3, 4.2, 5, 6, 6.8, 7.8, 8.5][standard - 1];
-function SCREW_METRIC_BOREHOLE(standard) = [0, 0, 3.4, 4.5, 5.5, 6.6, 0, 9, 0, 11][standard - 1];
-function SCREW_METRIC_COUNTERSUNK_HEIGHT(standard) = [0, 0, 1.7, 2.3, 2.8, 3.3, 0, 4.4, 0, 5.5][standard - 1];
-function SCREW_METRIC_COUNTERSUNK_OD(standard) = standard * 2;
+function screw_metric_corehole(standard) = [.75, 1.6, 2.5, 3.3, 4.2, 5, 6, 6.8, 7.8, 8.5][standard - 1];
+function screw_metric_borehole(standard) = [0, 0, 3.4, 4.5, 5.5, 6.6, 0, 9, 0, 11][standard - 1];
+function screw_metric_countersunk_height(standard) = [0, 0, 1.7, 2.3, 2.8, 3.3, 0, 4.4, 0, 5.5][standard - 1];
+function screw_metric_countersunk_od(standard) = standard * 2;
 
-module SCREW_METRIC_COUNTERSUNK(standard, length, unthreaded_length = 0, borehole_length = 0, tolerance = .15) {
-  if (SCREW_METRIC_COREHOLE(standard=standard) == 0) echo("ERROR: SCREW_METRIC_COREHOLE value has not been set yet.");
-  if (SCREW_METRIC_BOREHOLE(standard=standard) == 0) echo("ERROR: SCREW_METRIC_BOREHOLE value has not been set yet.");
-  if (SCREW_METRIC_COUNTERSUNK_HEIGHT(standard=standard) == 0) echo("ERROR: SCREW_METRIC_COUNTERSUNK_HEIGHT value has not been set yet.");
+module screw_metric_countersunk(standard, length, unthreaded_length = 0, borehole_length = 0, tolerance = .15) {
+  if (screw_metric_corehole(standard=standard) == 0) echo("ERROR: screw_metric_corehole value has not been set yet.");
+  if (screw_metric_borehole(standard=standard) == 0) echo("ERROR: screw_metric_borehole value has not been set yet.");
+  if (screw_metric_countersunk_height(standard=standard) == 0) echo("ERROR: screw_metric_countersunk_height value has not been set yet.");
 
   union() {
     translate(v=[0, 0, -.1]) {
-      cylinder(h=.2 + borehole_length, d=SCREW_METRIC_COUNTERSUNK_OD(standard) + tolerance, center=false);
-      translate(v=[0, 0, -SCREW_METRIC_COUNTERSUNK_HEIGHT(standard)]) {
-        cylinder(h=SCREW_METRIC_COUNTERSUNK_HEIGHT(standard) + .01, d2=SCREW_METRIC_COUNTERSUNK_OD(standard) + tolerance, d1=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
-        translate(v=[0, 0, -.1]) cylinder(h=.1, d=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
+      cylinder(h=.2 + borehole_length, d=screw_metric_countersunk_od(standard) + tolerance, center=false);
+      translate(v=[0, 0, -screw_metric_countersunk_height(standard)]) {
+        cylinder(h=screw_metric_countersunk_height(standard) + .01, d2=screw_metric_countersunk_od(standard) + tolerance, d1=screw_metric_borehole(standard) + tolerance, center=false);
+        translate(v=[0, 0, -.1]) cylinder(h=.1, d=screw_metric_borehole(standard) + tolerance, center=false);
       }
     }
-    translate(v=[0, 0, -length]) cylinder(h=length, d=SCREW_METRIC_COREHOLE(standard) + tolerance, center=false);
+    translate(v=[0, 0, -length]) cylinder(h=length, d=screw_metric_corehole(standard) + tolerance, center=false);
 
     // unthreaded part
-    translate(v=[0, 0, -.1 - SCREW_METRIC_COUNTERSUNK_HEIGHT(standard) - unthreaded_length]) cylinder(h=unthreaded_length + .1, d=SCREW_METRIC_BOREHOLE(standard) + tolerance, center=false);
+    translate(v=[0, 0, -.1 - screw_metric_countersunk_height(standard) - unthreaded_length]) cylinder(h=unthreaded_length + .1, d=screw_metric_borehole(standard) + tolerance, center=false);
   }
 }
 
@@ -33,14 +33,14 @@ module SCREW_METRIC_COUNTERSUNK(standard, length, unthreaded_length = 0, borehol
 
 // TODO: module metric rounded head screws
 
-function SCREW_WOOD_COREHOLE(diameter) = diameter * 0.75;
-function SCREW_WOOD_BOREHOLE(diameter) = diameter * 1.25;
-function SCREW_WOOD_COUNTERSUNK_HEIGHT(diameter) = diameter * 0.75;
+function screw_wood_corehole(diameter) = diameter * 0.75;
+function screw_wood_borehole(diameter) = diameter * 1.25;
+function screw_wood_countersunk_height(diameter) = diameter * 0.75;
 
-module SCREW_WOOD_COUNTERSUNK(diameter, length, unthreaded_length = 0, tolerance = .15) {
-  if (SCREW_METRIC_COREHOLE(standard=standard) == 0) echo("ERROR: SCREW_METRIC_COREHOLE value has not been set yet.");
-  if (SCREW_METRIC_BOREHOLE(standard=standard) == 0) echo("ERROR: SCREW_METRIC_BOREHOLE value has not been set yet.");
-  if (SCREW_METRIC_COUNTERSUNK_HEIGHT(standard=standard) == 0) echo("ERROR: SCREW_METRIC_COUNTERSUNK_HEIGHT value has not been set yet.");
+module screw_wood_countersunk(diameter, length, unthreaded_length = 0, tolerance = .15) {
+  if (screw_metric_corehole(standard=standard) == 0) echo("ERROR: screw_metric_corehole value has not been set yet.");
+  if (screw_metric_borehole(standard=standard) == 0) echo("ERROR: screw_metric_borehole value has not been set yet.");
+  if (screw_metric_countersunk_height(standard=standard) == 0) echo("ERROR: screw_metric_countersunk_height value has not been set yet.");
 
   // TODO: add module for wood screws 
   union(){}
