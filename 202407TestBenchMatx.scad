@@ -1,7 +1,9 @@
 // created by IndiePandaaaaa
 // encoding: utf-8
 
+use <Functions/ListTools.scad>
 use <Parts/Screw.scad>
+use <Parts/SplitToPrint.scad>
 
 $fn = 75;
 
@@ -13,45 +15,6 @@ STANDOFF_HEIGHT = 7;
 STRAP_HEIGHT = 3;
 
 mATX_SIZE = [243.8, 243.8];
-
-function element_in_list(element, list) = len([for (e = [0:len(list)]) if (list[e] == element) 1]) > 0;
-
-module screw_split(cutaway_part, screws, material_thickness, material_width, screw_od_core, screw_od, cut_thickness = .1, screw_length = 5) {
-  // screw standard is M3. DIN7991. countersunk head depth min. is 1.7 mm
-  countersunk_height = 1.7;
-  screw_distance_factor = 3;
-  screw_length_additional = .5;
-  material_height_bottom = screw_length - countersunk_height + screw_length_additional;
-
-  union() {
-    translate(v=[-cut_thickness, -cut_thickness, -cut_thickness]) {
-      mirror(v=[0, 1, 0]) {
-        rotate(a=90, v=[1, 0, 0]) {
-          linear_extrude(height=material_width + .2, center=false) {
-            polygon(
-              points=[
-                [0, 0],
-                [cut_thickness, 0],
-                [cut_thickness, material_height_bottom + cut_thickness * 1],
-                [cut_thickness * 3 + screw_od * screw_distance_factor * screws, material_height_bottom + cut_thickness * 1],
-                [cut_thickness * 3 + screw_od * screw_distance_factor * screws, screw_length + screw_length_additional + cut_thickness * 3],
-                [cut_thickness * 2 + screw_od * screw_distance_factor * screws, screw_length + screw_length_additional + cut_thickness * 3],
-                [cut_thickness * 2 + screw_od * screw_distance_factor * screws, material_height_bottom + cut_thickness * 2],
-                [0, material_height_bottom + cut_thickness * 2],
-              ]
-            );
-          }
-        }
-      }
-    }
-
-    for (i = [0:screws - 1]) {
-      translate(v=[(screw_od * screw_distance_factor) / 2 + (screw_od * screw_distance_factor) * i, (cut_thickness * 2 + material_width) / 2, cone_height(diameter=3) + material_height_bottom]) {
-        SCREW_METRIC_COUNTERSUNK(standard=3, length=7, unthreaded_length=.4, borehole_length=5);
-      }
-    }
-  }
-}
 
 module mainboard_support_grid(mainboard, screw_od, screw_od_core, standoff_height = 7, strap_height = 3) {
   mATX_SCREWS = [
@@ -99,5 +62,5 @@ module mainboard_support_grid(mainboard, screw_od, screw_od_core, standoff_heigh
 
 union() {
   mainboard_support_grid(mainboard=b450_pro_vdh_plus, screw_od=SCREW_OD[0], screw_od_core=SCREW_OD[1], standoff_height=STANDOFF_HEIGHT, strap_height=STRAP_HEIGHT);
-  translate(v=[0, -SCREW_OD[0] / 2, 0]) screw_split(cutaway_part=false, screws=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0], screw_od_core=SCREW_OD[1], screw_od=SCREW_OD[0]);
+  translate(v=[0, 0, 0]) split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
 }
