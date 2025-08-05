@@ -46,7 +46,7 @@ module split_with_screw(screw_standard, screw_count, material_thickness, materia
       // screws
       for (i = [0:screw_count - 1]) {
         translate(v=[screw_pos_first + i * sts_distance, 0, top_split_height + .1])
-          screw_metric_countersunk(standard=screw_standard, length=height + .1, unthreaded_length=screw_length_unthreaded, borehole_length=height, tolerance=.15);
+          screw_metric_countersunk(standard=screw_standard, length=height + .2, unthreaded_length=screw_length_unthreaded, borehole_length=height, tolerance=.15);
       }
     }
   }
