@@ -10,11 +10,13 @@ function split_screw_material_height(screw_standard, material_thickness, unthrea
     material_thickness
   : screw_metric_countersunk_height(screw_standard) + screw_standard + unthreaded;
 
-module split_with_screw(screw_standard, screw_count, material_thickness, material_width, cut_thickness = .1) {
-  sts_distance_factor = 3; // sts = screw to screw
-  sts_distance = sts_distance_factor * screw_standard;
+function split_screw_distance(screw_standard) = screw_standard * 3;
+function split_width(screw_standard, screw_count) = split_screw_distance(screw_standard) * screw_count + .2;
 
-  width = sts_distance * screw_count + .2;
+module split_with_screw(screw_standard, screw_count, material_thickness, material_width, cut_thickness = .1) {
+  sts_distance = split_screw_distance(screw_standard); // sts = screw to screw
+
+  width = split_width(screw_standard, screw_count);
   height = split_screw_material_height(screw_standard, material_thickness) + .2;
 
   bottom_split_height = height - screw_metric_countersunk_height(screw_standard) - .5;
