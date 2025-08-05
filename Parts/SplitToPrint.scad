@@ -13,6 +13,13 @@ function split_screw_material_height(screw_standard, material_thickness, unthrea
 function split_screw_distance(screw_standard) = screw_standard * 3;
 function split_width(screw_standard, screw_count) = split_screw_distance(screw_standard) * screw_count + .2;
 
+module split_with_screw_support(screw_standard, screw_count, material_thickness, material_width) {
+  support_height = split_screw_material_height(screw_standard=screw_standard, material_thickness=material_thickness);
+  support_width = split_width(screw_standard=screw_standard, screw_count=screw_count);
+
+  translate(v=[0, 0, support_height / 2]) cube(size=[material_width, support_width + 1, support_height], center=true);
+}
+
 module split_with_screw(screw_standard, screw_count, material_thickness, material_width, cut_thickness = .1) {
   sts_distance = split_screw_distance(screw_standard); // sts = screw to screw
 
