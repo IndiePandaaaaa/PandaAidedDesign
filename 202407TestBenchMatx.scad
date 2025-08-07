@@ -7,8 +7,9 @@ use <Parts/SplitToPrint.scad>
 
 $fn = 75;
 
-// mainboards
+// mainboards (screws which are not populated)
 b450_pro_vdh_plus = [5, 9];
+p8h61m_le = [5, 7, 8, 9];
 
 SCREW_OD = [7, 2.7];
 STANDOFF_HEIGHT = 8;
@@ -42,14 +43,27 @@ module mainboard_support_grid(mainboard, screw_od, screw_od_core, standoff_heigh
 
   module strap_grid(width, height) {
     // horizontal straps
-    translate(v=[mATX_SCREWS[0][0], -width / 2 - mATX_SCREWS[0][1], 0]) cube(size=[mATX_SCREWS[7][0] - mATX_SCREWS[0][0], width, height], center=false);
-    translate(v=[mATX_SCREWS[1][0], -width / 2 - mATX_SCREWS[1][1], 0]) cube(size=[mATX_SCREWS[8][0] - mATX_SCREWS[1][0], width, height], center=false);
+    if (element_in_list(7, mainboard)) {
+      translate(v=[mATX_SCREWS[0][0], -width / 2 - mATX_SCREWS[0][1], 0]) cube(size=[mATX_SCREWS[4][0] - mATX_SCREWS[0][0], width, height], center=false);
+    } else {
+      translate(v=[mATX_SCREWS[0][0], -width / 2 - mATX_SCREWS[0][1], 0]) cube(size=[mATX_SCREWS[7][0] - mATX_SCREWS[0][0], width, height], center=false);
+    }
+
+    if (element_in_list(8, mainboard)) {
+      translate(v=[mATX_SCREWS[1][0], -width / 2 - mATX_SCREWS[1][1], 0]) cube(size=[mATX_SCREWS[5][0] - mATX_SCREWS[1][0], width, height], center=false);
+    } else {
+      translate(v=[mATX_SCREWS[1][0], -width / 2 - mATX_SCREWS[1][1], 0]) cube(size=[mATX_SCREWS[8][0] - mATX_SCREWS[1][0], width, height], center=false);
+    }
 
     // vertical straps
     translate(v=[mATX_SCREWS[0][0] + width / 2, -mATX_SCREWS[0][1], 0]) rotate(a=180, v=[0, 0, 1]) cube(size=[width, mATX_SCREWS[1][1] - mATX_SCREWS[0][1], height], center=false);
     translate(v=[mATX_SCREWS[5][0] + width / 2, -mATX_SCREWS[0][1], 0]) rotate(a=180, v=[0, 0, 1]) cube(size=[width, mATX_SCREWS[1][1] - mATX_SCREWS[0][1], height], center=false);
     translate(v=[mATX_SCREWS[1][0] + width / 2, -mATX_SCREWS[1][1], 0]) rotate(a=180, v=[0, 0, 1]) cube(size=[width, mATX_SCREWS[2][1] - mATX_SCREWS[1][1], height], center=false);
-    translate(v=[mATX_SCREWS[4][0] + width / 2, -mATX_SCREWS[4][1], 0]) rotate(a=180, v=[0, 0, 1]) cube(size=[width, mATX_SCREWS[6][1] - mATX_SCREWS[4][1], height], center=false);
+    if (element_in_list(5, mainboard)) {
+      translate(v=[mATX_SCREWS[4][0] + width / 2, -mATX_SCREWS[4][1], 0]) rotate(a=180, v=[0, 0, 1]) cube(size=[width, mATX_SCREWS[6][1] - mATX_SCREWS[4][1], height], center=false);
+    } else if (element_in_list(6, mainboard)) {
+      translate(v=[mATX_SCREWS[4][0] + width / 2, -mATX_SCREWS[4][1], 0]) rotate(a=180, v=[0, 0, 1]) cube(size=[width, mATX_SCREWS[5][1] - mATX_SCREWS[4][1], height], center=false);
+    }
   }
 
   union() {
