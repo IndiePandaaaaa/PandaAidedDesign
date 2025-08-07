@@ -61,35 +61,45 @@ module mainboard_support_grid(mainboard, screw_od, screw_od_core, standoff_heigh
 
         // support for splitting section
         for (point = split_points) {
+          // horizontal
           translate(v=[mATX_SCREWS[point][0] + 10 * (point < 3 ? 1 : -1) + (point == 1 ? 25 : 0), -mATX_SCREWS[point][1], 0]) {
-            split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
+            rotate(a=(point < 3 ? 180 : 0), v=[0, 0, 1])
+              split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
           }
-          if (point != 1) {
-            translate(v=[mATX_SCREWS[point][0], -mATX_SCREWS[point][1] - 10 * (point % 3 == 0 ? 1 : -1), 0]) {
-              rotate(a=90, v=[0, 0, 1]) split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
-            }
+          // vertical
+          translate(v=[mATX_SCREWS[ (point == 1 ? 0 : point) ][0], -mATX_SCREWS[point][1] - 10 * (point % 3 == 0 ? 1 : -1), 0]) {
+            rotate(a=90 * (point == 1 || point == 4 ? -1 : 1), v=[0, 0, 1])
+              split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
           }
         }
       }
 
       // splitting section
       for (point = split_points) {
+        // horizontal
         translate(v=[mATX_SCREWS[point][0] + 10 * (point < 3 ? 1 : -1) + (point == 1 ? 25 : 0), -mATX_SCREWS[point][1], 0]) {
-          split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
+          rotate(a=(point < 3 ? 180 : 0), v=[0, 0, 1])
+            split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
         }
-        if (point != 1) {
-          translate(v=[mATX_SCREWS[point][0], -mATX_SCREWS[point][1] - 10 * (point % 3 == 0 ? 1 : -1), 0]) {
-            rotate(a=90, v=[0, 0, 1]) split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
-          }
+        // vertical
+        translate(v=[mATX_SCREWS[ (point == 1 ? 0 : point) ][0], -mATX_SCREWS[point][1] - 10 * (point % 3 == 0 ? 1 : -1), 0]) {
+          rotate(a=90 * (point == 1 || point == 4 ? -1 : 1), v=[0, 0, 1])
+            split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
         }
+      }
+      // plate mounting holes
+      translate(v=[mATX_SCREWS[0][0], -mATX_SCREWS[0][1] - mATX_SCREWS[1][1] / 2, strap_height + 2]) {
+        screw_metric_countersunk(standard=3, length=12);
+        translate(v=[-mATX_SCREWS[0][0] + mATX_SCREWS[3][0], 0, 0]) screw_metric_countersunk(standard=3, length=12);
+      }
+      translate(v=[(mATX_SCREWS[0][0] + mATX_SCREWS[3][0]) / 2, -mATX_SCREWS[0][1], strap_height + 2]) {
+        screw_metric_countersunk(standard=3, length=12);
+        translate(v=[0, mATX_SCREWS[0][1] - mATX_SCREWS[1][1], 0]) screw_metric_countersunk(standard=3, length=12);
       }
 
       // screw holes
       translate(v=[0, 0, -.1]) screw_grid(diameter=screw_od_core, height=standoff_height + .2);
     }
-
-    // TODO: add board support blocks to prevent pcb contact with screws
-    // TODO: add mounting points to combine with plate/case
   }
 }
 
