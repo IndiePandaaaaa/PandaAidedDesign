@@ -17,7 +17,7 @@ module split_with_screw_support(screw_standard, screw_count, material_thickness,
   support_height = split_screw_material_height(screw_standard=screw_standard, material_thickness=material_thickness);
   support_width = split_width(screw_standard=screw_standard, screw_count=screw_count);
 
-  translate(v=[0, 0, support_height / 2]) cube(size=[support_width + 3, material_width, support_height], center=true);
+  translate(v=[-1.5, 0, support_height / 2]) cube(size=[support_width + 7, material_width, support_height], center=true);
 }
 
 module split_with_screw(screw_standard, screw_count, material_thickness, material_width, cut_thickness = .1) {
