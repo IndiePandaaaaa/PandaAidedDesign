@@ -5,7 +5,7 @@ use <Functions/ListTools.scad>
 use <Parts/Screw.scad>
 use <Parts/SplitToPrint.scad>
 
-$fn = 75;
+$fn = $preview ? 25 : 125;
 
 // mainboards (screws which are populated)
 b450_pro_vdh_plus = [0, 1, 2, 4, 5, 7, 9, 10];
@@ -25,11 +25,11 @@ module mainboard_support_grid(mainboard, screw_od, screw_od_core, standoff_heigh
     [10.16, 163.83], // 1: ATX, µATX, mITX
     [10.16, 209.55], // 2: ATX, µATX
     [10.16, 288.29], // 3: ATX
-    [177.8, 6.35], // 4: ATX, µATX, mITX
-    [177.8, 163.83], // 5: ATX, µATX, mITX
-    [177.8, 209.55], // 6: µATX
-    [177.8, 229.87], // 7: µATX
-    [177.8, 288.29], // 8: ATX
+    [165.1, 6.35], // 4: ATX, µATX, mITX
+    [165.1, 163.83], // 5: ATX, µATX, mITX
+    [165.1, 209.55], // 6: µATX
+    [165.1, 229.87], // 7: µATX
+    [165.1, 288.29], // 8: ATX
     [237.49, 6.35], // 9: ATX, µATX
     [237.49, 163.83], // 10: ATX, µATX
     [237.49, 288.29], // 11: ATX
@@ -110,41 +110,58 @@ module mainboard_support_grid(mainboard, screw_od, screw_od_core, standoff_heigh
     }
   }
 
+  module split_points() {
+    min_pos = MAINBOARD_SCREW_POSITIONS[min(mainboard)];
+    max_pos = MAINBOARD_SCREW_POSITIONS[max(mainboard)];
+
+    for (i = [0:len(MAINBOARD_SCREW_POSITIONS)]) {
+      pos = MAINBOARD_SCREW_POSITIONS[i];
+      if (element_in_list(i, mainboard)) {
+        if (min_pos[0] < pos[0] && pos[0] < max_pos[0]) {
+          translate(v=[pos[0], pos[1], 0])
+            split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
+        }
+      }
+    }
+  }
+
   union() {
-    //    split_points = [0, 1, 4, 5];
+    split_points = [0, 1, 4, 5];
     difference() {
       union() {
         screw_grid(diameter=screw_od, height=standoff_height);
         strap_grid(screw_od, strap_height);
 
-        //        // support for splitting section
-        //        for (point = split_points) {
-        //          // horizontal
-        //          translate(v=[MAINBOARD_SCREW_POSITIONS[point][0] + 10 * (point < 4 ? 1 : -1) + (point == 1 ? 25 : 0), -MAINBOARD_SCREW_POSITIONS[point][1], 0]) {
-        //            rotate(a=(point < 4 ? 180 : 0), v=[0, 0, 1])
-        //              split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
-        //          }
-        //          // vertical
-        //          translate(v=[MAINBOARD_SCREW_POSITIONS[ (point == 1 ? 0 : point) ][0], -MAINBOARD_SCREW_POSITIONS[point][1] - 10 * (point % 3 == 0 ? 1 : -1), 0]) {
-        //            rotate(a=90 * (point == 1 || point == 4 ? -1 : 1), v=[0, 0, 1])
-        //              split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
-        //          }
-        //        }
+        //        split_points();
+
+        // support for splitting section
+        for (point = split_points) {
+          // horizontal
+          translate(v=[MAINBOARD_SCREW_POSITIONS[point][0] + 10 * (point < 4 ? 1 : -1) + (point == 1 ? 25 : 0), -MAINBOARD_SCREW_POSITIONS[point][1], 0]) {
+            rotate(a=(point < 4 ? 180 : 0), v=[0, 0, 1])
+              split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
+          }
+          // vertical
+          translate(v=[MAINBOARD_SCREW_POSITIONS[ (point == 1 ? 0 : point) ][0], -MAINBOARD_SCREW_POSITIONS[point][1] - 10 * (point % 4 == 0 ? 1 : -1), 0]) {
+            rotate(a=90 * (point == 1 || point == 5 ? -1 : 1), v=[0, 0, 1])
+              split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
+          }
+        }
       }
 
       // splitting section
-      //      for (point = split_points) {
-      //        // horizontal
-      //        translate(v=[MAINBOARD_SCREW_POSITIONS[point][0] + 10 * (point < 4 ? 1 : -1) + (point == 1 ? 25 : 0), -MAINBOARD_SCREW_POSITIONS[point][1], 0]) {
-      //          rotate(a=(point < 4 ? 180 : 0), v=[0, 0, 1])
-      //            split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
-      //        }
-      //        // vertical
-      //        translate(v=[MAINBOARD_SCREW_POSITIONS[ (point == 1 ? 0 : point) ][0], -MAINBOARD_SCREW_POSITIONS[point][1] - 10 * (point % 3 == 0 ? 1 : -1), 0]) {
-      //          rotate(a=90 * (point == 1 || point == 4 ? -1 : 1), v=[0, 0, 1])
-      //            split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
-      //        }
-      //      }
+      for (point = split_points) {
+        // horizontal
+        translate(v=[MAINBOARD_SCREW_POSITIONS[point][0] + 10 * (point < 4 ? 1 : -1) + (point == 1 ? 25 : 0), -MAINBOARD_SCREW_POSITIONS[point][1], 0]) {
+          rotate(a=(point < 4 ? 180 : 0), v=[0, 0, 1])
+            split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
+        }
+        // vertical
+        translate(v=[MAINBOARD_SCREW_POSITIONS[ (point == 1 ? 0 : point) ][0], -MAINBOARD_SCREW_POSITIONS[point][1] - 10 * (point % 4 == 0 ? 1 : -1), 0]) {
+          rotate(a=90 * (point == 1 || point == 5 ? -1 : 1), v=[0, 0, 1])
+            split_with_screw(screw_standard=3, screw_count=1, material_thickness=STRAP_HEIGHT, material_width=SCREW_OD[0]);
+        }
+      }
       // plate mounting holes
       translate(v=[MAINBOARD_SCREW_POSITIONS[0][0], -MAINBOARD_SCREW_POSITIONS[0][1] - MAINBOARD_SCREW_POSITIONS[1][1] / 2, strap_height + 2]) {
         screw_metric_countersunk(standard=3, length=12);
@@ -161,5 +178,5 @@ module mainboard_support_grid(mainboard, screw_od, screw_od_core, standoff_heigh
   }
 }
 
-//mainboard_support_grid(mainboard=b450_pro_vdh_plus, screw_od=SCREW_OD[0], screw_od_core=SCREW_OD[1], standoff_height=STANDOFF_HEIGHT, strap_height=STRAP_HEIGHT);
-mainboard_support_grid(mainboard=miniITX, screw_od=SCREW_OD[0], screw_od_core=SCREW_OD[1], standoff_height=STANDOFF_HEIGHT, strap_height=STRAP_HEIGHT);
+mainboard_support_grid(mainboard=b450_pro_vdh_plus, screw_od=SCREW_OD[0], screw_od_core=SCREW_OD[1], standoff_height=STANDOFF_HEIGHT, strap_height=STRAP_HEIGHT);
+//mainboard_support_grid(mainboard=miniITX, screw_od=SCREW_OD[0], screw_od_core=SCREW_OD[1], standoff_height=STANDOFF_HEIGHT, strap_height=STRAP_HEIGHT);
