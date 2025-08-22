@@ -113,6 +113,9 @@ module screw(diameter, length = 12, cutout_sample = false) {
 module screw_corehole(diameter_screw, diameter_core, unthreaded_length, length = 12) {
   union() {
     screw(diameter=diameter_screw, length=unthreaded_length, cutout_sample=true);
+    if (unthreaded_length < diameter_core - .1) {
+      translate(v=[0, 0, -diameter_screw * .8]) cylinder(h=diameter_screw, d=diameter_screw + .3, center=false);
+    }
     translate([0, 0, -length]) cylinder(d=diameter_core, h=length - unthreaded_length + .1);
   }
 }
