@@ -56,7 +56,7 @@ function cone_height(diameter) = diameter * 0.75;
 
 module screw(diameter, length = 12, cutout_sample = false) {
   module base_model(diameter, length, cone_height, cone_diameter, offset = 0) {
-    rotate_extrude() {
+    rotate_extrude(angle=360) {
       polygon(
         [
           [0, 0],
@@ -84,7 +84,7 @@ module screw(diameter, length = 12, cutout_sample = false) {
         translate([0, 0, length - (cone_height(diameter) - diameter / 2) + .1])
           difference() {
             rotate([0, 0, 45])
-              rotate_extrude() {
+              rotate_extrude(angle=360) {
                 polygon(
                   [
                     [0, 0],
