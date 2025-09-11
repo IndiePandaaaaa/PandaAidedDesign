@@ -42,8 +42,9 @@ module circular_guide(diameter, depth, support_plate_height, min_depth = 3) {
     translate(v=[0, 0, -.1]) color(c="red", alpha=1.0) cylinder(h=remaining_height + .2, r=diameter / 2, center=false);
 
     for (i = [0:7])
-      rotate(a=360 / 8 * i, v=[0, 0, 1]) rotate(a=180, v=[1, 0, 0]) translate(v=[50, 0, 0]) screw(diameter=3.5, length=20, cutout_sample=true);
+      rotate(a=360 / 8 * i, v=[0, 0, 1]) rotate(a=180, v=[1, 0, 0]) translate(v=[(diameter + thickness * 2 + 50) / 2 - 7, 0, 0]) screw(diameter=3.5, length=20, cutout_sample=true);
   }
 }
 
 circular_guide(diameter=59, depth=22.5 - 10, support_plate_height=24, min_depth=3);
+translate(v=[0, 0, 40]) circular_guide(diameter=22.5, depth=22.5 - 10, support_plate_height=24, min_depth=3);
