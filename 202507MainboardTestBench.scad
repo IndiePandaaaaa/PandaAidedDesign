@@ -159,11 +159,22 @@ module mainboard_support_grid(mainboard, standoff_height, strap_height = 3) {
           }
         }
 
-        if (element_in_list(2, mainboard) && element_in_list(6, mainboard)) {
+        // additional splits horizontal
+        if (element_in_list(2, mainboard) && (element_in_list(5, mainboard) || element_in_list(6, list=mainboard))) {
           translate(v=[0, -MAINBOARD_SCREW_POSITIONS[2][1], 0]) {
             translate(v=[MAINBOARD_SCREW_POSITIONS[2][0] + 10, 0, 0]) rotate(a=180, v=[0, 0, 1])
                 split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
             translate(v=[MAINBOARD_SCREW_POSITIONS[6][0] - 10, 0, 0]) rotate(a=180, v=[0, 0, 0])
+                split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
+          }
+        }
+
+        // additional splits vertical
+        if (element_in_list(9, mainboard) && element_in_list(10, list=mainboard)) {
+          translate(v=[MAINBOARD_SCREW_POSITIONS[9][0], 0, 0]) {
+            translate(v=[0, -MAINBOARD_SCREW_POSITIONS[9][1] - 10, 0]) rotate(a=90, v=[0, 0, 1])
+                split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
+            translate(v=[0, -MAINBOARD_SCREW_POSITIONS[10][1] + 10, 0]) rotate(a=90, v=[0, 0, -1])
                 split_with_screw_support(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
           }
         }
@@ -182,11 +193,22 @@ module mainboard_support_grid(mainboard, standoff_height, strap_height = 3) {
             split_with_screw(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
         }
 
+        // additional splits horizontal
         translate(v=[0, -MAINBOARD_SCREW_POSITIONS[2][1], 0]) {
           translate(v=[MAINBOARD_SCREW_POSITIONS[2][0] + 10, 0, 0]) rotate(a=180, v=[0, 0, 1])
               split_with_screw(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
           translate(v=[MAINBOARD_SCREW_POSITIONS[6][0] - 10, 0, 0]) rotate(a=180, v=[0, 0, 0])
               split_with_screw(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
+        }
+
+        // additional splits vertical
+        if (element_in_list(9, mainboard) && element_in_list(10, list=mainboard)) {
+          translate(v=[MAINBOARD_SCREW_POSITIONS[9][0], 0, 0]) {
+            translate(v=[0, -MAINBOARD_SCREW_POSITIONS[9][1] - 10, 0]) rotate(a=90, v=[0, 0, 1])
+                split_with_screw(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
+            translate(v=[0, -MAINBOARD_SCREW_POSITIONS[10][1] + 10, 0]) rotate(a=90, v=[0, 0, -1])
+                split_with_screw(screw_standard=3, screw_count=1, material_thickness=strap_height, material_width=SCREW_OD[0]);
+          }
         }
       }
       // plate mounting holes
