@@ -6,23 +6,11 @@ use <Parts/Screw.scad>
 thickness = 3;
 $fn = $preview ? 25 : 125;
 
-transferBit = [25, 5, 16]; // [cutting bit height, bearing height, bit diameter]
+transferBitHeight = 25; // bit cutting height
+transferBitBearing = 5; // bit bearing height
+transferBitOD = 16; // bit outer diameter
+transferBit = [transferBitHeight, transferBitBearing, transferBitOD];
 supportWidth = 42;
-
-uLatte = [44, 24];
-
-// TODO: Maße uLatte in das Modell schreiben als Text
-// TODO: Ausleger für Zwingenmontage
-
-// DACHLATTEN-INTERSECTION
-//union() {
-//  //  cube(size=[uLatte[0] + supportWidth * 2, uLatte[0] + supportWidth * 2, thickness], center=true);
-//  color(c="brown", alpha=1.0) cube(size=[uLatte[0], uLatte[0] + supportWidth * 2 + .2, uLatte[1]], center=true);
-//  color(c="darkgrey", alpha=1.0) {
-//    translate(v=[0, 0, uLatte[1] / 4 + .1]) cube(size=[uLatte[0] + transferBit[2], uLatte[0], uLatte[1] / 2 + .2], center=true);
-//    translate(v=[0, 0, (uLatte[1] + transferBit[0]) / 2]) cube(size=[uLatte[0] + transferBit[2], uLatte[0], uLatte[1] + transferBit[0]], center=true);
-//  }
-//}
 
 module circular_guide(diameter, depth, support_plate_height, min_depth = 3) {
   remaining_height = transferBit[0] + transferBit[1] - 3;
@@ -46,5 +34,28 @@ module circular_guide(diameter, depth, support_plate_height, min_depth = 3) {
   }
 }
 
-circular_guide(diameter=59, depth=22.5 - 10, support_plate_height=24, min_depth=3);
-translate(v=[0, 0, 40]) circular_guide(diameter=22.5, depth=22.5 - 10, support_plate_height=24, min_depth=3);
+module ulatte_cutout() {
+  difference() {
+    union() {
+      // guide
+      cube(size=[10, 3, 22 + .1], center=false);
+      translate(v=[10 - 2.5, 0, 0]) cube(size=[2.5, 30, 22 + .1], center=false);
+      translate(v=[0, 0, 22]) cube(size=[70, 30, 3.5], center=false);
+      translate(v=[0, 0, 22 + 3.5 - .1]) cube(size=[70, 3, 17.5 + .1], center=false);
+
+      // wood sample
+      translate(v=[-2.5, 3 + .2, 22 + 3.5 + .2]) color(c="brown", alpha=1.0) cube(size=[75, 50, 17.7], center=false);
+
+      // wood support
+      translate(v=[0, 36, 22]) cube(size=[70, 14, 3.5], center=false);
+    }
+
+    // screws
+    for (i = [0:3]) {
+      translate(v=[15 + (i % 2) * 40, 15 + (i < 2 ? 0 : 1) * 28, 22.1]) rotate(a=180, v=[0, 1, 0]) screw(diameter=3.5, length=16, cutout_sample=true);
+    }
+  }
+}
+
+//circular_guide(diameter=59, depth=22.5 - 10, support_plate_height=24, min_depth=3);
+ulatte_cutout();
