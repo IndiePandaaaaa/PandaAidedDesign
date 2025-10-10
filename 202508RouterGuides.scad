@@ -57,5 +57,6 @@ module ulatte_cutout() {
   }
 }
 
-//circular_guide(diameter=59, depth=22.5 - 10, support_plate_height=24, min_depth=3);
-ulatte_cutout();
+// circular desk cable management guide:
+circular_guide(diameter=60, depth=22.5 - 10, support_plate_height=24, min_depth=3);
+//ulatte_cutout();
