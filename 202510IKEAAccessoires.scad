@@ -34,21 +34,23 @@ module platsa_side_hook(width_inside = 2, hook_width = 4.7) {
 }
 
 module sortera_bag_clamp(width, height, depth, material_thickness = 2) {
+  // inspired by: https://www.printables.com/model/1419004-ikea-sortera-trash-bag-holder-frame
+  
+  module twoD_edge_rounded(thickness, inner_radius) {
+    difference() {
+      circle(r=inner_radius + thickness);
+      circle(r=inner_radius);
+      
+      for (i=[0:2]) {
+        rotate(90 + 90*i) square(inner_radius+thickness+1);
+      }
+    }
+  }
+
   linear_extrude(height=depth, center=false, convexity=10, twist=0, slices=20, scale=1.0) {
-    polygon(
-      points=[
-        [0, 0],
-        [material_thickness, 0],
-        [material_thickness, height],
-        [material_thickness + width, height],
-        [material_thickness + width, 0],
-        [material_thickness * 2 + width, 0],
-        [material_thickness * 2 + width, height + material_thickness],
-        [0, height + material_thickness],
-      ]
-    );
+    twoD_edge_rounded(material_thickness, 3);
   }
 }
 
 // TODO: add little hook on one side, chest material thickness 2.2 mm
-sortera_bag_clamp(width=19.2, height=45, depth=15, material_thickness=2.5);
+sortera_bag_clamp(width=19.2, height=45, depth=.1, material_thickness=2.5);
