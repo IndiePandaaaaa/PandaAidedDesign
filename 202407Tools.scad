@@ -11,7 +11,7 @@ $fa = $preview ? 10 : .01; // add to smaller circles: , $fn=$preview ? 20 : 50
 
 VACUUM_OD = 34.2;
 
-module perpendicular_angle(width, depth, ruler_depth = 13, ruler_mode = 2.5) {
+module carpenter_square(width, depth, ruler_depth = 13, ruler_depth_2 = 10, ruler_mode = 2.5) {
   // ruler_mode: 10 => cm; 5 => cm, 5 mm; 2.5 => cm, 2.5 mm; 1 => cm, mm; 0 => no ruler
   module ruler(width, mode, mirrored = false) {
     module marker(mode, label, mirrored = false) {
@@ -56,8 +56,8 @@ module perpendicular_angle(width, depth, ruler_depth = 13, ruler_mode = 2.5) {
             polygon(
               [
                 [0, 0],
-                [5, 0],
-                [5, depth - ruler_depth],
+                [ruler_depth_2, 0],
+                [ruler_depth_2, depth - ruler_depth],
                 [width + TOLERANCE, depth - ruler_depth],
                 [width + TOLERANCE, depth],
                 [0, depth],
@@ -177,6 +177,6 @@ module router_guide_batten_channel(cutting_width, cutting_depth, wood_width, woo
   }
 }
 
-// perpendicular_angle(75, 50, ruler_depth = 10, ruler_mode = 0);
+carpenter_square(100, 50, ruler_depth=15, ruler_depth_2=10, ruler_mode=0);
 // pocket_holes();
-router_guide_batten_channel(cutting_width=24, cutting_depth=12, wood_width=44, wood_height=24);
+//router_guide_batten_channel(cutting_width=24, cutting_depth=12, wood_width=44, wood_height=24);
