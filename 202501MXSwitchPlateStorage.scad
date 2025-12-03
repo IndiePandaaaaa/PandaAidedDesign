@@ -6,7 +6,8 @@ THICKNESS = 1.5;
 $fn = $preview ? 25 : 125;
 
 module switch_plate(width, depth, switch_count, border = 2, with_bottom = false, rounded_edges = 0) {
-  cherry_size = [14.05, 14.05, 9.2];
+  cherry_size = [14.05, 14.05, 9.2]; // Cherry MX 
+  //  cherry_size = [13.8, 13.8, 5.5]; // Kailh Choc
 
   cherry_pin_support = [cherry_size[0] + 5, cherry_size[1] + 5, cherry_size[2] - .1];
   cherry_pin_support_rounded = [cherry_pin_support[0] - rounded_edges * 2, cherry_pin_support[1] - rounded_edges * 2, cherry_pin_support[2] - rounded_edges * 2];
@@ -62,5 +63,5 @@ module switch_plate(width, depth, switch_count, border = 2, with_bottom = false,
 }
 
 // FIX: add plate without rounded edges to connect switch plates with more than 1 switch.
-switch_plate(width=210, depth=145, switch_count=46);
+switch_plate(width=210, depth=145, switch_count=12);
 //switch_plate(width=30, depth=30, switch_count=1, border=0, with_bottom=true, rounded_edges=.5);
