@@ -43,19 +43,19 @@ module top_mount() {
     }
 }
 
-module vertical_mount(width = 28.5, height = 58.5) {
+module vertical_mount(width = 28.5, height = 58.5, board_thickness = 20.8) {
   rotate([90, 0, 90]) linear_extrude(width) {
       polygon(
         [
           [0, 0],
           [THICKNESS, 0],
           [THICKNESS, height],
-          [THICKNESS + BOARD_THICKNESS + TOLERANCE, height],
-          [THICKNESS + BOARD_THICKNESS + TOLERANCE, height - MOUNT_HEIGHT],
-          [THICKNESS * 2 + BOARD_THICKNESS + TOLERANCE - CHAMFER, height - MOUNT_HEIGHT],
-          [THICKNESS * 2 + BOARD_THICKNESS + TOLERANCE, height - MOUNT_HEIGHT + CHAMFER],
-          [THICKNESS * 2 + BOARD_THICKNESS + TOLERANCE, height + THICKNESS - CHAMFER],
-          [THICKNESS * 2 + BOARD_THICKNESS + TOLERANCE - CHAMFER, height + THICKNESS],
+          [THICKNESS + board_thickness + TOLERANCE, height],
+          [THICKNESS + board_thickness + TOLERANCE, height - MOUNT_HEIGHT],
+          [THICKNESS * 2 + board_thickness + TOLERANCE - CHAMFER, height - MOUNT_HEIGHT],
+          [THICKNESS * 2 + board_thickness + TOLERANCE, height - MOUNT_HEIGHT + CHAMFER],
+          [THICKNESS * 2 + board_thickness + TOLERANCE, height + THICKNESS - CHAMFER],
+          [THICKNESS * 2 + board_thickness + TOLERANCE - CHAMFER, height + THICKNESS],
           [0, height + THICKNESS],
         ]
       );
