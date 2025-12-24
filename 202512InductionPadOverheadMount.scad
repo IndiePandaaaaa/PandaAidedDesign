@@ -11,6 +11,7 @@ $fn = $preview ? 25 : 125;
 wood_size = [17.4, 35.1];
 
 induction_pad = [90.8, 10.4]; // IKEA LIVBOJ (Type: E2311-C)
+//induction_pad = [55.9, 5.7]; // JSAUX Magnetic Wireless Charger (Type: WP1501)
 
 iphone = [78, 12.2, 5]; // 12 + case
 sony = [78.8, 12.8, 3]; // xperia 1 VI + case
