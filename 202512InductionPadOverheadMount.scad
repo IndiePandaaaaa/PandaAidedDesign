@@ -90,7 +90,8 @@ module phone_mount(depth = 50, angle = 30, phone_width, phone_thickness, phone_b
         }
   }
 }
+mount_angle = 0;
 
 translate(v=[0, 100, 0]) board_mount();
-color(c="orange", alpha=1.0) translate(v=[0, 0, 0]) induction_pad_mount(depth=50, angle=30, cutout_sample=false);
-translate(v=[0, 0, 0]) phone_mount(depth=50, angle=30, phone_width=iphone[0], phone_thickness=iphone[1], phone_border=iphone[2]);
+color(c="orange", alpha=1.0) translate(v=[0, 0, 0]) induction_pad_mount(depth=50, angle=mount_angle, cutout_sample=false);
+translate(v=[0, 0, 0]) phone_mount(depth=50, angle=mount_angle, phone_width=iphone[0], phone_thickness=iphone[1], phone_border=iphone[2]);
